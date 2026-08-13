@@ -158,6 +158,6 @@ The automated checks verify that the landing restores the destination of the lat
 - [x] Split or unwrap antimeridian-crossing paths so no world-spanning line is rendered.
 - [x] Drive visible route reveal, aircraft position, and geographic bearing rotation from the same generated geodesic coordinates.
 - [x] Add automated geographic tests for CCU → DEL, BLR, BOM, Dubai, London, New York, Calgary, and Acapulco.
-- [ ] Verify short and long routes across map scales, then commit, push, and checkpoint the repair.
+- [x] Verify short and long routes across map scales, then commit and push the repair; save its recovery checkpoint next.
 
 The route service now obtains WGS84 great-circle coordinates from Turf, renders dateline-safe segments in Leaflet, and calculates the moving aircraft’s location and bearing from that exact same path. The requested CCU routes were checked in unit tests and in the real browser map at two zoom levels; no invalid or world-spanning SVG path values were produced.

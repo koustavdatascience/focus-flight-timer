@@ -1,7 +1,7 @@
 /* Cloud Atlas Editorial map: real OSM geography with compact floating UI layered above it. */
 
 import { divIcon, latLngBounds } from "leaflet";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { CircleMarker, MapContainer, Marker, Polyline, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { MAP_CONFIG } from "@/config/map";
@@ -60,9 +60,16 @@ function MapClickHandler({ onMapClick }: Pick<FlightMapProps, "onMapClick">) {
 
 export function FlightMap({ origin, destination, progress = 0, mode, landingFocus = null, onMapClick }: FlightMapProps) {
   const hasRoute = Boolean(origin && destination);
-  const route = hasRoute && origin && destination ? gentleFlightRoute({ latitude: origin.latitude, longitude: origin.longitude }, { latitude: destination.latitude, longitude: destination.longitude }) : null;
-  const aircraft = route ? aircraftAtProgress(route, progress) : null;
-  const visibleRoute = route ? routeCoordinatesAtProgress(route, mode === "active" ? progress : 1) : [];
+  const route = useMemo(() => {
+    if (!hasRoute || !origin || !destination) return null;
+    return gentleFlightRoute(
+      { latitude: origin.latitude, longitude: origin.longitude },
+      { latitude: destination.latitude, longitude: destination.longitude },
+    );
+  }, [destination?.latitude, destination?.longitude, hasRoute, origin?.latitude, origin?.longitude]);
+  const aircraft = useMemo(() => route ? aircraftAtProgress(route, progress) : null, [progress, route]);
+  const plannedRoute = useMemo(() => route ? routeCoordinatesAtProgress(route, 1) : [], [route]);
+  const travelledRoute = useMemo(() => route ? routeCoordinatesAtProgress(route, progress) : [], [progress, route]);
   const renderedOrigin = route?.animationCoordinates[0] ?? (origin ? { latitude: origin.latitude, longitude: origin.longitude } : null);
   const renderedDestination = route?.animationCoordinates.at(-1) ?? (destination ? { latitude: destination.latitude, longitude: destination.longitude } : null);
 
@@ -72,7 +79,18 @@ export function FlightMap({ origin, destination, progress = 0, mode, landingFocu
       <MapViewport origin={origin} destination={destination} mode={mode} landingFocus={landingFocus} route={route} />
       <MapClickHandler onMapClick={onMapClick} />
       {hasRoute && origin && destination && <>
-        {visibleRoute.length > 1 && <Polyline positions={visibleRoute.map((coordinate) => [coordinate.latitude, coordinate.longitude])} pathOptions={{ color: "#0d78ce", weight: 3, opacity: 0.92, dashArray: "9 12", lineCap: "round" }} />}
+        {plannedRoute.length > 1 && <Polyline
+          positions={plannedRoute.map((coordinate) => [coordinate.latitude, coordinate.longitude])}
+          smoothFactor={0}
+          interactive={false}
+          pathOptions={{ className: "flight-route-planned", color: "#0879d1", weight: mode === "active" ? 4.6 : 3.8, opacity: 1, dashArray: "12 10", lineCap: "round", lineJoin: "round" }}
+        />}
+        {mode === "active" && travelledRoute.length > 1 && <Polyline
+          positions={travelledRoute.map((coordinate) => [coordinate.latitude, coordinate.longitude])}
+          smoothFactor={0}
+          interactive={false}
+          pathOptions={{ className: "flight-route-travelled", color: "#eb3e7c", weight: 5.8, opacity: 1, lineCap: "round", lineJoin: "round" }}
+        />}
         {renderedOrigin && <CircleMarker center={[renderedOrigin.latitude, renderedOrigin.longitude]} radius={6} pathOptions={{ color: "#182c42", weight: 3, fillColor: "#f6f3ec", fillOpacity: 1 }} />}
         {renderedDestination && <CircleMarker center={[renderedDestination.latitude, renderedDestination.longitude]} radius={7} pathOptions={{ color: "#eb3e7c", weight: 3, fillColor: "#ffffff", fillOpacity: 1 }} />}
         {renderedOrigin && <Marker position={[renderedOrigin.latitude, renderedOrigin.longitude]} icon={originIcon}>

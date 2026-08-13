@@ -34,6 +34,26 @@ await page.waitForTimeout(1400);
 
 const timerText = await page.locator(".time-card strong").innerText();
 const activePathCount = await page.locator(".leaflet-overlay-pane path").count();
+const activePathDetails = await page.locator(".leaflet-overlay-pane path").evaluateAll((paths) => paths.map((path) => {
+  const paint = getComputedStyle(path);
+  const svgBounds = path.getBBox();
+  const screenBounds = path.getBoundingClientRect();
+  return {
+    className: path.getAttribute("class"),
+    dLength: path.getAttribute("d")?.length ?? 0,
+    stroke: path.getAttribute("stroke"),
+    strokeWidth: path.getAttribute("stroke-width"),
+    strokeOpacity: path.getAttribute("stroke-opacity"),
+    dashArray: path.getAttribute("stroke-dasharray"),
+    computedStroke: paint.stroke,
+    computedStrokeWidth: paint.strokeWidth,
+    computedOpacity: paint.opacity,
+    display: paint.display,
+    visibility: paint.visibility,
+    svgBounds: { x: svgBounds.x, y: svgBounds.y, width: svgBounds.width, height: svgBounds.height },
+    screenBounds: { x: screenBounds.x, y: screenBounds.y, width: screenBounds.width, height: screenBounds.height },
+  };
+}));
 const aircraftVisible = (await page.locator(".flight-plane-icon").count()) === 1;
 const markersVisible = await page.locator(".leaflet-marker-icon").count();
 await page.screenshot({ path: "/home/ubuntu/screenshots/focusflight-ccu-jfk-active.png", fullPage: true });
@@ -42,6 +62,7 @@ console.log(JSON.stringify({
   selectedRoute,
   selectionPathCount,
   activePathCount,
+  activePathDetails,
   aircraftVisible,
   markersVisible,
   timerText,

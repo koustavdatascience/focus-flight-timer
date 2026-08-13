@@ -140,6 +140,9 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outl
 /* Cloud Atlas Editorial real-map layer: OSM geography, compact controls, and no dashboard cover. */
 .geo-flight-shell { min-height: 100svh; position: relative; overflow: hidden; isolation: isolate; background: #dcecf0; }
 .flight-map-canvas { position: absolute !important; inset: 0; z-index: 0; width: 100%; height: 100%; background: #dcecf0; font-family: "DM Sans", sans-serif; }
+.active-flight-shell .flight-map-canvas { z-index: 2; }
+.flight-map-canvas .flight-route-planned { filter: drop-shadow(0 0 2px rgba(255,255,255,.95)); }
+.flight-map-canvas .flight-route-travelled { filter: drop-shadow(0 0 3px rgba(255,255,255,.95)); }
 .flight-map-canvas .leaflet-control-zoom { margin: 88px 22px 0 0; border: 0; box-shadow: 0 7px 18px rgba(29,62,76,.14); }
 .flight-map-canvas .leaflet-control-zoom a { width: 34px; height: 34px; line-height: 34px; border: 0; color: var(--ink); background: rgba(255,255,255,.9); }
 .flight-map-canvas .leaflet-control-attribution { padding: 3px 6px; color: rgba(24,44,66,.68); background: rgba(255,255,255,.76); }

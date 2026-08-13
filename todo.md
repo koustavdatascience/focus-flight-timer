@@ -194,3 +194,12 @@ The landing page now displays exactly two location cards: Starting location and 
 - [x] Report the live route and timer behavior without persisting a production test trip.
 
 Guest-mode browser verification selected CCU → JFK and started a 16h 30m estimated journey without authentication or trip persistence. The active map showed three markers (origin, destination, aircraft), three geographic map paths, no browser errors, and a running timer at 16:29:59 after launch. The saved capture visually confirms the aircraft and endpoint markers on the active geographic route.
+
+## Active-flight route visibility repair
+
+- [x] Restore a persistent planned-route trace during active flights so the full path remains legible behind the aircraft.
+- [x] Render a distinct travelled-route layer that progressively reveals from the origin to the aircraft.
+- [x] Verify the active route layer in a live CCU-to-JFK start sequence and verify midpoint/completion geometry through the shared route-progress tests.
+- [x] Save a recovery checkpoint for the active-flight route visibility repair.
+
+The repair separates the persistent dashed blue planned path from the solid pink travelled path and memoizes route geometry by endpoint coordinates. This prevents the Leaflet viewport from restarting its `flyToBounds` animation for every timer tick. The live CCU-to-JFK capture now visibly shows the 4.6px planned path spanning 923px, endpoint and aircraft markers, a running timer, and no browser errors. The shared route tests continue to validate progressive midpoint and final geometry.

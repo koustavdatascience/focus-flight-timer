@@ -5,7 +5,7 @@ import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { FlightMap } from "@/components/map/FlightMap";
 import { ORIGIN } from "@/config/origin";
 import { geocodePlace } from "@/services/geocoding";
-import { AIRPORTS, findNearestAirport, getFeaturedAirports, searchAirports, type Destination } from "@/services/airportSearch";
+import { findNearestAirport, getFeaturedAirports, searchAirports, type Destination } from "@/services/airportSearch";
 import { distanceBetween, suggestedFocusMinutes } from "@/services/route";
 
 type ViewState = "landing" | "selecting" | "active";
@@ -22,27 +22,25 @@ function airportLabel(airport: Destination) {
 }
 
 export default function Home() {
-  const initialDestination = FEATURED_AIRPORTS[0] || AIRPORTS[0];
-  const initialMinutes = suggestedFocusMinutes(distanceBetween(ORIGIN, initialDestination));
   const [view, setView] = useState<ViewState>("landing");
-  const [selectedDestination, setSelectedDestination] = useState<Destination>(initialDestination);
+  const [selectedDestination, setSelectedDestination] = useState<Destination | null>(null);
   const [query, setQuery] = useState("");
   const [searching, setSearching] = useState(false);
   const [running, setRunning] = useState(false);
   const [soundOn, setSoundOn] = useState(true);
-  const [remaining, setRemaining] = useState(initialMinutes * 60);
-  const [sessionMinutes, setSessionMinutes] = useState(initialMinutes);
+  const [remaining, setRemaining] = useState(25 * 60);
+  const [sessionMinutes, setSessionMinutes] = useState(25);
   const [located, setLocated] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [notice, setNotice] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const localSuggestions = useMemo(() => searchAirports(query, 6), [query]);
-  const routeDistance = distanceBetween(ORIGIN, selectedDestination);
+  const routeDistance = selectedDestination ? distanceBetween(ORIGIN, selectedDestination) : 0;
   const totalSeconds = sessionMinutes * 60;
   const progress = totalSeconds === 0 ? 0 : 1 - remaining / totalSeconds;
 
   useEffect(() => {
-    if (!running || view !== "active") return;
+    if (!running || view !== "active" || !selectedDestination) return;
     const timer = window.setInterval(() => {
       setRemaining((value) => {
         if (value <= 1) {
@@ -54,7 +52,7 @@ export default function Home() {
       });
     }, 1000);
     return () => window.clearInterval(timer);
-  }, [running, selectedDestination.city, view]);
+  }, [running, selectedDestination?.city, view]);
 
   function selectDestination(destination: Destination) {
     const minutes = suggestedFocusMinutes(distanceBetween(ORIGIN, destination));
@@ -69,6 +67,7 @@ export default function Home() {
   }
 
   function startFlight() {
+    if (!selectedDestination) return;
     setRemaining(sessionMinutes * 60);
     setRunning(true);
     setView("active");
@@ -77,6 +76,9 @@ export default function Home() {
 
   function returnToLanding() {
     setRunning(false);
+    setSelectedDestination(null);
+    setSessionMinutes(25);
+    setRemaining(25 * 60);
     setView("landing");
     setNotice("");
   }
@@ -102,8 +104,9 @@ export default function Home() {
       setSessionMinutes(customMinutes);
       setRemaining(customMinutes * 60);
       setView("selecting");
-      setNotice(`Custom focus duration set for ${selectedDestination.city}.`);
+      setNotice(selectedDestination ? `Custom focus duration set for ${selectedDestination.city}.` : "Custom focus duration set. Choose a destination to depart.");
       setQuery("");
+      if (!selectedDestination) setView("landing");
       return;
     }
 
@@ -151,7 +154,7 @@ export default function Home() {
     );
   }
 
-  if (view === "active") {
+  if (view === "active" && selectedDestination) {
     return (
       <main className="geo-flight-shell active-flight-shell">
         <FlightMap origin={ORIGIN} destination={selectedDestination} progress={progress} mode="active" onMapClick={handleMapClick} />
@@ -168,7 +171,7 @@ export default function Home() {
     );
   }
 
-  if (view === "selecting") {
+  if (view === "selecting" && selectedDestination) {
     return (
       <main className="geo-flight-shell selecting-flight-shell">
         <FlightMap origin={ORIGIN} destination={selectedDestination} progress={0} mode="selecting" onMapClick={handleMapClick} />

@@ -10,6 +10,8 @@ page.on("console", (message) => {
 page.on("pageerror", (error) => errors.push(`pageerror: ${error.message}`));
 
 await page.goto(baseUrl, { waitUntil: "networkidle" });
+const initialSelectionCards = await page.locator(".selection-destination-card").count();
+const initialMapCanvases = await page.locator(".leaflet-container").count();
 await page.getByLabel("Search city or airport").fill("HND");
 await page.getByRole("option").first().click();
 await page.locator(".leaflet-container").waitFor({ state: "visible" });
@@ -39,6 +41,8 @@ const geocodingWorked = geocodedText.length > 0 && !geocodedText.includes("No pl
 
 console.log(JSON.stringify({
   selectingTiles,
+  initialSelectionCards,
+  initialMapCanvases,
   selectingRouteLines,
   selectedText,
   activeTiles,
@@ -49,7 +53,7 @@ console.log(JSON.stringify({
   geocodedText,
   geocodingWorked,
   errors,
-  pass: selectingTiles > 0 && selectingRouteLines > 0 && activeTiles > 0 && activeMarkers >= 3 && pausedButton === 1 && timeBeforePause === timeAfterPause && geocodingWorked && errors.length === 0,
+  pass: initialSelectionCards === 0 && initialMapCanvases === 0 && selectingTiles > 0 && selectingRouteLines > 0 && activeTiles > 0 && activeMarkers >= 3 && pausedButton === 1 && timeBeforePause === timeAfterPause && geocodingWorked && errors.length === 0,
 }, null, 2));
 
 await browser.close();

@@ -10,7 +10,18 @@ type NominatimResult = {
   lon: string;
   type?: string;
   name?: string;
-  address?: { city?: string; town?: string; village?: string; country?: string; country_code?: string };
+  namedetails?: Record<string, string>;
+  address?: {
+    city?: string;
+    town?: string;
+    village?: string;
+    country?: string;
+    country_code?: string;
+    "city:en"?: string;
+    "town:en"?: string;
+    "village:en"?: string;
+    "country:en"?: string;
+  };
 };
 
 export async function geocodePlace(query: string): Promise<Destination[]> {
@@ -19,17 +30,21 @@ export async function geocodePlace(query: string): Promise<Destination[]> {
   url.searchParams.set("q", query);
   url.searchParams.set("limit", "6");
   url.searchParams.set("addressdetails", "1");
+  url.searchParams.set("namedetails", "1");
+  url.searchParams.set("accept-language", "en");
   const response = await fetch(url, { headers: { Accept: "application/json" } });
   if (!response.ok) throw new Error("Geocoding service is unavailable.");
   const results = (await response.json()) as NominatimResult[];
   return results
     .map((result) => {
-      const city = result.address?.city || result.address?.town || result.address?.village || result.name || result.display_name.split(",")[0];
+      const englishName = result.namedetails?.["name:en"] || result.namedetails?.["official_name:en"] || result.name;
+      const city = result.address?.["city:en"] || result.address?.["town:en"] || result.address?.["village:en"] || result.address?.city || result.address?.town || result.address?.village || englishName || result.display_name.split(",")[0];
+      const country = result.address?.["country:en"] || result.address?.country || "";
       return {
         id: `geocode-${result.place_id}`,
-        name: result.name || city,
+        name: englishName || city,
         city,
-        country: result.address?.country || "",
+        country,
         countryCode: (result.address?.country_code || "").toUpperCase(),
         iata: null,
         icao: null,
@@ -40,7 +55,7 @@ export async function geocodePlace(query: string): Promise<Destination[]> {
         isMajor: false,
         priority: 20,
         source: "geocoder" as const,
-        displayName: result.display_name,
+        displayName: [englishName || city, country].filter(Boolean).join(", "),
       } satisfies Destination;
     })
     .filter((place) => Number.isFinite(place.latitude) && Number.isFinite(place.longitude));

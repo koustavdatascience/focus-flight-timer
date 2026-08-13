@@ -32,3 +32,14 @@ The existing `MapView` wrapper targets Google Maps. The new requirement explicit
 ## Final visual verification
 
 The selection screenshot shows a real world map with visible OpenStreetMap geography, zoom controls, origin and destination markers, a dashed route, and a compact destination card. The active screenshot shows the full-screen geographic map, dashed route, aircraft marker, top-right controls, and bottom-corner timer/distance cards. The preview-mode banner is management chrome outside the app viewport and is not part of the deployed page.
+
+## Default state and English localization revision
+
+- [x] Do not select or highlight any airport on initial landing-page load.
+- [x] Keep destination, airport, country, search, and control labels in English.
+- [x] Prefer English Nominatim name details when available.
+- [x] Verify explicit search/card selection still opens the real map and active-flight flow.
+
+## Current localization baseline
+
+`Home.tsx` initializes `selectedDestination` to the first featured airport and calculates its route and timer immediately. `geocoding.ts` currently derives labels from `address` and `display_name` without requesting Nominatim `namedetails`, so the revision will make the selected destination nullable and prefer `name:en`/English address fields when supplied.

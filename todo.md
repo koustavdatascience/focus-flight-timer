@@ -47,6 +47,54 @@ The selection screenshot shows a real world map with visible OpenStreetMap geogr
 - [x] Keep the route, distance, timer, and active-flight screens blocked until both airports are selected.
 - [x] Verify reset/back behavior clears the origin and destination for the next session.
 
+## Latest attachment revision
+
+- [ ] Inspect the latest attached text for new functional or visual requirements.
+- [ ] Apply the attachment requirements without reintroducing a default origin or destination.
+- [ ] Run type, build, end-to-end, and responsive visual checks.
+- [ ] Save a new deliverable checkpoint.
+
+## Repository and Supabase provisioning revision
+
+- [ ] Create a private GitHub repository and push the current FocusFlight project.
+- [ ] Obtain and confirm the exact Supabase project cost before creating a new backend.
+- [ ] Provision the Supabase project and securely configure the application connection.
+- [ ] Implement Supabase Auth, user profile persistence, completed-trip saving, and user-isolated travel history.
+- [ ] Add a My Journey map with personal route, airport, visit-count, and distance insights.
+- [ ] Verify the authenticated persistence flow and push the completed integration changes to GitHub.
+
+## Paused live-integration UI-shell revision
+
+- [ ] Keep live Supabase client configuration disconnected from the current application build.
+- [ ] Build the sign-in, profile, travel-history, and My Journey interface shell using clearly labeled empty and loading states only.
+- [ ] Preserve the existing guest flight-selection flow and real map journey.
+- [ ] Verify the UI shell and build, then commit and push the repository to GitHub.
+
+## Immediate GitHub push
+
+- [ ] Commit the current FocusFlight workspace, including the in-progress UI shell and Supabase preparation files.
+- [ ] Push the commit to the private FocusFlight GitHub repository and verify the remote state.
+
+## Auth, database, and travel-history revision
+
+The attachment requires Supabase Auth, Supabase Postgres/RLS, persistent profiles and trips, and user-scoped travel history. The current project is static and has no Supabase configuration, so implementation requires a full-stack upgrade plus a connected Supabase project URL and anon key (or an existing Supabase connector). No auth or database code will be fabricated against placeholder credentials.
+
+## Provisioned backend
+
+The FocusFlight Supabase project is provisioned in the Mumbai region. The implementation will use Supabase Auth for browser sessions and a client service configured only through `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`. Profiles and trips will be protected by database RLS policies based on `auth.uid()`.
+
+## Post-upgrade application baseline
+
+The original FocusFlight `Home` screen remains intact but needs its Supabase authentication imports and feature wiring restored. The router currently contains only the landing route, so the personal My Journey experience will be a separate route with navigation from the landing header. The existing full-stack server scaffold will remain available, while Supabase will own browser authentication and persisted user travel data.
+
+## UI-shell layout decision
+
+The template dashboard layout is intended for internal tools and would replace the public cartographic landing experience with a generic sidebar. FocusFlight will retain its bespoke public header and add a contextual My Journey route with a clear return path instead. Live authentication and persistence remain visibly marked as a future connection point rather than being simulated with account or trip data.
+
+## UI-shell implementation baseline
+
+The landing already has the correct origin-first real-map flight flow and an English visual system. Its upgrade conflict is limited to an orphaned `useAuth` reference, which will be removed while building the paused-integration shell. The existing stylesheet contains reusable cartographic backdrop, floating-card, map, and mobile-navigation treatments that can support an empty My Journey page without introducing fabricated personal metrics or travel records.
+
 ## Current origin baseline
 
 `origin.ts` exports a fixed `SIN` origin and `Home.tsx` passes it to all distance, geocoding, route, and flight-map calculations. The revision will make origin nullable in the page state, add a reusable origin search mode, and pass an origin only after an airport is explicitly selected.

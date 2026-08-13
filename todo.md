@@ -212,3 +212,20 @@ The repair separates the persistent dashed blue planned path from the solid pink
 - [x] Save and push the Vercel-ready project state.
 
 The GitHub-linked Vercel project exists at `focus-flight-timer.vercel.app`, but its initial Vite autodetection ran the repository's generic `build` script and published the Express bundle instead of the browser application. The Vercel configuration now explicitly runs the client-only build, publishes `dist/public`, and includes the SPA rewrite required for direct `/journey` navigation. The local Vercel build, TypeScript check, and 19 unit tests pass. The deployment still requires the existing public Supabase URL and publishable key to be entered in Vercel's environment-variable settings; no credentials were committed.
+
+## Vercel production-environment completion
+
+- [x] Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` to the selected Vercel project for Production and Preview.
+- [x] Add the Vercel production Site URL and redirect URL to the selected Supabase project's Auth URL configuration.
+- [x] Redeploy and verify the live FocusFlight landing page, sign-in dialog, and `/journey` route in a browser.
+- [ ] Optionally add an exact Vercel preview deployment URL to Supabase Redirect URLs before testing email authentication on a preview deployment.
+
+The selected Vercel project now has its two public browser variables in both Production and Preview. Supabase Auth Site URL is `https://focus-flight-timer.vercel.app`, with the deployed application route wildcard allowed under that domain. The live root page renders the interactive Leaflet map and airport controls, `/journey` resolves as a client route, and the deployed sign-in dialog initializes successfully. A preview-specific redirect URL is only needed if authentication is tested on a separate preview hostname.
+
+## User-selected Vercel project provisioning
+
+- [x] Configure the Vite import screen with the two required public Supabase values for Production and Preview.
+- [x] Deploy the newly selected Vercel project from the linked GitHub `main` branch.
+- [x] Verify the fresh deployment, direct `/journey` routing, and Supabase Auth production redirect URL configuration.
+
+The user selected the Vercel new-project flow for `koustavdatascience/focus-flight-timer`, rather than updating the earlier imported project. The repository already contains the client-only build and SPA rewrite configuration, so no Build or Output Settings overrides were required in the Vercel import form. The live root URL now renders the interactive New York landing map and controls, a direct request to `/journey` renders the signed-out Journey screen rather than a Vercel 404, and the production Supabase Auth return domain is configured for email confirmation and password recovery.

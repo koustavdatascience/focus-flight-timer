@@ -41,10 +41,10 @@ export function JourneyMap({ routes }: { routes: JourneyRoute[] }) {
       <TileLayer url={MAP_CONFIG.tileUrl} attribution={MAP_CONFIG.attribution} crossOrigin />
       <JourneyViewport routes={routes} />
       {routes.map((route, index) => {
-        const line = greatCircleRoute(route.origin, route.destination);
+        const routeGeometry = greatCircleRoute(route.origin, route.destination);
         const hue = index % 2 === 0 ? "#0d78ce" : "#eb3e7c";
         const date = route.completedAt ? new Date(route.completedAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "Completed focus flight";
-        return <Polyline key={route.id} positions={line} pathOptions={{ color: hue, weight: 3, opacity: 0.86, dashArray: "9 11", lineCap: "round" }}><Popup className="journey-map-popup"><div className="journey-popup-route"><span>{route.origin.iata || route.origin.icao || route.origin.city} → {route.destination.iata || route.destination.icao || route.destination.city}</span><strong>{route.distanceKm.toLocaleString()} km</strong><small>{formatDuration(route.focusDurationSeconds)} focus · {date}</small></div></Popup></Polyline>;
+        return routeGeometry.renderSegments.map((segment, segmentIndex) => <Polyline key={`${route.id}-${segmentIndex}`} positions={segment.map((coordinate) => [coordinate.latitude, coordinate.longitude])} pathOptions={{ color: hue, weight: 3, opacity: 0.86, dashArray: "9 11", lineCap: "round" }}>{segmentIndex === 0 && <Popup className="journey-map-popup"><div className="journey-popup-route"><span>{route.origin.iata || route.origin.icao || route.origin.city} → {route.destination.iata || route.destination.icao || route.destination.city}</span><strong>{route.distanceKm.toLocaleString()} km</strong><small>{formatDuration(route.focusDurationSeconds)} focus · {date}</small></div></Popup>}</Polyline>);
       })}
       {airports.map((airport) => {
         const connectedRoutes = routes.filter((route) => route.origin.id === airport.id || route.destination.id === airport.id);

@@ -151,3 +151,13 @@ The autonomous completion work now uses the selected Tokyo Supabase project dire
 - [x] Document the live email-confirmed verification boundary without creating customer or test records in the production backend.
 
 The automated checks verify that the landing restores the destination of the latest completed trip (by completion time) and that authenticated trip creation retains the route key, duration seconds, source type, and source label. A live sign-up/confirmation run is intentionally not executed against the production backend because it would create a test account and persisted records; the shipped email-auth UI remains available for the account owner’s normal verification.
+
+## Geodesic flight-path repair
+
+- [x] Replace custom curved route rendering with shared great-circle coordinates calculated exclusively in longitude/latitude space.
+- [x] Split or unwrap antimeridian-crossing paths so no world-spanning line is rendered.
+- [x] Drive visible route reveal, aircraft position, and geographic bearing rotation from the same generated geodesic coordinates.
+- [x] Add automated geographic tests for CCU → DEL, BLR, BOM, Dubai, London, New York, Calgary, and Acapulco.
+- [ ] Verify short and long routes across map scales, then commit, push, and checkpoint the repair.
+
+The route service now obtains WGS84 great-circle coordinates from Turf, renders dateline-safe segments in Leaflet, and calculates the moving aircraft’s location and bearing from that exact same path. The requested CCU routes were checked in unit tests and in the real browser map at two zoom levels; no invalid or world-spanning SVG path values were produced.

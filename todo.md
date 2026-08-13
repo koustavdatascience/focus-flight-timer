@@ -233,3 +233,11 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 ## Product roadmap repository update
 
 - [x] Add the user-approved FocusFlight product expansion roadmap to the repository documentation and push it to GitHub.
+
+## Public information pages — planning only
+
+- [x] Prepare an implementation-ready suggestion for the About, Privacy Policy, and Terms of Service pages without changing the application.
+
+## Public-page planning repository update
+
+- [x] Add the approved public-information pages planning addendum to repository documentation and push it to GitHub.

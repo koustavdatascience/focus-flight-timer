@@ -241,3 +241,11 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 ## Public-page planning repository update
 
 - [x] Add the approved public-information pages planning addendum to repository documentation and push it to GitHub.
+
+## 25 August launch-scope assessment — planning only
+
+- [x] Define a launch-critical FocusFlight scope and a deferred post-launch scope for a 25 August 2026 target date without starting implementation.
+
+## Repository README update
+
+- [x] Create and publish a current-state README covering FocusFlight features, architecture, setup, deployment, and contribution boundaries.

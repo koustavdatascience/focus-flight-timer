@@ -136,3 +136,18 @@ Origin state is nullable in the page controller, and an origin is only passed to
 - [x] Add interactive airport and route popups on My Journey with airport identity, visit count, connected routes, and route date, duration, and distance.
 
 The autonomous completion work now uses the selected Tokyo Supabase project directly through managed browser variables. It adds email/password authentication, Auth-backed profile creation, user-isolated RLS trip persistence, pause/resume state, a personal Leaflet journey map, and responsive visual checks. No customer data or fabricated trip records were inserted during verification.
+
+## Realistic duration and landing-map revision
+
+- [x] Default the real interactive landing map to New York City for guests and signed-in users without completed trips.
+- [x] Preserve the latest completed destination as the real landing-map focus for returning users.
+- [x] Research direct-flight duration data sources and define a separate `flightDurations` cache model.
+- [x] Use sourced direct-flight durations where verified and transparent commercial-aircraft estimates only when no direct duration is available.
+- [x] Connect stored duration seconds to destination cards, timer initialization, aircraft progress, and trip persistence without hardcoding values in React components.
+- [x] Verify duration-cache behavior, New York/default restoration logic, route simulation, responsive UI, and existing guest/authenticated flows.
+- [ ] Commit, push, and checkpoint the completed realistic-duration and landing-map revision.
+
+- [x] Add focused automated coverage for authenticated landing-map restoration from completed trip history and for persisted duration metadata passed to trip saving.
+- [x] Document the live email-confirmed verification boundary without creating customer or test records in the production backend.
+
+The automated checks verify that the landing restores the destination of the latest completed trip (by completion time) and that authenticated trip creation retains the route key, duration seconds, source type, and source label. A live sign-up/confirmation run is intentionally not executed against the production backend because it would create a test account and persisted records; the shipped email-auth UI remains available for the account owner’s normal verification.

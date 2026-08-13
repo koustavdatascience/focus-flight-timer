@@ -15,10 +15,6 @@ export function distanceBetween(a: Coordinate, b: Coordinate) {
   return Math.round(EARTH_RADIUS_KM * 2 * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine)));
 }
 
-export function suggestedFocusMinutes(distanceKm: number) {
-  return Math.max(25, Math.min(60, Math.round(distanceKm / 180)));
-}
-
 export function greatCircleRoute(start: Coordinate, end: Coordinate, segments = 72) {
   const startLat = radians(start.latitude);
   const startLon = radians(start.longitude);

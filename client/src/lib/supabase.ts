@@ -32,6 +32,9 @@ export type FocusTrip = {
   destination_airport_id: string;
   distance_km: number;
   focus_duration_seconds: number;
+  flight_duration_route_key: string | null;
+  duration_source: "verified_direct" | "estimated" | null;
+  duration_source_label: string | null;
   elapsed_seconds: number;
   is_paused: boolean;
   status: FocusTripStatus;
@@ -81,7 +84,7 @@ export async function getFocusTrips() {
   return (data ?? []) as FocusTrip[];
 }
 
-export async function startFocusTrip(input: Pick<FocusTrip, "user_id" | "origin_airport_id" | "destination_airport_id" | "distance_km" | "focus_duration_seconds">) {
+export async function startFocusTrip(input: Pick<FocusTrip, "user_id" | "origin_airport_id" | "destination_airport_id" | "distance_km" | "focus_duration_seconds" | "flight_duration_route_key" | "duration_source" | "duration_source_label">) {
   const { data, error } = await supabase
     .from("trips")
     .insert({ ...input, elapsed_seconds: 0, is_paused: false })

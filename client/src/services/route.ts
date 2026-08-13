@@ -145,6 +145,24 @@ export function coordinateAtProgress(route: GeodesicRoute, progress: number) {
   return interpolate(coordinates[lowerIndex], coordinates[Math.min(lowerIndex + 1, coordinates.length - 1)], position - lowerIndex);
 }
 
+/**
+ * Return the continuous unwrapped coordinate sequence for a visible portion of a route.
+ * Leaflet can render longitudes outside ±180° as a neighbouring world copy, which keeps a
+ * dateline-crossing great-circle visually continuous instead of breaking it into two arcs.
+ */
+export function routeCoordinatesAtProgress(route: GeodesicRoute, progress: number) {
+  const coordinates = route.animationCoordinates;
+  if (coordinates.length === 0) return [] as Coordinate[];
+  const safeProgress = Math.max(0, Math.min(1, progress));
+  const position = safeProgress * (coordinates.length - 1);
+  const lastIndex = Math.floor(position);
+  const visible = coordinates.slice(0, lastIndex + 1);
+  if (lastIndex < coordinates.length - 1) {
+    visible.push(interpolate(coordinates[lastIndex], coordinates[lastIndex + 1], position - lastIndex));
+  }
+  return visible;
+}
+
 export function bearingBetween(a: Coordinate, b: Coordinate) {
   const deltaLongitude = radians(normaliseLongitude(b.longitude - a.longitude));
   const startLatitude = radians(a.latitude);
@@ -155,14 +173,7 @@ export function bearingBetween(a: Coordinate, b: Coordinate) {
 }
 
 export function routeSegmentsAtProgress(route: GeodesicRoute, progress: number) {
-  const coordinates = route.animationCoordinates;
-  if (coordinates.length === 0) return [] as Coordinate[][];
-  const safeProgress = Math.max(0, Math.min(1, progress));
-  const position = safeProgress * (coordinates.length - 1);
-  const lastIndex = Math.floor(position);
-  const visible = coordinates.slice(0, lastIndex + 1);
-  if (lastIndex < coordinates.length - 1) visible.push(interpolate(coordinates[lastIndex], coordinates[lastIndex + 1], position - lastIndex));
-  return splitAtAntimeridian(visible);
+  return splitAtAntimeridian(routeCoordinatesAtProgress(route, progress));
 }
 
 export function aircraftAtProgress(route: GeodesicRoute, progress: number): AircraftState {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getAirportByCode } from "@/services/airportSearch";
-import { aircraftAtProgress, greatCircleRoute } from "./route";
+import { aircraftAtProgress, greatCircleRoute, routeCoordinatesAtProgress } from "./route";
 
 function airportCoordinate(code: string) {
   const airport = getAirportByCode(code);
@@ -48,5 +48,18 @@ describe("great-circle flight routes", () => {
         expect(Math.abs(segment[index].longitude - segment[index - 1].longitude)).toBeLessThanOrEqual(180);
       }
     }
+  });
+
+  it("keeps CCU → Acapulco continuous in one neighbouring world copy for Leaflet display", () => {
+    const route = greatCircleRoute(origin, airportCoordinate("ACA"));
+    const visible = routeCoordinatesAtProgress(route, 1);
+    const destination = visible.at(-1);
+
+    expect(visible.length).toBeGreaterThan(2);
+    for (let index = 1; index < visible.length; index += 1) {
+      expect(Math.abs(visible[index].longitude - visible[index - 1].longitude)).toBeLessThanOrEqual(10);
+    }
+    expect(destination?.latitude).toBeCloseTo(airportCoordinate("ACA").latitude, 6);
+    expect(destination?.longitude).toBeGreaterThan(180);
   });
 });

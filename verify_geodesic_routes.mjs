@@ -13,6 +13,7 @@ for (const destination of destinations) {
   await page.getByRole("textbox", { name: "Search destination" }).fill(destination);
   await page.getByRole("option").first().click();
   await page.waitForFunction(() => document.querySelectorAll(".leaflet-overlay-pane path").length > 0, null, { timeout: 15000 });
+  await page.waitForTimeout(1400);
 
   const initialPathCount = await page.locator(".leaflet-overlay-pane path").count();
   const initialPathsValid = await page.locator(".leaflet-overlay-pane path").evaluateAll((paths) => paths.every((path) => {
@@ -26,6 +27,10 @@ for (const destination of destinations) {
     const d = path.getAttribute("d") || "";
     return d.length > 2 && !/NaN|Infinity/.test(d);
   }));
+
+  if (destination === "ACA") {
+    await page.screenshot({ path: "/home/ubuntu/screenshots/focusflight-ccu-aca-geodesic.png", fullPage: true });
+  }
 
   results.push({ destination, initialPathCount, zoomedPathCount, initialPathsValid, zoomedPathsValid });
 }

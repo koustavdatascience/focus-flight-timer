@@ -6,7 +6,7 @@ import { CircleMarker, MapContainer, Marker, Polyline, Popup, TileLayer, useMap,
 import "leaflet/dist/leaflet.css";
 import { MAP_CONFIG } from "@/config/map";
 import type { Destination } from "@/services/airportSearch";
-import { aircraftAtProgress, greatCircleRoute, type Coordinate } from "@/services/route";
+import { aircraftAtProgress, greatCircleRoute, routeCoordinatesAtProgress, type Coordinate, type GeodesicRoute } from "@/services/route";
 
 type MapMode = "landing" | "selecting" | "active";
 
@@ -31,7 +31,7 @@ function planeIconForBearing(bearing: number) {
   });
 }
 
-function MapViewport({ origin, destination, mode, landingFocus }: Pick<FlightMapProps, "origin" | "destination" | "mode" | "landingFocus">) {
+function MapViewport({ origin, destination, mode, landingFocus, route }: Pick<FlightMapProps, "origin" | "destination" | "mode" | "landingFocus"> & { route: GeodesicRoute | null }) {
   const map = useMap();
   useEffect(() => {
     if (mode === "landing") {
@@ -40,9 +40,12 @@ function MapViewport({ origin, destination, mode, landingFocus }: Pick<FlightMap
       return;
     }
     if (!origin || !destination) return;
-    const bounds = latLngBounds([[origin.latitude, origin.longitude], [destination.latitude, destination.longitude]]);
+    const routeCoordinates = route?.animationCoordinates;
+    const bounds = routeCoordinates && routeCoordinates.length > 1
+      ? latLngBounds(routeCoordinates.map((coordinate) => [coordinate.latitude, coordinate.longitude] as [number, number]))
+      : latLngBounds([[origin.latitude, origin.longitude], [destination.latitude, destination.longitude]]);
     map.flyToBounds(bounds, { padding: [110, 110], maxZoom: mode === "active" ? 5 : 6, duration: 1.25 });
-  }, [destination?.latitude, destination?.longitude, landingFocus?.id, landingFocus?.latitude, landingFocus?.longitude, mode, origin?.latitude, origin?.longitude, map]);
+  }, [destination?.latitude, destination?.longitude, landingFocus?.id, landingFocus?.latitude, landingFocus?.longitude, mode, origin?.latitude, origin?.longitude, route, map]);
   return null;
 }
 
@@ -59,23 +62,25 @@ export function FlightMap({ origin, destination, progress = 0, mode, landingFocu
   const hasRoute = Boolean(origin && destination);
   const route = hasRoute && origin && destination ? greatCircleRoute({ latitude: origin.latitude, longitude: origin.longitude }, { latitude: destination.latitude, longitude: destination.longitude }) : null;
   const aircraft = route ? aircraftAtProgress(route, progress) : null;
-  const visibleRoute = route ? (mode === "active" ? aircraft?.visibleSegments : route.renderSegments) : [];
+  const visibleRoute = route ? routeCoordinatesAtProgress(route, mode === "active" ? progress : 1) : [];
+  const renderedOrigin = route?.animationCoordinates[0] ?? (origin ? { latitude: origin.latitude, longitude: origin.longitude } : null);
+  const renderedDestination = route?.animationCoordinates.at(-1) ?? (destination ? { latitude: destination.latitude, longitude: destination.longitude } : null);
 
   return (
     <MapContainer className="flight-map-canvas" center={MAP_CONFIG.defaultCenter} zoom={MAP_CONFIG.defaultZoom} minZoom={2} maxZoom={12} scrollWheelZoom doubleClickZoom dragging zoomControl attributionControl>
       <TileLayer url={MAP_CONFIG.tileUrl} attribution={MAP_CONFIG.attribution} crossOrigin />
-      <MapViewport origin={origin} destination={destination} mode={mode} landingFocus={landingFocus} />
+      <MapViewport origin={origin} destination={destination} mode={mode} landingFocus={landingFocus} route={route} />
       <MapClickHandler onMapClick={onMapClick} />
       {hasRoute && origin && destination && <>
-        {visibleRoute?.map((segment, index) => segment.length > 1 && <Polyline key={`${index}-${segment.length}`} positions={segment.map((coordinate) => [coordinate.latitude, coordinate.longitude])} pathOptions={{ color: "#0d78ce", weight: 3, opacity: 0.92, dashArray: "9 12", lineCap: "round" }} />)}
-        <CircleMarker center={[origin.latitude, origin.longitude]} radius={6} pathOptions={{ color: "#182c42", weight: 3, fillColor: "#f6f3ec", fillOpacity: 1 }} />
-        <CircleMarker center={[destination.latitude, destination.longitude]} radius={7} pathOptions={{ color: "#eb3e7c", weight: 3, fillColor: "#ffffff", fillOpacity: 1 }} />
-        <Marker position={[origin.latitude, origin.longitude]} icon={originIcon}>
+        {visibleRoute.length > 1 && <Polyline positions={visibleRoute.map((coordinate) => [coordinate.latitude, coordinate.longitude])} pathOptions={{ color: "#0d78ce", weight: 3, opacity: 0.92, dashArray: "9 12", lineCap: "round" }} />}
+        {renderedOrigin && <CircleMarker center={[renderedOrigin.latitude, renderedOrigin.longitude]} radius={6} pathOptions={{ color: "#182c42", weight: 3, fillColor: "#f6f3ec", fillOpacity: 1 }} />}
+        {renderedDestination && <CircleMarker center={[renderedDestination.latitude, renderedDestination.longitude]} radius={7} pathOptions={{ color: "#eb3e7c", weight: 3, fillColor: "#ffffff", fillOpacity: 1 }} />}
+        {renderedOrigin && <Marker position={[renderedOrigin.latitude, renderedOrigin.longitude]} icon={originIcon}>
           <Popup><strong>{origin.iata || origin.icao}</strong><br />{origin.name}</Popup>
-        </Marker>
-        <Marker position={[destination.latitude, destination.longitude]} icon={destinationIcon}>
+        </Marker>}
+        {renderedDestination && <Marker position={[renderedDestination.latitude, renderedDestination.longitude]} icon={destinationIcon}>
           <Popup><strong>{destination.iata || destination.city}</strong><br />{destination.name}</Popup>
-        </Marker>
+        </Marker>}
         {mode === "active" && aircraft && <Marker position={[aircraft.coordinate.latitude, aircraft.coordinate.longitude]} icon={planeIconForBearing(aircraft.bearing)} interactive={false} zIndexOffset={500} />}
       </>}
     </MapContainer>

@@ -161,3 +161,11 @@ The automated checks verify that the landing restores the destination of the lat
 - [x] Verify short and long routes across map scales, then commit and push the repair; save its recovery checkpoint next.
 
 The route service now obtains WGS84 great-circle coordinates from Turf, renders dateline-safe segments in Leaflet, and calculates the moving aircraft’s location and bearing from that exact same path. The requested CCU routes were checked in unit tests and in the real browser map at two zoom levels; no invalid or world-spanning SVG path values were produced.
+
+## Acapulco long-haul route review
+
+- [x] Inspect the CCU → Acapulco great-circle output and Leaflet segment presentation shown in the attached screenshot.
+- [x] Correct the dateline presentation by rendering one continuous unwrapped great-circle path in the neighbouring world copy while keeping the shared aircraft geometry intact.
+- [x] Re-verify Acapulco and related long-haul routes at practical map scales before checkpointing the correction.
+
+The corrected Acapulco route is a continuous WGS84 shortest-path arc over the northern Pacific/Arctic, with no artificial control points or dateline break. Because CCU and ACA are near-antipodal, this legitimate great-circle reaches high latitudes; the long arc seen on a Web Mercator world map is geographic rather than a custom loop. The live map, endpoint markers, viewport bounds, and aircraft now share the same unwrapped longitude sequence, while the journey history map retains safely split segments for multi-route overview rendering.

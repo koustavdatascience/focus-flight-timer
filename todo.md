@@ -249,3 +249,17 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 ## Repository README update
 
 - [x] Create and publish a current-state README covering FocusFlight features, architecture, setup, deployment, and contribution boundaries.
+
+## Approved product expansion
+
+- [x] Establish shared Supabase data models, RLS policies, and migration foundations for profiles, social features, rooms, group flights, and leaderboard aggregates.
+- [ ] Add password recovery and Google authentication entry points while retaining email/password sign-in.
+- [ ] Build profile identity, solo statistics, location privacy, and public-profile routing.
+- [ ] Build persistent rooms, authoritative all-member presence, and synchronized group-flight lifecycle controls.
+- [ ] Add separate group histories and valid optional solo-location sync offers.
+- [ ] Add friendship, blocking, and privacy-enforced friend-gated profile access.
+- [ ] Add Solo and Co-Focus leaderboards with monthly and all-time completed-focus-time rankings.
+- [ ] Create About, Feedback, Changelog, Privacy, and Terms pages.
+- [ ] Add SEO metadata, sitemap, crawl controls, and original launch content.
+- [ ] Complete security, automated, browser, and production validation before release.
+- [ ] Publish the verified expansion to GitHub and Vercel.

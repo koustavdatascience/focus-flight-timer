@@ -177,3 +177,12 @@ The corrected Acapulco route is a continuous WGS84 shortest-path arc over the no
 - [x] Verify the revised visual curvature on regional, long-haul, and dateline-crossing routes before checkpointing the change.
 
 The flight route now blends the geographic great-circle reference toward the direct unwrapped latitude/longitude connection at a fixed 16% geographic strength. It does not use map pixels, viewport measurements, or a separate animation curve. The Acapulco capture confirms a small Pacific arc instead of a polar semicircle; regional and dateline-crossing paths remain finite and continuous.
+
+## Two-card route selector revision
+
+- [x] Replace the three featured airport cards with exactly two route-selector cards.
+- [x] Make the first card display and select the starting location, and the second display and select the destination.
+- [x] Preserve search, real-map markers, duration preparation, and responsive route-selection behavior.
+- [x] Verify the simplified selector at desktop and mobile widths, then checkpoint the change.
+
+The landing page now displays exactly two location cards: Starting location and Destination. Both cards remain keyboard-accessible buttons that switch the existing airport search mode; the destination card guides an unstarted journey back to origin selection. Desktop and 390px mobile renders show the two cards without clipping while retaining the real New York map, geolocation control, and search field.

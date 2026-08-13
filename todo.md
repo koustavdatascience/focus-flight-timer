@@ -186,3 +186,11 @@ The flight route now blends the geographic great-circle reference toward the dir
 - [x] Verify the simplified selector at desktop and mobile widths, then checkpoint the change.
 
 The landing page now displays exactly two location cards: Starting location and Destination. Both cards remain keyboard-accessible buttons that switch the existing airport search mode; the destination card guides an unstarted journey back to origin selection. Desktop and 390px mobile renders show the two cards without clipping while retaining the real New York map, geolocation control, and search field.
+
+## Live CCU-to-JFK journey verification
+
+- [x] Select CCU as origin and JFK as destination in the live application.
+- [x] Start the CCU-to-JFK flight and verify the visible route remains aligned with aircraft progress and revealed travel path.
+- [x] Report the live route and timer behavior without persisting a production test trip.
+
+Guest-mode browser verification selected CCU → JFK and started a 16h 30m estimated journey without authentication or trip persistence. The active map showed three markers (origin, destination, aircraft), three geographic map paths, no browser errors, and a running timer at 16:29:59 after launch. The saved capture visually confirms the aircraft and endpoint markers on the active geographic route.

@@ -12,7 +12,10 @@ page.on("pageerror", (error) => errors.push(`pageerror: ${error.message}`));
 await page.goto(baseUrl, { waitUntil: "networkidle" });
 const initialSelectionCards = await page.locator(".selection-destination-card").count();
 const initialMapCanvases = await page.locator(".leaflet-container").count();
-await page.getByLabel("Search city or airport").fill("HND");
+const initialOriginPrompt = await page.getByText("Select a starting airport to begin").count();
+await page.getByRole("textbox", { name: "Search starting airport" }).fill("SIN");
+await page.getByRole("option").first().click();
+await page.getByRole("textbox", { name: "Search destination" }).fill("HND");
 await page.getByRole("option").first().click();
 await page.locator(".leaflet-container").waitFor({ state: "visible" });
 await page.waitForFunction(() => document.querySelectorAll(".leaflet-tile-loaded").length > 0, null, { timeout: 15000 });
@@ -33,7 +36,9 @@ await page.waitForTimeout(1200);
 const timeAfterPause = await page.locator(".time-card strong").innerText();
 
 await page.goto(baseUrl, { waitUntil: "networkidle" });
-await page.getByLabel("Search city or airport").fill("Cambridge, Massachusetts");
+await page.getByRole("textbox", { name: "Search starting airport" }).fill("SIN");
+await page.getByRole("option").first().click();
+await page.getByRole("textbox", { name: "Search destination" }).fill("Cambridge, Massachusetts");
 await page.getByRole("button", { name: "Search destination" }).click();
 await page.locator(".selection-destination-card").waitFor({ state: "visible", timeout: 20000 });
 const geocodedText = await page.locator(".selection-destination-card").innerText();
@@ -43,6 +48,7 @@ console.log(JSON.stringify({
   selectingTiles,
   initialSelectionCards,
   initialMapCanvases,
+  initialOriginPrompt,
   selectingRouteLines,
   selectedText,
   activeTiles,
@@ -53,7 +59,7 @@ console.log(JSON.stringify({
   geocodedText,
   geocodingWorked,
   errors,
-  pass: initialSelectionCards === 0 && initialMapCanvases === 0 && selectingTiles > 0 && selectingRouteLines > 0 && activeTiles > 0 && activeMarkers >= 3 && pausedButton === 1 && timeBeforePause === timeAfterPause && geocodingWorked && errors.length === 0,
+  pass: initialSelectionCards === 0 && initialMapCanvases === 0 && initialOriginPrompt === 1 && selectingTiles > 0 && selectingRouteLines > 0 && activeTiles > 0 && activeMarkers >= 3 && pausedButton === 1 && timeBeforePause === timeAfterPause && geocodingWorked && errors.length === 0,
 }, null, 2));
 
 await browser.close();

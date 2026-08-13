@@ -40,6 +40,17 @@ The selection screenshot shows a real world map with visible OpenStreetMap geogr
 - [x] Prefer English Nominatim name details when available.
 - [x] Verify explicit search/card selection still opens the real map and active-flight flow.
 
+## Empty-origin revision
+
+- [x] Remove the fixed Singapore origin from the default state and map flow.
+- [x] Add explicit origin search/selection alongside destination selection.
+- [x] Keep the route, distance, timer, and active-flight screens blocked until both airports are selected.
+- [x] Verify reset/back behavior clears the origin and destination for the next session.
+
+## Current origin baseline
+
+`origin.ts` exports a fixed `SIN` origin and `Home.tsx` passes it to all distance, geocoding, route, and flight-map calculations. The revision will make origin nullable in the page state, add a reusable origin search mode, and pass an origin only after an airport is explicitly selected.
+
 ## Current localization baseline
 
 `Home.tsx` initializes `selectedDestination` to the first featured airport and calculates its route and timer immediately. `geocoding.ts` currently derives labels from `address` and `display_name` without requesting Nominatim `namedetails`, so the revision will make the selected destination nullable and prefer `name:en`/English address fields when supplied.

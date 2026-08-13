@@ -1,17 +1,17 @@
-/* Cloud Atlas Editorial landing page: premium FocusFlight identity, real destination map, and timer-led journey. */
-
+// Cloud Atlas Editorial page: warm cartography, dark ink type, blue flight accents, and compact map-first controls.
 import { ArrowLeft, ChevronRight, Info, MapPin, Menu, Pause, Plane, Play, Search, Volume2, VolumeX, X } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { FlightMap } from "@/components/map/FlightMap";
-import { ORIGIN } from "@/config/origin";
 import { geocodePlace } from "@/services/geocoding";
 import { findNearestAirport, getFeaturedAirports, searchAirports, type Destination } from "@/services/airportSearch";
 import { distanceBetween, suggestedFocusMinutes } from "@/services/route";
 
 type ViewState = "landing" | "selecting" | "active";
+type SearchMode = "origin" | "destination";
 
 const FEATURED_CODES = ["HND", "LIS", "CPT"];
 const FEATURED_AIRPORTS = getFeaturedAirports(FEATURED_CODES);
+const DEFAULT_FOCUS_MINUTES = 25;
 
 function formatCompactTime(seconds: number) {
   return `${Math.floor(seconds / 60)}m ${(seconds % 60).toString().padStart(2, "0")}s`;
@@ -23,24 +23,26 @@ function airportLabel(airport: Destination) {
 
 export default function Home() {
   const [view, setView] = useState<ViewState>("landing");
+  const [selectedOrigin, setSelectedOrigin] = useState<Destination | null>(null);
   const [selectedDestination, setSelectedDestination] = useState<Destination | null>(null);
+  const [searchMode, setSearchMode] = useState<SearchMode>("origin");
   const [query, setQuery] = useState("");
   const [searching, setSearching] = useState(false);
   const [running, setRunning] = useState(false);
   const [soundOn, setSoundOn] = useState(true);
-  const [remaining, setRemaining] = useState(25 * 60);
-  const [sessionMinutes, setSessionMinutes] = useState(25);
+  const [remaining, setRemaining] = useState(DEFAULT_FOCUS_MINUTES * 60);
+  const [sessionMinutes, setSessionMinutes] = useState(DEFAULT_FOCUS_MINUTES);
   const [located, setLocated] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [notice, setNotice] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const localSuggestions = useMemo(() => searchAirports(query, 6), [query]);
-  const routeDistance = selectedDestination ? distanceBetween(ORIGIN, selectedDestination) : 0;
+  const routeDistance = selectedOrigin && selectedDestination ? distanceBetween(selectedOrigin, selectedDestination) : 0;
   const totalSeconds = sessionMinutes * 60;
   const progress = totalSeconds === 0 ? 0 : 1 - remaining / totalSeconds;
 
   useEffect(() => {
-    if (!running || view !== "active" || !selectedDestination) return;
+    if (!running || view !== "active" || !selectedOrigin || !selectedDestination) return;
     const timer = window.setInterval(() => {
       setRemaining((value) => {
         if (value <= 1) {
@@ -52,10 +54,29 @@ export default function Home() {
       });
     }, 1000);
     return () => window.clearInterval(timer);
-  }, [running, selectedDestination?.city, view]);
+  }, [running, selectedDestination?.city, selectedOrigin?.city, view]);
+
+  function selectOrigin(origin: Destination) {
+    setSelectedOrigin(origin);
+    setSelectedDestination(null);
+    setSearchMode("destination");
+    setLocated(false);
+    setSessionMinutes(DEFAULT_FOCUS_MINUTES);
+    setRemaining(DEFAULT_FOCUS_MINUTES * 60);
+    setRunning(false);
+    setView("landing");
+    setNotice(`${origin.city} set as your starting airport. Now choose a destination.`);
+    setQuery("");
+    setMenuOpen(false);
+  }
 
   function selectDestination(destination: Destination) {
-    const minutes = suggestedFocusMinutes(distanceBetween(ORIGIN, destination));
+    if (!selectedOrigin) {
+      setSearchMode("origin");
+      setNotice("Choose a starting airport before selecting a destination.");
+      return;
+    }
+    const minutes = suggestedFocusMinutes(distanceBetween(selectedOrigin, destination));
     setSelectedDestination(destination);
     setSessionMinutes(minutes);
     setRemaining(minutes * 60);
@@ -67,7 +88,7 @@ export default function Home() {
   }
 
   function startFlight() {
-    if (!selectedDestination) return;
+    if (!selectedOrigin || !selectedDestination) return;
     setRemaining(sessionMinutes * 60);
     setRunning(true);
     setView("active");
@@ -76,9 +97,11 @@ export default function Home() {
 
   function returnToLanding() {
     setRunning(false);
+    setSelectedOrigin(null);
     setSelectedDestination(null);
-    setSessionMinutes(25);
-    setRemaining(25 * 60);
+    setSearchMode("origin");
+    setSessionMinutes(DEFAULT_FOCUS_MINUTES);
+    setRemaining(DEFAULT_FOCUS_MINUTES * 60);
     setView("landing");
     setNotice("");
   }
@@ -93,20 +116,20 @@ export default function Home() {
     event.preventDefault();
     const value = query.trim();
     if (!value) return;
+
     const localMatch = searchAirports(value, 1)[0];
     if (localMatch) {
-      selectDestination(localMatch);
+      if (searchMode === "origin") selectOrigin(localMatch);
+      else selectDestination(localMatch);
       return;
     }
 
     const customMinutes = Number.parseInt(value, 10);
-    if (Number.isFinite(customMinutes) && customMinutes > 0 && customMinutes <= 180) {
+    if (searchMode === "destination" && Number.isFinite(customMinutes) && customMinutes > 0 && customMinutes <= 180) {
       setSessionMinutes(customMinutes);
       setRemaining(customMinutes * 60);
-      setView("selecting");
-      setNotice(selectedDestination ? `Custom focus duration set for ${selectedDestination.city}.` : "Custom focus duration set. Choose a destination to depart.");
+      setNotice(selectedOrigin ? `Custom focus duration set for your next destination.` : "Choose a starting airport before setting a route duration.");
       setQuery("");
-      if (!selectedDestination) setView("landing");
       return;
     }
 
@@ -114,12 +137,13 @@ export default function Home() {
     try {
       const geocoded = await geocodePlace(value);
       if (geocoded[0]) {
-        selectDestination(geocoded[0]);
+        if (searchMode === "origin") selectOrigin(geocoded[0]);
+        else selectDestination(geocoded[0]);
       } else {
-        setNotice("No place found. Try a city, airport name, IATA code, or ICAO code.");
+        setNotice(searchMode === "origin" ? "No starting airport found. Try a city, airport name, IATA code, or ICAO code." : "No destination found. Try a city, airport name, IATA code, or ICAO code.");
       }
     } catch {
-      setNotice("Search is temporarily unavailable. Try one of the airport cards instead.");
+      setNotice("Search is temporarily unavailable. Try an airport card or search again shortly.");
     } finally {
       setSearching(false);
     }
@@ -139,49 +163,71 @@ export default function Home() {
     setNotice("No commercial airport nearby. Search by city or airport code to set a destination.");
   }
 
-  function renderSearchForm(className = "destination-form") {
+  function handleUseMyLocation() {
+    if (!navigator.geolocation) {
+      setNotice("Location access is unavailable. Search for a starting airport instead.");
+      return;
+    }
+    setNotice("Finding the nearest airport…");
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        const nearest = findNearestAirport(coords.latitude, coords.longitude);
+        if (nearest) {
+          setLocated(true);
+          selectOrigin(nearest);
+        } else {
+          setNotice("No commercial airport nearby. Search for a starting airport instead.");
+        }
+      },
+      () => setNotice("Location permission was not granted. Search for a starting airport instead."),
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 },
+    );
+  }
+
+  function renderSearchForm(className = "destination-form", mode: SearchMode = searchMode) {
+    const isOriginSearch = mode === "origin";
     return (
       <div className="search-stack">
         <form className={className} onSubmit={submitSearch}>
           <Search size={15} className="search-icon" aria-hidden="true" />
-          <input ref={inputRef} value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search city, airport, IATA or ICAO code" aria-label="Search city or airport" />
-          <button type="submit" aria-label="Search destination" disabled={searching}>{searching ? <span className="search-spinner" /> : <ChevronRight size={15} />}</button>
+          <input ref={inputRef} value={query} onChange={(event) => setQuery(event.target.value)} placeholder={isOriginSearch ? "Search starting city, airport, IATA or ICAO" : "Search destination city, airport, IATA or ICAO"} aria-label={isOriginSearch ? "Search starting airport" : "Search destination"} />
+          <button type="submit" aria-label={isOriginSearch ? "Search starting airport" : "Search destination"} disabled={searching}>{searching ? <span className="search-spinner" /> : <ChevronRight size={15} />}</button>
         </form>
-        {query.trim() && localSuggestions.length > 0 && <div className="airport-suggestions" role="listbox" aria-label="Matching airports">
-          {localSuggestions.map((airport) => <button key={`${airport.id}`} type="button" onClick={() => selectDestination(airport)} role="option"><span><strong>{airportLabel(airport)}</strong><small>{airport.city}, {airport.country}</small></span><ChevronRight size={14} /></button>)}
+        {query.trim() && localSuggestions.length > 0 && <div className="airport-suggestions" role="listbox" aria-label={isOriginSearch ? "Matching starting airports" : "Matching destinations"}>
+          {localSuggestions.map((airport) => <button key={`${airport.id}`} type="button" onClick={() => (isOriginSearch ? selectOrigin(airport) : selectDestination(airport))} role="option"><span><strong>{airportLabel(airport)}</strong><small>{airport.city}, {airport.country}</small></span><ChevronRight size={14} /></button>)}
         </div>}
       </div>
     );
   }
 
-  if (view === "active" && selectedDestination) {
+  if (view === "active" && selectedOrigin && selectedDestination) {
     return (
       <main className="geo-flight-shell active-flight-shell">
-        <FlightMap origin={ORIGIN} destination={selectedDestination} progress={progress} mode="active" onMapClick={handleMapClick} />
+        <FlightMap origin={selectedOrigin} destination={selectedDestination} progress={progress} mode="active" onMapClick={handleMapClick} />
         <button className="flight-back-button" onClick={returnToSelection} aria-label="Back to destination selection"><ArrowLeft size={20} /></button>
         <div className="flight-top-controls" aria-label="Flight controls">
           <button className="flight-icon-button" onClick={() => setRunning((value) => !value)} aria-label={running ? "Pause flight" : "Resume flight"}>{running ? <Pause size={17} fill="currentColor" /> : <Play size={17} fill="currentColor" />}</button>
           <button className={`flight-icon-button ${soundOn ? "selected" : ""}`} onClick={() => setSoundOn((value) => !value)} aria-label={soundOn ? "Mute sound" : "Enable sound"}>{soundOn ? <Volume2 size={17} /> : <VolumeX size={17} />}</button>
-          <button className="flight-icon-button" onClick={() => showNotice(`${ORIGIN.iata} → ${airportLabel(selectedDestination)} · ${routeDistance.toLocaleString()} km`)} aria-label="Show flight information"><Info size={17} /></button>
+          <button className="flight-icon-button" onClick={() => showNotice(`${selectedOrigin.iata || selectedOrigin.icao} → ${airportLabel(selectedDestination)} · ${routeDistance.toLocaleString()} km`)} aria-label="Show flight information"><Info size={17} /></button>
         </div>
         <div className="active-notice" aria-live="polite">{notice || (remaining === 0 ? "Landed — take a good break." : running ? `${selectedDestination.city} is in progress` : "Flight paused")}</div>
         <div className="flight-stat-card time-card"><span>Time</span><strong>{formatCompactTime(remaining)}</strong><small>{running ? "in the air" : remaining === 0 ? "arrived" : "paused"}</small></div>
-        <div className="flight-stat-card distance-card"><span>Distance</span><strong>{routeDistance.toLocaleString()} km</strong><small>{ORIGIN.iata} → {airportLabel(selectedDestination)}</small></div>
+        <div className="flight-stat-card distance-card"><span>Distance</span><strong>{routeDistance.toLocaleString()} km</strong><small>{airportLabel(selectedOrigin)} → {airportLabel(selectedDestination)}</small></div>
       </main>
     );
   }
 
-  if (view === "selecting" && selectedDestination) {
+  if (view === "selecting" && selectedOrigin && selectedDestination) {
     return (
       <main className="geo-flight-shell selecting-flight-shell">
-        <FlightMap origin={ORIGIN} destination={selectedDestination} progress={0} mode="selecting" onMapClick={handleMapClick} />
+        <FlightMap origin={selectedOrigin} destination={selectedDestination} progress={0} mode="selecting" onMapClick={handleMapClick} />
         <button className="flight-back-button" onClick={returnToLanding} aria-label="Back to landing page"><ArrowLeft size={20} /></button>
-        <div className="selection-map-search">{renderSearchForm("destination-form map-search-form")}</div>
+        <div className="selection-map-search">{renderSearchForm("destination-form map-search-form", "destination")}</div>
         <div className="selection-destination-card">
-          <span className="selection-eyebrow">Destination selected</span>
+          <span className="selection-eyebrow">Route selected</span>
           <strong>{airportLabel(selectedDestination)} <em>{selectedDestination.city}</em></strong>
           <span>{selectedDestination.name}</span>
-          <small>{routeDistance.toLocaleString()} km from {ORIGIN.city} · {sessionMinutes} minute focus flight</small>
+          <small>{airportLabel(selectedOrigin)} → {airportLabel(selectedDestination)} · {routeDistance.toLocaleString()} km · {sessionMinutes} minute focus flight</small>
           <button className="start-flight-button" onClick={startFlight}>Start focus flight <Plane size={15} fill="currentColor" /></button>
         </div>
       </main>
@@ -203,14 +249,14 @@ export default function Home() {
         {menuOpen && <div className="landing-mobile-menu"><button onClick={() => showNotice("Your flight log will appear after your first landing")}>History</button><button onClick={() => showNotice("Guest mode is ready — no sign in required")}>Guest mode is ready — no sign in required</button><button onClick={() => showNotice("Co-focus rooms are coming soon")}>Co-Focus</button><button onClick={() => showNotice("A calmer Pomodoro, framed as a short journey")}>About</button></div>}
       </header>
       <section className="flight-content" aria-labelledby="flight-title">
-        <div className="flight-kicker"><Plane size={17} fill="currentColor" /><span>Pick a route,</span><strong>keep your focus.</strong></div>
+        <div className="flight-kicker"><Plane size={17} fill="currentColor" /><span>{selectedOrigin ? "Choose a destination," : "Choose a starting airport,"}</span><strong>keep your focus.</strong></div>
         <h1 id="flight-title">Your next focus flight<br /><em>starts here.</em></h1>
-        <div className="route-cards" aria-label="Focus routes">{FEATURED_AIRPORTS.map((airport) => <button key={`${airport.id}`} className="route-card-simple" onClick={() => selectDestination(airport)}><span className="route-code-simple">{airportLabel(airport)}</span><span className="route-place-simple">{airport.city}</span><span className="route-minutes-simple">{suggestedFocusMinutes(distanceBetween(ORIGIN, airport))}min</span></button>)}</div>
-        <div className="route-controls"><button className="choose-route-button" onClick={() => inputRef.current?.focus()}><span>Choose your route</span><ChevronRight size={15} /></button><button className={`location-button ${located ? "located" : ""}`} aria-label="Use my location" onClick={() => { setLocated(true); setNotice("Location set — choose a destination to depart"); }}><MapPin size={16} fill="currentColor" /></button></div>
+        <div className="route-cards" aria-label="Focus destinations">{FEATURED_AIRPORTS.map((airport) => <button key={`${airport.id}`} className="route-card-simple" onClick={() => selectDestination(airport)}><span className="route-code-simple">{airportLabel(airport)}</span><span className="route-place-simple">{airport.city}</span><span className="route-minutes-simple">{selectedOrigin ? `${suggestedFocusMinutes(distanceBetween(selectedOrigin, airport))}min` : "Pick origin"}</span></button>)}</div>
+        <div className="route-controls"><button className="choose-route-button" onClick={() => inputRef.current?.focus()}><span>{selectedOrigin ? "Choose your destination" : "Choose your starting airport"}</span><ChevronRight size={15} /></button><button className={`location-button ${located ? "located" : ""}`} aria-label="Use my location as starting airport" onClick={handleUseMyLocation}><MapPin size={16} fill="currentColor" /></button></div>
         {renderSearchForm()}
-        <div className="flight-status" aria-live="polite">{notice || "Select a destination to open the geographic flight map"}</div>
+        <div className="flight-status" aria-live="polite">{notice || (selectedOrigin ? "Select a destination to open the geographic flight map" : "Select a starting airport to begin")}</div>
       </section>
-      <footer className="landing-footer"><span>FocusFlight / a small ritual for deep work</span><span>Illustrated landing · live map after selection</span></footer>
+      <footer className="landing-footer"><span>FocusFlight / a small ritual for deep work</span><span>Choose your origin · choose your destination</span></footer>
     </main>
   );
 }

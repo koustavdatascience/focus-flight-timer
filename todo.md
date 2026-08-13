@@ -72,8 +72,8 @@ The selection screenshot shows a real world map with visible OpenStreetMap geogr
 
 ## Immediate GitHub push
 
-- [ ] Commit the current FocusFlight workspace, including the in-progress UI shell and Supabase preparation files.
-- [ ] Push the commit to the private FocusFlight GitHub repository and verify the remote state.
+- [x] Commit the current FocusFlight workspace, including the in-progress UI shell and Supabase preparation files.
+- [x] Push the commit to the private FocusFlight GitHub repository and verify the remote state.
 
 ## Auth, database, and travel-history revision
 

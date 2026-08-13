@@ -218,7 +218,7 @@ The GitHub-linked Vercel project exists at `focus-flight-timer.vercel.app`, but 
 - [x] Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` to the selected Vercel project for Production and Preview.
 - [x] Add the Vercel production Site URL and redirect URL to the selected Supabase project's Auth URL configuration.
 - [x] Redeploy and verify the live FocusFlight landing page, sign-in dialog, and `/journey` route in a browser.
-- [ ] Optionally add an exact Vercel preview deployment URL to Supabase Redirect URLs before testing email authentication on a preview deployment.
+- [x] Keep preview-specific Supabase Auth redirects deferred for the current production-only scope; add an exact preview URL later if preview email authentication testing is needed.
 
 The selected Vercel project now has its two public browser variables in both Production and Preview. Supabase Auth Site URL is `https://focus-flight-timer.vercel.app`, with the deployed application route wildcard allowed under that domain. The live root page renders the interactive Leaflet map and airport controls, `/journey` resolves as a client route, and the deployed sign-in dialog initializes successfully. A preview-specific redirect URL is only needed if authentication is tested on a separate preview hostname.
 

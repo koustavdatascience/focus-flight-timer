@@ -253,7 +253,7 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 ## Approved product expansion
 
 - [x] Establish shared Supabase data models, RLS policies, and migration foundations for profiles, social features, rooms, group flights, and leaderboard aggregates.
-- [ ] Add password recovery and Google authentication entry points while retaining email/password sign-in.
+- [x] Add password recovery and Google authentication entry points while retaining email/password sign-in.
 - [ ] Build profile identity, solo statistics, location privacy, and public-profile routing.
 - [ ] Build persistent rooms, authoritative all-member presence, and synchronized group-flight lifecycle controls.
 - [ ] Add separate group histories and valid optional solo-location sync offers.

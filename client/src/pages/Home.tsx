@@ -2,7 +2,7 @@
 import { ArrowLeft, ChevronRight, Info, MapPin, Menu, Pause, Plane, Play, Search, Volume2, VolumeX, X } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "wouter";
-import { AuthDialog } from "@/components/auth/AuthDialog";
+import { AuthDialog, type AuthDialogMode } from "@/components/auth/AuthDialog";
 import { FlightMap } from "@/components/map/FlightMap";
 import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
 import { useFocusJourney } from "@/hooks/useFocusJourney";
@@ -44,6 +44,7 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [notice, setNotice] = useState("");
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [authDialogMode, setAuthDialogMode] = useState<AuthDialogMode>("signin");
   const [activeTrip, setActiveTrip] = useState<FocusTrip | null>(null);
   const [persistingTrip, setPersistingTrip] = useState(false);
   const [completionRecorded, setCompletionRecorded] = useState(false);
@@ -55,6 +56,14 @@ export default function Home() {
   const progress = totalSeconds === 0 ? 0 : 1 - remaining / totalSeconds;
   const latestCompletedTrip = useMemo(() => getLatestCompletedTrip(trips), [trips]);
   const landingMapDestination = useMemo(() => latestCompletedTrip ? getAirportById(latestCompletedTrip.destination_airport_id) : null, [latestCompletedTrip]);
+
+  useEffect(() => {
+    const authAction = new URLSearchParams(location.split("?")[1] || window.location.search).get("auth");
+    if (authAction !== "reset") return;
+    setAuthDialogMode("update-password");
+    setAuthDialogOpen(true);
+    navigate("/", { replace: true });
+  }, [location, navigate]);
 
   useEffect(() => {
     const tripId = new URLSearchParams(location.split("?")[1] || window.location.search).get("resume");
@@ -380,11 +389,11 @@ export default function Home() {
         <button className="landing-wordmark" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>FocusFlight</button>
         <nav className="landing-nav" aria-label="Landing page navigation">
           {isAuthenticated && <button onClick={() => navigate("/journey")}>My Journey</button>}
-          {authLoading ? <span className="nav-status">Connecting…</span> : isAuthenticated ? <button onClick={() => void signOut()}>Sign out</button> : <button onClick={() => setAuthDialogOpen(true)}>Sign In</button>}
+          {authLoading ? <span className="nav-status">Connecting…</span> : isAuthenticated ? <button onClick={() => void signOut()}>Sign out</button> : <button onClick={() => { setAuthDialogMode("signin"); setAuthDialogOpen(true); }}>Sign In</button>}
           <button onClick={() => showNotice("Co-focus rooms are coming soon")}>Co-Focus</button><button onClick={() => showNotice("A calmer Pomodoro, framed as a short journey")}>About</button>
         </nav>
         <button className="mobile-menu-trigger" aria-label="Open menu" aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}>{menuOpen ? <X size={18} /> : <Menu size={18} />}</button>
-        {menuOpen && <div className="landing-mobile-menu">{isAuthenticated && <button onClick={() => navigate("/journey")}>My Journey</button>}{isAuthenticated ? <button onClick={() => void signOut()}>Sign out</button> : <button onClick={() => setAuthDialogOpen(true)}>Sign in</button>}<button onClick={() => showNotice("Co-focus rooms are coming soon")}>Co-Focus</button><button onClick={() => showNotice("A calmer Pomodoro, framed as a short journey")}>About</button></div>}
+        {menuOpen && <div className="landing-mobile-menu">{isAuthenticated && <button onClick={() => navigate("/journey")}>My Journey</button>}{isAuthenticated ? <button onClick={() => void signOut()}>Sign out</button> : <button onClick={() => { setAuthDialogMode("signin"); setAuthDialogOpen(true); }}>Sign in</button>}<button onClick={() => showNotice("Co-focus rooms are coming soon")}>Co-Focus</button><button onClick={() => showNotice("A calmer Pomodoro, framed as a short journey")}>About</button></div>}
       </header>
       <section className="flight-content" aria-labelledby="flight-title">
         <div className="flight-kicker"><Plane size={17} fill="currentColor" /><span>{selectedOrigin ? "Choose a destination," : "Choose a starting airport,"}</span><strong>keep your focus.</strong></div>
@@ -407,7 +416,7 @@ export default function Home() {
         {latestCompletedTrip && <button className="continue-journey-button" type="button" onClick={continueFromLastDestination}>Continue from your last destination <ChevronRight size={15} /></button>}
       </section>
       <footer className="landing-footer"><span>FocusFlight / a small ritual for deep work</span><span>Choose your origin · choose your destination</span></footer>
-      <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
+      <AuthDialog open={authDialogOpen} initialMode={authDialogMode} onOpenChange={setAuthDialogOpen} />
     </main>
   );
 }

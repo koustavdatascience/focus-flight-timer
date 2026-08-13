@@ -13,6 +13,15 @@
 .auth-dialog-form .start-flight-button { width: 100%; margin-top: 4px; padding: 11px 14px; }
 .auth-dialog-form .start-flight-button:disabled { opacity: .65; cursor: wait; transform: none; }
 .auth-dialog-message { padding: 9px 11px; border-radius: 8px; color: #466372; background: rgba(169,212,222,.34); font-size: 12px; line-height: 1.45; }
+.auth-dialog-back-link, .auth-dialog-link { display: inline-flex; align-items: center; gap: 6px; margin: 16px 0 13px; padding: 0; color: var(--blue); background: transparent; font-size: 12px; font-weight: 700; cursor: pointer; }
+.auth-dialog-link { margin: 14px 0 0; }
+.auth-dialog-divider { display: flex; align-items: center; gap: 10px; margin: 16px 0 11px; color: #84939a; font-size: 11px; }
+.auth-dialog-divider::before, .auth-dialog-divider::after { content: ""; flex: 1; height: 1px; background: rgba(24,44,66,.13); }
+.auth-google-button { display: flex; align-items: center; justify-content: center; gap: 9px; width: 100%; min-height: 42px; border: 1px solid rgba(24,44,66,.17); border-radius: 9px; color: var(--ink); background: rgba(255,255,255,.8); font-size: 12px; font-weight: 700; cursor: pointer; transition: transform .16s cubic-bezier(.23,1,.32,1), box-shadow .16s cubic-bezier(.23,1,.32,1); }
+.auth-google-button:hover { box-shadow: 0 6px 16px rgba(24,44,66,.09); }
+.auth-google-button:active { transform: scale(.97); }
+.auth-google-button:disabled { opacity: .65; cursor: wait; }
+.auth-google-button span { display: grid; place-items: center; width: 21px; height: 21px; border-radius: 50%; color: white; background: #4285f4; font-family: Arial, sans-serif; font-size: 12px; }
 @keyframes auth-dialog-in { from { opacity: 0; transform: translateY(8px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
 /* Personal journey: editorial logbook framing a real Leaflet route map. */

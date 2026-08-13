@@ -229,3 +229,7 @@ The selected Vercel project now has its two public browser variables in both Pro
 - [x] Verify the fresh deployment, direct `/journey` routing, and Supabase Auth production redirect URL configuration.
 
 The user selected the Vercel new-project flow for `koustavdatascience/focus-flight-timer`, rather than updating the earlier imported project. The repository already contains the client-only build and SPA rewrite configuration, so no Build or Output Settings overrides were required in the Vercel import form. The live root URL now renders the interactive New York landing map and controls, a direct request to `/journey` renders the signed-out Journey screen rather than a Vercel 404, and the production Supabase Auth return domain is configured for email confirmation and password recovery.
+
+## Product roadmap repository update
+
+- [x] Add the user-approved FocusFlight product expansion roadmap to the repository documentation and push it to GitHub.

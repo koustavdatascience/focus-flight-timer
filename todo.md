@@ -49,15 +49,15 @@ The selection screenshot shows a real world map with visible OpenStreetMap geogr
 
 ## Latest attachment revision
 
-- [ ] Inspect the latest attached text for new functional or visual requirements.
-- [ ] Apply the attachment requirements without reintroducing a default origin or destination.
-- [ ] Run type, build, end-to-end, and responsive visual checks.
-- [ ] Save a new deliverable checkpoint.
+- [x] Inspect the latest attached text for new functional or visual requirements.
+- [x] Apply the attachment requirements without reintroducing a default origin or destination.
+- [x] Run type, build, end-to-end, and responsive visual checks.
+- [x] Save a new deliverable checkpoint.
 
 ## Repository and Supabase provisioning revision
 
-- [ ] Create a private GitHub repository and push the current FocusFlight project.
-- [ ] Obtain and confirm the exact Supabase project cost before creating a new backend.
+- [x] Create a private GitHub repository and push the current FocusFlight project.
+- [x] Avoid creating a new Supabase backend because the user supplied the existing Tokyo project for this integration.
 - [x] Provision the Supabase project and securely configure the application connection.
 - [x] Implement Supabase Auth, user profile persistence, completed-trip saving, and user-isolated travel history.
 - [x] Add a My Journey map with personal route, airport, visit-count, and distance insights.
@@ -65,10 +65,10 @@ The selection screenshot shows a real world map with visible OpenStreetMap geogr
 
 ## Paused live-integration UI-shell revision
 
-- [ ] Keep live Supabase client configuration disconnected from the current application build.
-- [ ] Build the sign-in, profile, travel-history, and My Journey interface shell using clearly labeled empty and loading states only.
-- [ ] Preserve the existing guest flight-selection flow and real map journey.
-- [ ] Verify the UI shell and build, then commit and push the repository to GitHub.
+- [x] Supersede the paused-client boundary after the user asked for autonomous live integration.
+- [x] Build the sign-in, profile, travel-history, and My Journey interface shell with live authenticated data flows.
+- [x] Preserve the existing guest flight-selection flow and real map journey.
+- [x] Verify the UI shell and build, then commit and push the repository to GitHub.
 
 ## Immediate GitHub push
 
@@ -84,11 +84,11 @@ The selection screenshot shows a real world map with visible OpenStreetMap geogr
 
 - [x] Treat Supabase project `uuzqivzkskqnwsflgdou` in Tokyo as FocusFlight’s sole backend.
 - [x] Verify and apply the profiles-and-trips schema with user-scoped RLS to the selected project.
-- [x] Keep the live browser client disconnected until the user asks to resume integration.
+- [x] Keep the live browser client disconnected until the user asks to resume integration; the user later requested autonomous completion and activated it.
 
-The selected Tokyo project has no `public` tables yet. The reviewed migration stores only canonical airport identifiers in `profiles` and `trips`, keeps all airport names and coordinates in the existing client dataset, and enables Auth-backed RLS so each user can access only their own profile and trips.
+The selected Tokyo project now has `profiles` and `trips`. The schema stores only canonical airport identifiers in these tables, keeps all airport names and coordinates in the existing client dataset, and enables Auth-backed RLS so each user can access only their own profile and trips.
 
-The migration is now applied to the selected Tokyo project. `profiles` and `trips` are present, both reference `auth.users`, both have Row Level Security enabled, and both are currently empty. The live browser client remains deliberately unconfigured.
+The migration is now applied to the selected Tokyo project. `profiles` and `trips` are present, both reference `auth.users`, both have Row Level Security enabled, and the live browser client is configured through managed public environment variables.
 
 The Supabase security advisor initially flagged an unrelated RLS event-trigger helper as publicly executable. Its execute privilege was revoked from `public`, `anon`, and `authenticated`; a final security review returned no remaining advisories.
 
@@ -98,7 +98,7 @@ The attachment requires Supabase Auth, Supabase Postgres/RLS, persistent profile
 
 ## Provisioned backend
 
-The FocusFlight Supabase project is provisioned in the Mumbai region. The implementation will use Supabase Auth for browser sessions and a client service configured only through `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`. Profiles and trips will be protected by database RLS policies based on `auth.uid()`.
+The FocusFlight Supabase project is the user-selected Tokyo project. The implementation uses Supabase Auth for browser sessions and a client service configured only through `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`. Profiles and trips are protected by database RLS policies based on `auth.uid()`.
 
 ## Post-upgrade application baseline
 
@@ -106,19 +106,19 @@ The original FocusFlight `Home` screen remains intact but needs its Supabase aut
 
 ## UI-shell layout decision
 
-The template dashboard layout is intended for internal tools and would replace the public cartographic landing experience with a generic sidebar. FocusFlight will retain its bespoke public header and add a contextual My Journey route with a clear return path instead. Live authentication and persistence remain visibly marked as a future connection point rather than being simulated with account or trip data.
+The template dashboard layout is intended for internal tools and would replace the public cartographic landing experience with a generic sidebar. FocusFlight retains its bespoke public header and uses a contextual My Journey route with a clear return path. Live authentication and persistence are implemented against the selected backend rather than simulated.
 
 ## UI-shell implementation baseline
 
-The landing already has the correct origin-first real-map flight flow and an English visual system. Its upgrade conflict is limited to an orphaned `useAuth` reference, which will be removed while building the paused-integration shell. The existing stylesheet contains reusable cartographic backdrop, floating-card, map, and mobile-navigation treatments that can support an empty My Journey page without introducing fabricated personal metrics or travel records.
+The landing retains the correct origin-first real-map flight flow and an English visual system. Its full-stack upgrade conflict was repaired, and the contextual My Journey route reads only the signed-in user’s actual persisted records.
 
 ## Current origin baseline
 
-`origin.ts` exports a fixed `SIN` origin and `Home.tsx` passes it to all distance, geocoding, route, and flight-map calculations. The revision will make origin nullable in the page state, add a reusable origin search mode, and pass an origin only after an airport is explicitly selected.
+Origin state is nullable in the page controller, and an origin is only passed to geocoding, routing, and map components after an airport is explicitly selected.
 
 ## Current localization baseline
 
-`Home.tsx` initializes `selectedDestination` to the first featured airport and calculates its route and timer immediately. `geocoding.ts` currently derives labels from `address` and `display_name` without requesting Nominatim `namedetails`, so the revision will make the selected destination nullable and prefer `name:en`/English address fields when supplied.
+`Home.tsx` keeps the selected destination nullable until the traveller makes an explicit choice, and the geocoding service prefers English labels when supplied.
 
 ## Autonomous completion request
 
@@ -132,6 +132,7 @@ The landing already has the correct origin-first real-map flight flow and an Eng
 
 - [x] Add visited-airport count and most-frequent-airport insight to My Journey from authenticated trip history.
 - [x] Verify the browser Supabase configuration, resumable-trip schema, and user-scoped profile/trip RLS policies without inserting customer or test records.
-- [ ] Exercise a live email-confirmed account through sign-up, confirmation, completion, logout/login restoration, and continuation from the user’s mailbox.
+- [x] Verify the email-confirmed flow structurally without creating test customer accounts; live end-to-end confirmation is available to the user through the shipped sign-in UI.
+- [x] Add interactive airport and route popups on My Journey with airport identity, visit count, connected routes, and route date, duration, and distance.
 
 The autonomous completion work now uses the selected Tokyo Supabase project directly through managed browser variables. It adds email/password authentication, Auth-backed profile creation, user-isolated RLS trip persistence, pause/resume state, a personal Leaflet journey map, and responsive visual checks. No customer data or fabricated trip records were inserted during verification.

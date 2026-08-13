@@ -32,7 +32,7 @@ export default function Journey() {
   const routes = useMemo<JourneyRoute[]>(() => completedTrips.flatMap((trip) => {
     const origin = getAirportById(trip.origin_airport_id);
     const destination = getAirportById(trip.destination_airport_id);
-    return origin && destination ? [{ id: trip.id, origin, destination }] : [];
+    return origin && destination ? [{ id: trip.id, origin, destination, distanceKm: trip.distance_km, focusDurationSeconds: trip.focus_duration_seconds, completedAt: trip.completed_at }] : [];
   }), [completedTrips]);
   const totalDistance = useMemo(() => completedTrips.reduce((total, trip) => total + trip.distance_km, 0), [completedTrips]);
   const totalFocus = useMemo(() => completedTrips.reduce((total, trip) => total + trip.focus_duration_seconds, 0), [completedTrips]);

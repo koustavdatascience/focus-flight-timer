@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
-import { ensureFocusProfile, getFocusTrips, type FocusProfile, type FocusTrip, updateFocusProfile } from "@/lib/supabase";
+import { ensureFocusProfile, getFocusTrips, type FocusProfile, type FocusProfileUpdate, type FocusTrip, updateFocusProfile } from "@/lib/supabase";
 
 export function useFocusJourney() {
   const { user, displayName, isAuthenticated } = useSupabaseAuth();
@@ -36,7 +36,7 @@ export function useFocusJourney() {
     void refresh();
   }, [refresh]);
 
-  const saveProfile = useCallback(async (input: Pick<FocusProfile, "display_name" | "home_airport_id">) => {
+  const saveProfile = useCallback(async (input: FocusProfileUpdate) => {
     const nextProfile = await updateFocusProfile(input);
     setProfile(nextProfile);
     return nextProfile;

@@ -6,6 +6,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import Journey from "./pages/Journey";
 import NotFound from "./pages/NotFound";
+import PublicProfile from "./pages/PublicProfile";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -13,6 +14,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/journey" component={Journey} />
+      <Route path="/u/:handle" component={PublicProfile} />
       <Route component={NotFound} />
     </Switch>
   );

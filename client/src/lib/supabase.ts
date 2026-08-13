@@ -19,7 +19,32 @@ export type FocusProfile = {
   id: string;
   display_name: string | null;
   home_airport_id: string | null;
+  handle: string | null;
+  bio: string | null;
+  avatar_path: string | null;
+  location_visibility: "only_me" | "shared_rooms" | "public";
+  leaderboard_opt_in: boolean;
+  solo_current_airport_id: string | null;
+  solo_location_version: number;
+  public_profile_enabled: boolean;
   created_at: string;
+  updated_at: string;
+};
+
+export type FocusProfileUpdate = Partial<Pick<FocusProfile, "display_name" | "home_airport_id" | "handle" | "bio" | "location_visibility" | "leaderboard_opt_in" | "public_profile_enabled">>;
+
+export type PublicProfileCard = {
+  profile_id: string;
+  handle: string;
+  display_name: string | null;
+  bio: string | null;
+  avatar_path: string | null;
+  current_airport_id: string | null;
+  solo_completed_focus_seconds: number;
+  solo_completed_flights: number;
+  cofocus_completed_focus_seconds: number;
+  cofocus_completed_flights: number;
+  pilot_since: string;
   updated_at: string;
 };
 
@@ -68,7 +93,7 @@ export async function getFocusProfile() {
   return data as FocusProfile | null;
 }
 
-export async function updateFocusProfile(input: Pick<FocusProfile, "display_name" | "home_airport_id">) {
+export async function updateFocusProfile(input: FocusProfileUpdate) {
   const { data, error } = await supabase
     .from("profiles")
     .update({ ...input, updated_at: new Date().toISOString() })
@@ -76,6 +101,16 @@ export async function updateFocusProfile(input: Pick<FocusProfile, "display_name
     .single();
   if (error) throw error;
   return data as FocusProfile;
+}
+
+export async function getPublicProfileCard(handle: string) {
+  const { data, error } = await supabase
+    .from("public_profile_cards")
+    .select("*")
+    .eq("handle", handle.toLowerCase())
+    .maybeSingle();
+  if (error) throw error;
+  return data as PublicProfileCard | null;
 }
 
 export async function getFocusTrips() {

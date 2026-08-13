@@ -203,3 +203,12 @@ Guest-mode browser verification selected CCU → JFK and started a 16h 30m estim
 - [x] Save a recovery checkpoint for the active-flight route visibility repair.
 
 The repair separates the persistent dashed blue planned path from the solid pink travelled path and memoizes route geometry by endpoint coordinates. This prevents the Leaflet viewport from restarting its `flyToBounds` animation for every timer tick. The live CCU-to-JFK capture now visibly shows the 4.6px planned path spanning 923px, endpoint and aircraft markers, a running timer, and no browser errors. The shared route tests continue to validate progressive midpoint and final geometry.
+
+## Vercel deployment preparation
+
+- [x] Assess the existing Vercel connection and the full-stack runtime compatibility.
+- [x] Add a Vercel-compatible static build and SPA routing configuration without exposing credentials.
+- [x] Validate the production client build and document required Vercel environment variables and deployment steps.
+- [x] Save and push the Vercel-ready project state.
+
+The GitHub-linked Vercel project exists at `focus-flight-timer.vercel.app`, but its initial Vite autodetection ran the repository's generic `build` script and published the Express bundle instead of the browser application. The Vercel configuration now explicitly runs the client-only build, publishes `dist/public`, and includes the SPA rewrite required for direct `/journey` navigation. The local Vercel build, TypeScript check, and 19 unit tests pass. The deployment still requires the existing public Supabase URL and publishable key to be entered in Vercel's environment-variable settings; no credentials were committed.

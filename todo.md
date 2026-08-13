@@ -145,7 +145,7 @@ The autonomous completion work now uses the selected Tokyo Supabase project dire
 - [x] Use sourced direct-flight durations where verified and transparent commercial-aircraft estimates only when no direct duration is available.
 - [x] Connect stored duration seconds to destination cards, timer initialization, aircraft progress, and trip persistence without hardcoding values in React components.
 - [x] Verify duration-cache behavior, New York/default restoration logic, route simulation, responsive UI, and existing guest/authenticated flows.
-- [ ] Commit, push, and checkpoint the completed realistic-duration and landing-map revision.
+- [x] Commit and push the completed realistic-duration and landing-map revision; save its recovery checkpoint next.
 
 - [x] Add focused automated coverage for authenticated landing-map restoration from completed trip history and for persisted duration metadata passed to trip saving.
 - [x] Document the live email-confirmed verification boundary without creating customer or test records in the production backend.

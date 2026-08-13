@@ -4,7 +4,7 @@ import { CircleMarker, MapContainer, Polyline, Popup, TileLayer, useMap } from "
 import "leaflet/dist/leaflet.css";
 import { MAP_CONFIG } from "@/config/map";
 import type { Destination } from "@/services/airportSearch";
-import { greatCircleRoute } from "@/services/route";
+import { gentleFlightRoute } from "@/services/route";
 
 export type JourneyRoute = {
   id: string;
@@ -41,7 +41,7 @@ export function JourneyMap({ routes }: { routes: JourneyRoute[] }) {
       <TileLayer url={MAP_CONFIG.tileUrl} attribution={MAP_CONFIG.attribution} crossOrigin />
       <JourneyViewport routes={routes} />
       {routes.map((route, index) => {
-        const routeGeometry = greatCircleRoute(route.origin, route.destination);
+        const routeGeometry = gentleFlightRoute(route.origin, route.destination);
         const hue = index % 2 === 0 ? "#0d78ce" : "#eb3e7c";
         const date = route.completedAt ? new Date(route.completedAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "Completed focus flight";
         return routeGeometry.renderSegments.map((segment, segmentIndex) => <Polyline key={`${route.id}-${segmentIndex}`} positions={segment.map((coordinate) => [coordinate.latitude, coordinate.longitude])} pathOptions={{ color: hue, weight: 3, opacity: 0.86, dashArray: "9 11", lineCap: "round" }}>{segmentIndex === 0 && <Popup className="journey-map-popup"><div className="journey-popup-route"><span>{route.origin.iata || route.origin.icao || route.origin.city} → {route.destination.iata || route.destination.icao || route.destination.city}</span><strong>{route.distanceKm.toLocaleString()} km</strong><small>{formatDuration(route.focusDurationSeconds)} focus · {date}</small></div></Popup>}</Polyline>);

@@ -6,7 +6,7 @@ import { CircleMarker, MapContainer, Marker, Polyline, Popup, TileLayer, useMap,
 import "leaflet/dist/leaflet.css";
 import { MAP_CONFIG } from "@/config/map";
 import type { Destination } from "@/services/airportSearch";
-import { aircraftAtProgress, greatCircleRoute, routeCoordinatesAtProgress, type Coordinate, type GeodesicRoute } from "@/services/route";
+import { aircraftAtProgress, gentleFlightRoute, routeCoordinatesAtProgress, type Coordinate, type GeodesicRoute } from "@/services/route";
 
 type MapMode = "landing" | "selecting" | "active";
 
@@ -60,7 +60,7 @@ function MapClickHandler({ onMapClick }: Pick<FlightMapProps, "onMapClick">) {
 
 export function FlightMap({ origin, destination, progress = 0, mode, landingFocus = null, onMapClick }: FlightMapProps) {
   const hasRoute = Boolean(origin && destination);
-  const route = hasRoute && origin && destination ? greatCircleRoute({ latitude: origin.latitude, longitude: origin.longitude }, { latitude: destination.latitude, longitude: destination.longitude }) : null;
+  const route = hasRoute && origin && destination ? gentleFlightRoute({ latitude: origin.latitude, longitude: origin.longitude }, { latitude: destination.latitude, longitude: destination.longitude }) : null;
   const aircraft = route ? aircraftAtProgress(route, progress) : null;
   const visibleRoute = route ? routeCoordinatesAtProgress(route, mode === "active" ? progress : 1) : [];
   const renderedOrigin = route?.animationCoordinates[0] ?? (origin ? { latitude: origin.latitude, longitude: origin.longitude } : null);

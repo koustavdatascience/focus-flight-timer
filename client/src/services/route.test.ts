@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getAirportByCode } from "@/services/airportSearch";
-import { aircraftAtProgress, greatCircleRoute, routeCoordinatesAtProgress } from "./route";
+import { aircraftAtProgress, gentleFlightRoute, greatCircleRoute, routeCoordinatesAtProgress } from "./route";
 
 function airportCoordinate(code: string) {
   const airport = getAirportByCode(code);
@@ -61,5 +61,20 @@ describe("great-circle flight routes", () => {
     }
     expect(destination?.latitude).toBeCloseTo(airportCoordinate("ACA").latitude, 6);
     expect(destination?.longitude).toBeGreaterThan(180);
+  });
+
+  it("uses a subtle shared arc for CCU → Acapulco while preserving endpoint and dateline continuity", () => {
+    const route = gentleFlightRoute(origin, airportCoordinate("ACA"));
+    const visible = routeCoordinatesAtProgress(route, 1);
+    const destination = visible.at(-1);
+    const baselineLatitude = (origin.latitude + airportCoordinate("ACA").latitude) / 2;
+    const midLatitude = visible[Math.floor(visible.length / 2)].latitude;
+
+    expect(destination?.latitude).toBeCloseTo(airportCoordinate("ACA").latitude, 6);
+    expect(destination?.longitude).toBeGreaterThan(180);
+    expect(Math.abs(midLatitude - baselineLatitude)).toBeLessThan(12);
+    for (let index = 1; index < visible.length; index += 1) {
+      expect(Math.abs(visible[index].longitude - visible[index - 1].longitude)).toBeLessThanOrEqual(10);
+    }
   });
 });

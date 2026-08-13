@@ -13,6 +13,13 @@ export type GeodesicRoute = {
   crossesAntimeridian: boolean;
 };
 
+/**
+ * A display-only blend between the direct unwrapped geographic connection (0)
+ * and the full great-circle reference (1). It is calculated in latitude and
+ * longitude only, never from map pixels, zoom, or viewport dimensions.
+ */
+export const GENTLE_ARC_STRENGTH = 0.16;
+
 export type AircraftState = {
   coordinate: Coordinate;
   bearing: number;
@@ -119,6 +126,37 @@ export function greatCircleRoute(start: Coordinate, end: Coordinate, steps = 160
   ).geometry;
   const lines = geometry.type === "LineString" ? [geometry.coordinates] : geometry.coordinates;
   const animationCoordinates = unwrapCoordinates(lines);
+  const renderSegments = splitAtAntimeridian(animationCoordinates);
+
+  return {
+    animationCoordinates,
+    renderSegments,
+    crossesAntimeridian: renderSegments.length > 1,
+  };
+}
+
+/**
+ * Produce the subtle visual route used by FocusFlight. It preserves the exact
+ * selected endpoints and blends the Turf great-circle reference toward the
+ * direct unwrapped geographic connection. The visible path, reveal, aircraft
+ * position, and bearing all consume these same coordinates.
+ */
+export function gentleFlightRoute(start: Coordinate, end: Coordinate, steps = 160, strength = GENTLE_ARC_STRENGTH): GeodesicRoute {
+  const reference = greatCircleRoute(start, end, steps);
+  const safeStrength = Math.max(0, Math.min(1, strength));
+  const referenceCoordinates = reference.animationCoordinates;
+  const unwrappedEnd = referenceCoordinates.at(-1)?.longitude ?? end.longitude;
+  const animationCoordinates = referenceCoordinates.map((coordinate, index) => {
+    const progress = referenceCoordinates.length <= 1 ? 0 : index / (referenceCoordinates.length - 1);
+    const baseline = {
+      latitude: start.latitude + (end.latitude - start.latitude) * progress,
+      longitude: start.longitude + (unwrappedEnd - start.longitude) * progress,
+    };
+    return {
+      latitude: baseline.latitude + (coordinate.latitude - baseline.latitude) * safeStrength,
+      longitude: baseline.longitude + (coordinate.longitude - baseline.longitude) * safeStrength,
+    };
+  });
   const renderSegments = splitAtAntimeridian(animationCoordinates);
 
   return {

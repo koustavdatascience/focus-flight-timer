@@ -169,3 +169,11 @@ The route service now obtains WGS84 great-circle coordinates from Turf, renders 
 - [x] Re-verify Acapulco and related long-haul routes at practical map scales before checkpointing the correction.
 
 The corrected Acapulco route is a continuous WGS84 shortest-path arc over the northern Pacific/Arctic, with no artificial control points or dateline break. Because CCU and ACA are near-antipodal, this legitimate great-circle reaches high latitudes; the long arc seen on a Web Mercator world map is geographic rather than a custom loop. The live map, endpoint markers, viewport bounds, and aircraft now share the same unwrapped longitude sequence, while the journey history map retains safely split segments for multi-route overview rendering.
+
+## Gentle flight-arc refinement
+
+- [x] Replace the high-latitude long-haul display with a low-amplitude longitude/latitude path that retains the selected endpoints and dateline safety.
+- [x] Use the same gentle coordinates for the visible line, progressive reveal, aircraft position, and geographic heading.
+- [x] Verify the revised visual curvature on regional, long-haul, and dateline-crossing routes before checkpointing the change.
+
+The flight route now blends the geographic great-circle reference toward the direct unwrapped latitude/longitude connection at a fixed 16% geographic strength. It does not use map pixels, viewport measurements, or a separate animation curve. The Acapulco capture confirms a small Pacific arc instead of a polar semicircle; regional and dateline-crossing paths remain finite and continuous.

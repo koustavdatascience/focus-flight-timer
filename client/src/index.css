@@ -58,6 +58,37 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outl
 .pin-two { left: 55.1%; top: 48.2%; width: 10px; height: 10px; opacity: .84; }
 .landing-footer { position: absolute; bottom: 13px; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 32px; color: rgba(24,44,66,.58); font-size: 10px; z-index: 3; }
 
+.flight-view { background: var(--sky); }
+.active-map { filter: saturate(.86) contrast(.98); transform: scale(1.06); transition: background-position .7s cubic-bezier(.23,1,.32,1), transform .7s cubic-bezier(.23,1,.32,1); }
+.active-wash { background: linear-gradient(180deg, rgba(169,212,222,.08), rgba(169,212,222,.01) 45%, rgba(169,212,222,.1)); }
+.flight-back-button, .flight-icon-button { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; border: 1px solid rgba(24,44,66,.09); background: rgba(255,255,255,.86); color: var(--ink); box-shadow: 0 7px 18px rgba(29,62,76,.17); cursor: pointer; transition: transform .18s ease, background .18s ease, color .18s ease; }
+.flight-back-button { position: absolute; top: 25px; left: 28px; z-index: 8; }
+.flight-back-button:hover, .flight-icon-button:hover { transform: translateY(-2px); background: white; color: var(--blue); }
+.flight-top-controls { position: absolute; top: 25px; right: 28px; z-index: 8; display: flex; gap: 10px; }
+.flight-icon-button { width: 42px; height: 42px; }
+.flight-icon-button.selected { color: var(--blue); }
+.route-stage { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.route-map-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.route-shadow, .route-line { fill: none; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.route-shadow { stroke: rgba(255,255,255,.7); stroke-width: 4; stroke-dasharray: 6 11; }
+.route-line { stroke: var(--blue); stroke-width: 2.3; stroke-dasharray: .01 .02; transition: stroke-dashoffset .5s linear; }
+.aircraft-progress { position: absolute; z-index: 3; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; color: var(--blue); background: rgba(255,255,255,.96); box-shadow: 0 4px 12px rgba(29,62,76,.2); transition: left .55s linear, top .55s linear, transform .55s linear; }
+.active-route-label { position: absolute; z-index: 4; display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--ink); text-shadow: 0 1px 2px rgba(255,255,255,.8); }
+.active-route-label::before { content: ""; width: 11px; height: 11px; border-radius: 50%; background: var(--pink); box-shadow: 0 0 0 5px rgba(235,62,124,.15); margin-bottom: 4px; }
+.active-route-label span { font: 600 11px "DM Sans", sans-serif; letter-spacing: .08em; }
+.active-route-label small { font-size: 11px; color: rgba(24,44,66,.7); }
+.origin-label { left: 20.8%; top: 73%; }
+.destination-label { left: 75.2%; top: 18%; }
+.destination-label.arrived::before { background: var(--blue); box-shadow: 0 0 0 5px rgba(13,120,206,.15); }
+.active-notice { position: absolute; left: 50%; bottom: 29px; transform: translateX(-50%); z-index: 6; min-height: 18px; color: rgba(24,44,66,.68); font-size: 11px; text-align: center; }
+.flight-stat-card { position: absolute; z-index: 7; bottom: 24px; min-width: 126px; padding: 13px 16px; border: 1px solid rgba(24,44,66,.08); border-radius: 9px; background: rgba(255,255,255,.88); box-shadow: 0 8px 18px rgba(29,62,76,.13); display: flex; flex-direction: column; gap: 3px; }
+.flight-stat-card span { color: #72808a; font-size: 10px; }
+.flight-stat-card strong { color: var(--blue); font-size: 19px; font-weight: 600; }
+.flight-stat-card small { color: #72808a; font-size: 9px; }
+.time-card { left: 28px; }
+.distance-card { right: 28px; }
+.active-attribution { position: absolute; right: 28px; bottom: 9px; z-index: 6; color: rgba(24,44,66,.55); font-size: 9px; }
+
 @media (max-width: 700px) {
   .landing-header { height: 58px; padding: 0 20px; grid-template-columns: 1fr auto; }
   .landing-wordmark { font-size: 18px; }
@@ -79,6 +110,16 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outl
   .landing-footer span:last-child { display: none; }
   .pin-one { left: 49%; top: 39%; }
   .pin-two { left: 58%; top: 46%; }
+  .flight-back-button { top: 16px; left: 16px; width: 42px; height: 42px; }
+  .flight-top-controls { top: 16px; right: 16px; gap: 6px; }
+  .flight-icon-button { width: 40px; height: 40px; }
+  .origin-label { left: 15%; top: 74%; }
+  .destination-label { left: 75%; top: 22%; }
+  .flight-stat-card { bottom: 28px; min-width: 108px; padding: 11px 13px; }
+  .time-card { left: 14px; }
+  .distance-card { right: 14px; }
+  .active-notice { bottom: 12px; width: 48%; }
+  .active-attribution { right: 14px; bottom: 7px; font-size: 8px; }
 }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; } }

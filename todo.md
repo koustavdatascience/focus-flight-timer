@@ -128,7 +128,7 @@ The landing already has the correct origin-first real-map flight flow and an Eng
 - [x] Save, resume, pause, complete, and render personal focus-flight journeys without changing the guest route-selection rules.
 - [x] Add the authenticated My Journey route with a real personal route map, completed-session list, and calculated totals.
 - [x] Add focused Vitest coverage and run build, end-to-end, desktop, and mobile verification.
-- [ ] Commit and push the completed integration to the private GitHub repository, then save a recovery checkpoint.
+- [x] Commit and push the completed integration to the private GitHub repository, then save a recovery checkpoint.
 
 - [x] Add visited-airport count and most-frequent-airport insight to My Journey from authenticated trip history.
 - [x] Verify the browser Supabase configuration, resumable-trip schema, and user-scoped profile/trip RLS policies without inserting customer or test records.

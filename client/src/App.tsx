@@ -4,13 +4,16 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
+import Journey from "./pages/Journey";
+import NotFound from "./pages/NotFound";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
       <Route path="/" component={Home} />
-      <Route component={Home} />
+      <Route path="/journey" component={Journey} />
+      <Route component={NotFound} />
     </Switch>
   );
 }

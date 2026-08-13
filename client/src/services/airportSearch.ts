@@ -70,6 +70,10 @@ export function getAirportByCode(code: string) {
   return AIRPORTS.find((airport) => airport.iata?.toLocaleLowerCase() === normalizedCode || airport.icao?.toLocaleLowerCase() === normalizedCode);
 }
 
+export function getAirportById(id: string | number) {
+  return AIRPORTS.find((airport) => String(airport.id) === String(id));
+}
+
 export function getFeaturedAirports(codes: string[]) {
   return codes.map((code) => getAirportByCode(code)).filter((airport): airport is Destination => Boolean(airport));
 }

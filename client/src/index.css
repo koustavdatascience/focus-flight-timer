@@ -22,6 +22,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outl
 .landing-nav button:hover { color: var(--blue); transform: translateY(-1px); }
 .mobile-menu-trigger { display: none; justify-self: end; background: transparent; color: var(--ink); padding: 8px; cursor: pointer; }
 .landing-mobile-menu { display: none; }
+.nav-status { color: rgba(24,44,66,.58); font-size: 12px; }
 
 .flight-content { min-height: calc(100svh - 66px); display: flex; flex-direction: column; align-items: center; padding: 62px 22px 72px; position: relative; text-align: center; }
 .flight-kicker { display: flex; align-items: center; justify-content: center; gap: 6px; color: var(--ink); font-size: 17px; line-height: 1.2; }
@@ -50,6 +51,8 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outl
 .destination-form button { width: 27px; height: 27px; display: grid; place-items: center; border-radius: 50%; background: var(--blue); color: white; cursor: pointer; transition: transform .18s ease; }
 .destination-form button:hover { transform: translateX(2px); }
 .flight-status { min-height: 22px; margin-top: 15px; color: rgba(24,44,66,.64); font-size: 11px; }
+.continue-journey-button { display: inline-flex; align-items: center; gap: 5px; margin-top: 4px; padding: 7px 11px; border-radius: 999px; background: rgba(255,255,255,.55); color: var(--ink); border: 1px solid rgba(24,44,66,.14); font-size: 11px; cursor: pointer; transition: transform .18s ease, background .18s ease; }
+.continue-journey-button:hover { transform: translateY(-1px); background: rgba(255,255,255,.9); }
 .board-button { margin-top: 4px; padding: 8px 14px; border-radius: 999px; background: rgba(255,255,255,.22); color: var(--ink); border: 1px solid rgba(24,44,66,.18); font-size: 11px; cursor: pointer; transition: background .18s ease, transform .18s ease; }
 .board-button:hover { background: rgba(255,255,255,.72); transform: translateY(-1px); }
 .board-button.running { color: white; background: var(--blue); border-color: var(--blue); }

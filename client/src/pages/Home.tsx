@@ -1,9 +1,14 @@
 // Cloud Atlas Editorial page: warm cartography, dark ink type, blue flight accents, and compact map-first controls.
 import { ArrowLeft, ChevronRight, Info, MapPin, Menu, Pause, Plane, Play, Search, Volume2, VolumeX, X } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { useLocation } from "wouter";
+import { AuthDialog } from "@/components/auth/AuthDialog";
 import { FlightMap } from "@/components/map/FlightMap";
+import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
+import { useFocusJourney } from "@/hooks/useFocusJourney";
+import { completeFocusTrip, startFocusTrip, updateFocusTripProgress, type FocusTrip } from "@/lib/supabase";
 import { geocodePlace } from "@/services/geocoding";
-import { findNearestAirport, getFeaturedAirports, searchAirports, type Destination } from "@/services/airportSearch";
+import { findNearestAirport, getAirportById, getFeaturedAirports, searchAirports, type Destination } from "@/services/airportSearch";
 import { distanceBetween, suggestedFocusMinutes } from "@/services/route";
 
 type ViewState = "landing" | "selecting" | "active";
@@ -22,13 +27,9 @@ function airportLabel(airport: Destination) {
 }
 
 export default function Home() {
-  // The useAuth hook provides authentication state.
-  // To implement login/logout, call logout(), or start login from an event
-  // handler: onClick={() => startLogin()} (imported from "@/const"). Never call
-  // startLogin() during render (no href={startLogin()}) — it mints a one-time
-  // nonce cookie and must run only at the moment of navigation.
-  let { user, loading, error, isAuthenticated, logout } = useAuth();
-
+  const [location, navigate] = useLocation();
+  const { user, displayName, isAuthenticated, loading: authLoading, signOut } = useSupabaseAuth();
+  const { trips, refresh: refreshJourney, saveProfile } = useFocusJourney();
   const [view, setView] = useState<ViewState>("landing");
   const [selectedOrigin, setSelectedOrigin] = useState<Destination | null>(null);
   const [selectedDestination, setSelectedDestination] = useState<Destination | null>(null);
@@ -42,11 +43,42 @@ export default function Home() {
   const [located, setLocated] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [notice, setNotice] = useState("");
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [activeTrip, setActiveTrip] = useState<FocusTrip | null>(null);
+  const [persistingTrip, setPersistingTrip] = useState(false);
+  const [completionRecorded, setCompletionRecorded] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const resumedTripId = useRef<string | null>(null);
   const localSuggestions = useMemo(() => searchAirports(query, 6), [query]);
   const routeDistance = selectedOrigin && selectedDestination ? distanceBetween(selectedOrigin, selectedDestination) : 0;
   const totalSeconds = sessionMinutes * 60;
   const progress = totalSeconds === 0 ? 0 : 1 - remaining / totalSeconds;
+  const latestCompletedTrip = useMemo(() => trips.find((trip) => trip.status === "completed"), [trips]);
+
+  useEffect(() => {
+    const tripId = new URLSearchParams(location.split("?")[1] || window.location.search).get("resume");
+    if (!isAuthenticated || !tripId || resumedTripId.current === tripId) return;
+    const savedTrip = trips.find((trip) => trip.id === tripId && trip.status === "in_progress");
+    if (!savedTrip) return;
+    const origin = getAirportById(savedTrip.origin_airport_id);
+    const destination = getAirportById(savedTrip.destination_airport_id);
+    if (!origin || !destination) {
+      setNotice("This saved flight cannot be restored because an airport record is unavailable.");
+      return;
+    }
+    resumedTripId.current = tripId;
+    const minutes = Math.ceil(savedTrip.focus_duration_seconds / 60);
+    setSelectedOrigin(origin);
+    setSelectedDestination(destination);
+    setSessionMinutes(minutes);
+    setRemaining(Math.max(1, savedTrip.focus_duration_seconds - savedTrip.elapsed_seconds));
+    setActiveTrip(savedTrip);
+    setCompletionRecorded(false);
+    setRunning(false);
+    setView("active");
+    setNotice(`Paused flight restored — ${destination.city} is waiting.`);
+    navigate("/", { replace: true });
+  }, [isAuthenticated, location, navigate, trips]);
 
   useEffect(() => {
     if (!running || view !== "active" || !selectedOrigin || !selectedDestination) return;
@@ -54,14 +86,32 @@ export default function Home() {
       setRemaining((value) => {
         if (value <= 1) {
           setRunning(false);
-          setNotice(`${selectedDestination.city} reached — you made it.`);
+          const elapsedSeconds = totalSeconds;
+          if (activeTrip && !completionRecorded) {
+            setCompletionRecorded(true);
+            void completeFocusTrip(activeTrip.id, elapsedSeconds)
+              .then(() => refreshJourney())
+              .then(() => setNotice(`${selectedDestination.city} reached — this flight is saved to My Journey.`))
+              .catch(() => setNotice(`${selectedDestination.city} reached — we could not save this flight just now.`));
+          } else {
+            setNotice(`${selectedDestination.city} reached — you made it.`);
+          }
           return 0;
         }
         return value - 1;
       });
     }, 1000);
     return () => window.clearInterval(timer);
-  }, [running, selectedDestination?.city, selectedOrigin?.city, view]);
+  }, [activeTrip, completionRecorded, refreshJourney, running, selectedDestination?.city, selectedOrigin?.city, totalSeconds, view]);
+
+  useEffect(() => {
+    if (!activeTrip || !running || remaining === 0) return;
+    const elapsedSeconds = totalSeconds - remaining;
+    if (elapsedSeconds <= 0 || elapsedSeconds % 5 !== 0) return;
+    void updateFocusTripProgress(activeTrip.id, elapsedSeconds, false).catch(() => {
+      setNotice("Your flight continues, but progress is not syncing at the moment.");
+    });
+  }, [activeTrip, remaining, running, totalSeconds]);
 
   function selectOrigin(origin: Destination) {
     setSelectedOrigin(origin);
@@ -75,6 +125,11 @@ export default function Home() {
     setNotice(`${origin.city} set as your starting airport. Now choose a destination.`);
     setQuery("");
     setMenuOpen(false);
+    if (isAuthenticated) {
+      void saveProfile({ display_name: displayName, home_airport_id: String(origin.id) }).catch(() => {
+        setNotice(`${origin.city} is ready, but we could not update your home airport.`);
+      });
+    }
   }
 
   function selectDestination(destination: Destination) {
@@ -100,9 +155,35 @@ export default function Home() {
     setRunning(true);
     setView("active");
     setNotice("");
+    setActiveTrip(null);
+    setCompletionRecorded(false);
+
+    if (!user) {
+      setNotice("Guest flight in progress — sign in next time to save your journey.");
+      return;
+    }
+
+    setPersistingTrip(true);
+    void startFocusTrip({
+      user_id: user.id,
+      origin_airport_id: String(selectedOrigin.id),
+      destination_airport_id: String(selectedDestination.id),
+      distance_km: Math.round(routeDistance),
+      focus_duration_seconds: totalSeconds,
+    })
+      .then((trip) => setActiveTrip(trip))
+      .catch(() => setNotice("Your flight has started, but it could not be saved right now."))
+      .finally(() => setPersistingTrip(false));
+  }
+
+  function pauseAndSyncActiveTrip() {
+    if (activeTrip && remaining > 0) {
+      void updateFocusTripProgress(activeTrip.id, totalSeconds - remaining, true).catch(() => undefined);
+    }
   }
 
   function returnToLanding() {
+    pauseAndSyncActiveTrip();
     setRunning(false);
     setSelectedOrigin(null);
     setSelectedDestination(null);
@@ -111,12 +192,24 @@ export default function Home() {
     setRemaining(DEFAULT_FOCUS_MINUTES * 60);
     setView("landing");
     setNotice("");
+    setActiveTrip(null);
   }
 
   function returnToSelection() {
+    pauseAndSyncActiveTrip();
     setRunning(false);
     setView("selecting");
     setNotice("");
+  }
+
+  function toggleFlightRunning() {
+    const nextRunning = !running;
+    setRunning(nextRunning);
+    if (activeTrip) {
+      void updateFocusTripProgress(activeTrip.id, totalSeconds - remaining, !nextRunning).catch(() => {
+        setNotice("Your flight continues, but progress is not syncing at the moment.");
+      });
+    }
   }
 
   async function submitSearch(event: FormEvent<HTMLFormElement>) {
@@ -135,7 +228,7 @@ export default function Home() {
     if (searchMode === "destination" && Number.isFinite(customMinutes) && customMinutes > 0 && customMinutes <= 180) {
       setSessionMinutes(customMinutes);
       setRemaining(customMinutes * 60);
-      setNotice(selectedOrigin ? `Custom focus duration set for your next destination.` : "Choose a starting airport before setting a route duration.");
+      setNotice(selectedOrigin ? "Custom focus duration set for your next destination." : "Choose a starting airport before setting a route duration.");
       setQuery("");
       return;
     }
@@ -191,6 +284,17 @@ export default function Home() {
     );
   }
 
+  function continueFromLastDestination() {
+    if (!latestCompletedTrip) return;
+    const lastDestination = getAirportById(latestCompletedTrip.destination_airport_id);
+    if (!lastDestination) {
+      setNotice("Your last destination is not available in the current airport catalogue.");
+      return;
+    }
+    selectOrigin(lastDestination);
+    setNotice(`Continuing from ${lastDestination.city}. Choose your next destination.`);
+  }
+
   function renderSearchForm(className = "destination-form", mode: SearchMode = searchMode) {
     const isOriginSearch = mode === "origin";
     return (
@@ -213,11 +317,11 @@ export default function Home() {
         <FlightMap origin={selectedOrigin} destination={selectedDestination} progress={progress} mode="active" onMapClick={handleMapClick} />
         <button className="flight-back-button" onClick={returnToSelection} aria-label="Back to destination selection"><ArrowLeft size={20} /></button>
         <div className="flight-top-controls" aria-label="Flight controls">
-          <button className="flight-icon-button" onClick={() => setRunning((value) => !value)} aria-label={running ? "Pause flight" : "Resume flight"}>{running ? <Pause size={17} fill="currentColor" /> : <Play size={17} fill="currentColor" />}</button>
+          <button className="flight-icon-button" onClick={toggleFlightRunning} aria-label={running ? "Pause flight" : "Resume flight"}>{running ? <Pause size={17} fill="currentColor" /> : <Play size={17} fill="currentColor" />}</button>
           <button className={`flight-icon-button ${soundOn ? "selected" : ""}`} onClick={() => setSoundOn((value) => !value)} aria-label={soundOn ? "Mute sound" : "Enable sound"}>{soundOn ? <Volume2 size={17} /> : <VolumeX size={17} />}</button>
           <button className="flight-icon-button" onClick={() => showNotice(`${selectedOrigin.iata || selectedOrigin.icao} → ${airportLabel(selectedDestination)} · ${routeDistance.toLocaleString()} km`)} aria-label="Show flight information"><Info size={17} /></button>
         </div>
-        <div className="active-notice" aria-live="polite">{notice || (remaining === 0 ? "Landed — take a good break." : running ? `${selectedDestination.city} is in progress` : "Flight paused")}</div>
+        <div className="active-notice" aria-live="polite">{notice || (persistingTrip ? "Saving this flight…" : remaining === 0 ? "Landed — take a good break." : running ? `${selectedDestination.city} is in progress` : "Flight paused")}</div>
         <div className="flight-stat-card time-card"><span>Time</span><strong>{formatCompactTime(remaining)}</strong><small>{running ? "in the air" : remaining === 0 ? "arrived" : "paused"}</small></div>
         <div className="flight-stat-card distance-card"><span>Distance</span><strong>{routeDistance.toLocaleString()} km</strong><small>{airportLabel(selectedOrigin)} → {airportLabel(selectedDestination)}</small></div>
       </main>
@@ -250,10 +354,12 @@ export default function Home() {
       <header className="landing-header">
         <button className="landing-wordmark" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>FocusFlight</button>
         <nav className="landing-nav" aria-label="Landing page navigation">
-          <button onClick={() => showNotice("Your flight log will appear after your first landing")}>History</button><button onClick={() => showNotice("Guest mode is ready — no sign in required")}>Sign In</button><button onClick={() => showNotice("Co-focus rooms are coming soon")}>Co-Focus</button><button onClick={() => showNotice("A calmer Pomodoro, framed as a short journey")}>About</button>
+          {isAuthenticated && <button onClick={() => navigate("/journey")}>My Journey</button>}
+          {authLoading ? <span className="nav-status">Connecting…</span> : isAuthenticated ? <button onClick={() => void signOut()}>Sign out</button> : <button onClick={() => setAuthDialogOpen(true)}>Sign In</button>}
+          <button onClick={() => showNotice("Co-focus rooms are coming soon")}>Co-Focus</button><button onClick={() => showNotice("A calmer Pomodoro, framed as a short journey")}>About</button>
         </nav>
         <button className="mobile-menu-trigger" aria-label="Open menu" aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}>{menuOpen ? <X size={18} /> : <Menu size={18} />}</button>
-        {menuOpen && <div className="landing-mobile-menu"><button onClick={() => showNotice("Your flight log will appear after your first landing")}>History</button><button onClick={() => showNotice("Guest mode is ready — no sign in required")}>Guest mode is ready — no sign in required</button><button onClick={() => showNotice("Co-focus rooms are coming soon")}>Co-Focus</button><button onClick={() => showNotice("A calmer Pomodoro, framed as a short journey")}>About</button></div>}
+        {menuOpen && <div className="landing-mobile-menu">{isAuthenticated && <button onClick={() => navigate("/journey")}>My Journey</button>}{isAuthenticated ? <button onClick={() => void signOut()}>Sign out</button> : <button onClick={() => setAuthDialogOpen(true)}>Sign in</button>}<button onClick={() => showNotice("Co-focus rooms are coming soon")}>Co-Focus</button><button onClick={() => showNotice("A calmer Pomodoro, framed as a short journey")}>About</button></div>}
       </header>
       <section className="flight-content" aria-labelledby="flight-title">
         <div className="flight-kicker"><Plane size={17} fill="currentColor" /><span>{selectedOrigin ? "Choose a destination," : "Choose a starting airport,"}</span><strong>keep your focus.</strong></div>
@@ -262,8 +368,10 @@ export default function Home() {
         <div className="route-controls"><button className="choose-route-button" onClick={() => inputRef.current?.focus()}><span>{selectedOrigin ? "Choose your destination" : "Choose your starting airport"}</span><ChevronRight size={15} /></button><button className={`location-button ${located ? "located" : ""}`} aria-label="Use my location as starting airport" onClick={handleUseMyLocation}><MapPin size={16} fill="currentColor" /></button></div>
         {renderSearchForm()}
         <div className="flight-status" aria-live="polite">{notice || (selectedOrigin ? "Select a destination to open the geographic flight map" : "Select a starting airport to begin")}</div>
+        {latestCompletedTrip && <button className="continue-journey-button" type="button" onClick={continueFromLastDestination}>Continue from your last destination <ChevronRight size={15} /></button>}
       </section>
       <footer className="landing-footer"><span>FocusFlight / a small ritual for deep work</span><span>Choose your origin · choose your destination</span></footer>
+      <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
     </main>
   );
 }

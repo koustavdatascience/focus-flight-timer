@@ -73,7 +73,11 @@ export default function About() {
           <p>I built Waypoint because I was tired of timers that just sit there counting down at you. I wanted it to feel like actually going somewhere, so it turned into a map, then a route, then kind of a log of my own flights.</p>
           <p>I&apos;m still figuring it out as I go, and I&apos;m keeping it small on purpose.</p>
           <p>If something&apos;s confusing, or breaks, or you try it and think it&apos;s onto something tell me. Doesn&apos;t need to be long, just specific. I read every note. Can&apos;t promise I&apos;ll write back to all of them, but I&apos;m paying attention.</p>
-          <button className="public-text-button" onClick={() => navigate("/feedback")}>Send feedback <ArrowRight size={15} /></button>
+          <div className="about-hero-actions" aria-label="About-page actions and legal information">
+            <button className="public-text-button" onClick={() => navigate("/feedback")}>Send feedback <ArrowRight size={15} /></button>
+            <a className="public-text-button" href="/privacy">Privacy Policy <ArrowRight size={15} /></a>
+            <a className="public-text-button" href="/terms">Terms of Service <ArrowRight size={15} /></a>
+          </div>
         </article>
         <article className="about-tech-card">
           <span className="panel-label">Development log</span>

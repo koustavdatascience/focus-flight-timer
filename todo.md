@@ -287,3 +287,4 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 - [x] Replace the Privacy Policy and Terms working drafts with an accurate Waypoint-specific adaptation of the user-supplied legal copy, retaining explicit attorney-review framing.
 - [x] Verify legal-page copy, public metadata, desktop/mobile layout, and automated coverage before publication.
 - [x] Publish the user-supplied Waypoint legal contact address in the Privacy Policy and Terms working drafts.
+- [x] Add clear Privacy Policy and Terms links to the About page and verify their public-route destinations.

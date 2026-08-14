@@ -14,4 +14,11 @@ describe("Waypoint founder note", () => {
     expect(aboutPage).toContain("I read every note.");
     expect(aboutPage).not.toContain("Waypoint began as a way to make a timer feel less like a countdown");
   });
+
+  it("keeps the legal working drafts directly reachable from the About page", () => {
+    expect(aboutPage).toContain('href="/privacy"');
+    expect(aboutPage).toContain("Privacy Policy");
+    expect(aboutPage).toContain('href="/terms"');
+    expect(aboutPage).toContain("Terms of Service");
+  });
 });

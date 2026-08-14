@@ -288,3 +288,8 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 - [x] Verify legal-page copy, public metadata, desktop/mobile layout, and automated coverage before publication.
 - [x] Publish the user-supplied Waypoint legal contact address in the Privacy Policy and Terms working drafts.
 - [x] Add clear Privacy Policy and Terms links to the About page and verify their public-route destinations.
+- [x] Rename the public GitHub repository to `project-waypoint`, retaining public visibility and redirects.
+- [x] Rename the Vercel project to `project-waypoint` and inspect the generated deployment address.
+- [x] Assign the alternate `project-waypoint-app.vercel.app` production address and verify the resulting public deployment configuration.
+- [x] Replace stale Vercel deployment references in Waypoint documentation and public metadata with `project-waypoint-app.vercel.app`, preserving the old URL only where migration guidance requires it.
+- [ ] Update Supabase and Google OAuth authorized origins for `project-waypoint-app.vercel.app`, then verify email recovery and Google sign-in on the new production address.

@@ -2,7 +2,7 @@
 
 > An original, map-first focus timer that turns completed study sessions into virtual flights.
 
-[Live application](https://focus-flight-timer.vercel.app/) · [Deployment guide](docs/vercel-deployment.md) · [Product roadmap](docs/focusflight-product-expansion-roadmap.md)
+[Live application](https://project-waypoint-app.vercel.app/) · [Deployment guide](docs/vercel-deployment.md) · [Product roadmap](docs/focusflight-product-expansion-roadmap.md)
 
 Waypoint pairs a Pomodoro-style focus ritual with a real interactive map. Choose an origin and destination, begin a timed focus flight, and watch the aircraft travel a geographically grounded route while the timer counts down. Completed trips can be saved to a personal journey history through Supabase authentication.
 
@@ -142,7 +142,7 @@ The current released experience includes the solo flight ritual, personal trip h
 
 ## Contributing and open-source status
 
-The repository is currently maintained as a private project. If it is opened later, it should first receive a contributor guide, security reporting policy, complete licence text, and a review of all source history for secrets or production-only data.
+The repository is public and maintained as an independent project. Contributions should follow a future contributor guide and security reporting policy; avoid sharing secrets or production-only data in issues, pull requests, or commits.
 
 The package metadata currently identifies the project as `MIT`; add a root `LICENSE` file before representing the repository as publicly licensed.
 

@@ -4,25 +4,25 @@
 
 The application’s visible product identity, browser metadata, structured data, public pages, guides, legal drafts, and README now use **Waypoint**. Existing user data, Supabase tables, migration history, and internal helper identifiers retain their prior names so the rebrand does not disrupt authentication, trips, social data, or existing deployment configuration.
 
-## Deliberately unchanged identifiers
+## Current configured identifiers
 
-| Identifier | Why it remains unchanged |
+| Identifier | Current state |
 |---|---|
-| `focus-flight-timer` GitHub repository and package identifier | Preserves the established repository, Vercel integration, and release history. |
-| `https://focus-flight-timer.vercel.app/` | Remains the live canonical origin until a Waypoint domain is purchased and connected. |
-| Supabase project reference and database/RPC identifiers | Preserves production data and application behavior. |
+| `project-waypoint` GitHub repository | Public repository renamed on 14 August 2026; GitHub preserves redirects from the prior repository URL. |
+| `https://project-waypoint-app.vercel.app/` | Assigned Project Waypoint Vercel production address and current canonical origin. |
+| `https://focus-flight-timer.vercel.app/` | Retained temporarily as a legacy Vercel deployment address during the authentication and search transition. |
+| Supabase project reference and database/RPC identifiers | Intentionally unchanged to preserve production data and application behavior. |
 | Google OAuth callback URI | The stable Supabase callback remains `https://pxicdashfmnqpobahify.supabase.co/auth/v1/callback`. |
 
 ## Owner-managed follow-up
 
-When a custom Waypoint domain is selected, complete these changes together:
+## Remaining owner-managed follow-up
 
-1. Add and verify the domain in Vercel, then make it the production domain.
-2. Update the canonical origin in `client/src/services/seo.ts`, `client/public/sitemap.xml`, `client/public/robots.txt`, `client/index.html`, and this README only after the domain is live.
-3. In Supabase **Authentication → URL Configuration**, set the new Site URL and add `<new-domain>/**` as an allowed redirect URL while retaining the current Vercel URL during transition.
-4. In Google Cloud’s OAuth client, add `https://<new-domain>` under Authorized JavaScript origins. Keep the Supabase callback URI unchanged.
-5. Rename the Google OAuth consent-screen application to **Waypoint**, then verify the public app display name and support contact.
-6. Verify the new domain in Google Search Console, submit the new sitemap, and request re-indexing of primary public routes.
+1. In Supabase **Authentication → URL Configuration**, set the Site URL to `https://project-waypoint-app.vercel.app` and add `https://project-waypoint-app.vercel.app/**` as an allowed redirect URL. Retain the old Vercel address during transition.
+2. In Google Cloud’s OAuth client, add `https://project-waypoint-app.vercel.app` under Authorized JavaScript origins. Keep the Supabase callback URI unchanged.
+3. Rename the Google OAuth consent-screen application to **Waypoint**, then verify the public app display name and support contact.
+4. Verify the new address in Google Search Console, submit `https://project-waypoint-app.vercel.app/sitemap.xml`, and request re-indexing of primary public routes.
+5. When a custom Waypoint domain is selected, repeat the canonical, sitemap, robots, Supabase, Google OAuth, and Search Console steps for that domain before retiring Vercel aliases.
 
 ## Validation boundary
 

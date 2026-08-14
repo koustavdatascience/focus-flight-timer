@@ -47,3 +47,9 @@ Waypoint's Privacy Policy and Terms working drafts were rewritten around the use
 ## 2026-08-14 — About-page legal links
 
 The independent-project section on `/about` now provides direct, visibly labelled links to the Privacy Policy and Terms of Service in addition to its feedback action. Full-page checks at 1280px and 375px confirmed the links remain legible, keyboard-reachable anchors, and fit the existing editorial card without horizontal overflow. `pnpm check`, `pnpm test` (18 files and 57 tests), and `pnpm build` completed successfully.
+
+## 2026-08-14 — Project Waypoint repository and deployment address
+
+The GitHub repository is public and was renamed to `koustavdatascience/project-waypoint`; the Vercel project was renamed to `project-waypoint`. The unavailable `waypoint.vercel.app` and `project-waypoint.vercel.app` aliases were not used. The available production address `https://project-waypoint-app.vercel.app` was assigned and confirmed to serve the current deployment. Canonical metadata, structured data, robots, sitemap, URL regression tests, README links, deployment guidance, and rebrand documentation now use the assigned address; legacy URLs remain only where migration instructions or historical records require them.
+
+`pnpm check`, `pnpm test` (18 files and 57 tests), and `pnpm build` completed successfully after the canonical-origin update. The required remaining transition work is owner-managed: add the new production address in Supabase URL Configuration and Google OAuth authorized origins, retain the old address temporarily, then complete email-recovery and Google sign-in checks at the new address.

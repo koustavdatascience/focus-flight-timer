@@ -1,4 +1,4 @@
-export const FOCUSFLIGHT_ORIGIN = "https://focus-flight-timer.vercel.app";
+export const WAYPOINT_ORIGIN = "https://project-waypoint-app.vercel.app";
 
 export type FaqItem = {
   question: string;
@@ -138,7 +138,7 @@ const appStructuredData = {
   applicationCategory: "ProductivityApplication",
   operatingSystem: "Web",
   description: "An original Pomodoro timer that turns a focus session into a calm virtual journey.",
-  url: FOCUSFLIGHT_ORIGIN,
+  url: WAYPOINT_ORIGIN,
 };
 
 function faqStructuredData(faqs: FaqItem[]) {
@@ -224,5 +224,5 @@ export function seoForPath(pathname: string): SeoDefinition {
 
 export function canonicalForPath(pathname: string) {
   const normalizedPath = pathname.replace(/\/+$/, "") || "/";
-  return `${FOCUSFLIGHT_ORIGIN}${normalizedPath}`;
+  return `${WAYPOINT_ORIGIN}${normalizedPath}`;
 }

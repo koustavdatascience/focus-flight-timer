@@ -258,7 +258,7 @@ Testing must be comprehensive because this feature set involves race conditions,
 
 ## Assumptions and questions to confirm before implementation
 
-This plan assumes the current Vercel production domain remains `https://focus-flight-timer.vercel.app`, Supabase remains the Tokyo project already used by FocusFlight, and GitHub `main` remains the production deployment branch. It also assumes the production app will keep English as its user-facing language.
+This plan assumes the current Vercel production domain is `https://project-waypoint-app.vercel.app`, Supabase remains the Tokyo project already used by Waypoint, and GitHub `main` remains the production deployment branch. It also assumes the production app will keep English as its user-facing language.
 
 | Topic | Proposed default | Confirmation needed before build |
 |---|---|---|

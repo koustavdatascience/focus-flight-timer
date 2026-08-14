@@ -1,4 +1,4 @@
-# FocusFlight on Vercel
+# Project Waypoint on Vercel
 
 ## Deployment model
 
@@ -32,17 +32,18 @@ The `VITE_` prefix makes these build-time values available to the Vite client bu
 In **Supabase → Authentication → URL Configuration**, set the Site URL to:
 
 ```text
-https://focus-flight-timer.vercel.app
+https://project-waypoint-app.vercel.app
 ```
 
 Add the following additional Redirect URLs to support Vercel preview deployments and local development:
 
 ```text
 https://*-koustav5.vercel.app/**
+https://focus-flight-timer.vercel.app/**
 http://localhost:3000/**
 ```
 
-Supabase uses the Site URL when no explicit redirect is supplied, and requires explicit allow-list entries for authentication redirects. Its Vercel guidance recommends an exact production Site URL and a wildcard preview pattern for Vercel preview URLs.[2]
+Supabase uses the Site URL when no explicit redirect is supplied, and requires explicit allow-list entries for authentication redirects. Keep the older Vercel address temporarily so existing password-recovery and OAuth links are not interrupted during the transition. Its Vercel guidance recommends an exact production Site URL and a wildcard preview pattern for Vercel preview URLs.[2]
 
 ## Verification sequence
 

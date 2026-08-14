@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://focus-flight-timer.vercel.app/</loc></url>
-  <url><loc>https://focus-flight-timer.vercel.app/about</loc></url>
-  <url><loc>https://focus-flight-timer.vercel.app/guides</loc></url>
-  <url><loc>https://focus-flight-timer.vercel.app/guides/pomodoro-timer</loc></url>
-  <url><loc>https://focus-flight-timer.vercel.app/guides/focus-session-planning</loc></url>
-  <url><loc>https://focus-flight-timer.vercel.app/guides/flight-metaphor-for-focus</loc></url>
-  <url><loc>https://focus-flight-timer.vercel.app/leaderboards</loc></url>
-  <url><loc>https://focus-flight-timer.vercel.app/changelog</loc></url>
-  <url><loc>https://focus-flight-timer.vercel.app/privacy</loc></url>
-  <url><loc>https://focus-flight-timer.vercel.app/terms</loc></url>
+  <url><loc>https://project-waypoint-app.vercel.app/</loc></url>
+  <url><loc>https://project-waypoint-app.vercel.app/about</loc></url>
+  <url><loc>https://project-waypoint-app.vercel.app/guides</loc></url>
+  <url><loc>https://project-waypoint-app.vercel.app/guides/pomodoro-timer</loc></url>
+  <url><loc>https://project-waypoint-app.vercel.app/guides/focus-session-planning</loc></url>
+  <url><loc>https://project-waypoint-app.vercel.app/guides/flight-metaphor-for-focus</loc></url>
+  <url><loc>https://project-waypoint-app.vercel.app/leaderboards</loc></url>
+  <url><loc>https://project-waypoint-app.vercel.app/changelog</loc></url>
+  <url><loc>https://project-waypoint-app.vercel.app/privacy</loc></url>
+  <url><loc>https://project-waypoint-app.vercel.app/terms</loc></url>
 </urlset>

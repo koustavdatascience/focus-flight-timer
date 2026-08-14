@@ -25,7 +25,7 @@ describe("Waypoint SEO routing", () => {
   });
 
   it("uses the production domain and normalizes trailing slashes for canonicals", () => {
-    expect(canonicalForPath("/about/")).toBe("https://focus-flight-timer.vercel.app/about");
+    expect(canonicalForPath("/about/")).toBe("https://project-waypoint-app.vercel.app/about");
   });
 
   it("does not accidentally index an unknown route", () => {

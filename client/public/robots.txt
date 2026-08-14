@@ -5,4 +5,4 @@ Disallow: /cofocus
 Disallow: /feedback
 Disallow: /u/
 
-Sitemap: https://focus-flight-timer.vercel.app/sitemap.xml
+Sitemap: https://project-waypoint-app.vercel.app/sitemap.xml

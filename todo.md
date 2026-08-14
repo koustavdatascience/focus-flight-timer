@@ -269,6 +269,8 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 
 - [x] Research Waypoint domain, app, and public brand conflicts before applying a rebrand.
 - [ ] If availability is acceptable and confirmed, rebrand FocusFlight to Waypoint across product copy, metadata, documentation, and external configuration guidance.
+- [x] Research Meridian domain, app, and public brand conflicts before applying a rebrand.
+- [ ] If availability is acceptable and confirmed, rebrand FocusFlight to Meridian across product copy, metadata, documentation, and external configuration guidance.
 - [x] Configure the currently disabled Google OAuth provider in Supabase and validate the FocusFlight sign-in return flow.
 - [x] Repair successful Google OAuth returns that leave FocusFlight displaying the unauthenticated Sign In state.
 - [x] Repair the Supabase Preview workflow failure caused by remote migration versions missing from the local migration directory.

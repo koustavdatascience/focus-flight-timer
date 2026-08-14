@@ -70,8 +70,9 @@ export default function About() {
         <article className="public-panel public-prose">
           <span className="panel-label">Built while learning</span>
           <h2>An independent project, growing carefully.</h2>
-          <p>Waypoint began as a way to make a timer feel less like a countdown in the corner of a screen. It became a map, then a route, then a personal flight log. The project is still being refined with care and kept intentionally simple.</p>
-          <p>If something is confusing, broken, or worth trying, a short, specific note is genuinely useful. Feedback is reviewed to improve the project, but a reply cannot be guaranteed.</p>
+          <p>I built Waypoint because I was tired of timers that just sit there counting down at you. I wanted it to feel like actually going somewhere, so it turned into a map, then a route, then kind of a log of my own flights.</p>
+          <p>I&apos;m still figuring it out as I go, and I&apos;m keeping it small on purpose.</p>
+          <p>If something&apos;s confusing, or breaks, or you try it and think it&apos;s onto something tell me. Doesn&apos;t need to be long, just specific. I read every note. Can&apos;t promise I&apos;ll write back to all of them, but I&apos;m paying attention.</p>
           <button className="public-text-button" onClick={() => navigate("/feedback")}>Send feedback <ArrowRight size={15} /></button>
         </article>
         <article className="about-tech-card">

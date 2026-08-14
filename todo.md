@@ -281,3 +281,4 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 - [x] Update factual changelog, legal-draft framing, feedback disclosures, and public-route metadata to reflect verified current capabilities without unsupported claims.
 - [x] Add focused public-page coverage and validate keyboard access, desktop/mobile layouts, build output, crawl controls, and production rendering.
 - [x] Publish the completed public-pages addendum and save a recovery checkpoint.
+- [x] Replace the About-page independent-project section with the user-provided founder note and preserve its accessible editorial presentation.

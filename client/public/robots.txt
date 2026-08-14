@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /journey
+Disallow: /cofocus
+Disallow: /feedback
+Disallow: /u/
+
+Sitemap: https://focus-flight-timer.vercel.app/sitemap.xml

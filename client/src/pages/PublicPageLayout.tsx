@@ -12,6 +12,7 @@ type PublicPageLayoutProps = PropsWithChildren<{
 
 const footerLinks = [
   ["About", "/about"],
+  ["Guides", "/guides"],
   ["Changelog", "/changelog"],
   ["Feedback", "/feedback"],
   ["Privacy", "/privacy"],
@@ -26,6 +27,7 @@ export function PublicPageLayout({ eyebrow, title, intro, className = "", childr
         <button className="public-wordmark" onClick={() => navigate("/")}>FocusFlight</button>
         <nav aria-label="Public page navigation" className="public-page-nav">
           <button onClick={() => navigate("/about")}>About</button>
+          <button onClick={() => navigate("/guides")}>Guides</button>
           <button onClick={() => navigate("/leaderboards")}>Rankings</button>
           <button onClick={() => navigate("/")}><ArrowLeft size={14} /> Timer</button>
         </nav>

@@ -1,5 +1,6 @@
 // Design philosophy: Cloud Atlas Editorial — a calm, cartographic focus ritual with tactile controls.
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { SeoMeta } from "@/components/SeoMeta";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -11,25 +12,31 @@ import Home from "./pages/Home";
 import Journey from "./pages/Journey";
 import { Privacy, Terms } from "./pages/Legal";
 import Leaderboards from "./pages/Leaderboards";
+import Guides from "./pages/Guides";
 import NotFound from "./pages/NotFound";
 import PublicProfile from "./pages/PublicProfile";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/journey" component={Journey} />
-      <Route path="/cofocus" component={CoFocus} />
-      <Route path="/leaderboards" component={Leaderboards} />
-      <Route path="/about" component={About} />
-      <Route path="/changelog" component={Changelog} />
-      <Route path="/feedback" component={Feedback} />
-      <Route path="/privacy" component={Privacy} />
-      <Route path="/terms" component={Terms} />
-      <Route path="/u/:handle" component={PublicProfile} />
-      <Route component={NotFound} />
-    </Switch>
+    <>
+      <SeoMeta />
+      <Switch>
+        <Route path="/" component={Home} />
+        <Route path="/journey" component={Journey} />
+        <Route path="/cofocus" component={CoFocus} />
+        <Route path="/leaderboards" component={Leaderboards} />
+        <Route path="/about" component={About} />
+        <Route path="/guides" component={Guides} />
+        <Route path="/guides/:slug" component={Guides} />
+        <Route path="/changelog" component={Changelog} />
+        <Route path="/feedback" component={Feedback} />
+        <Route path="/privacy" component={Privacy} />
+        <Route path="/terms" component={Terms} />
+        <Route path="/u/:handle" component={PublicProfile} />
+        <Route component={NotFound} />
+      </Switch>
+    </>
   );
 }
 

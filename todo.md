@@ -260,7 +260,7 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 - [x] Add friendship, blocking, and privacy-enforced friend-gated profile access.
 - [x] Add Solo and Co-Focus leaderboards with monthly and all-time completed-focus-time rankings.
 - [x] Create About, Feedback, Changelog, Privacy, and Terms pages.
-- [ ] Add SEO metadata, sitemap, crawl controls, and original launch content.
+- [x] Add SEO metadata, sitemap, crawl controls, and original launch content.
 - [ ] Complete security, automated, browser, and production validation before release.
 - [ ] Publish the verified expansion to GitHub and Vercel.
 - [ ] After the approved product expansion is fully verified and published, implement the separate public-information-pages planning addendum supplied by the user.

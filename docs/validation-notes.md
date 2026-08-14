@@ -35,3 +35,7 @@ Automated validation completed with `pnpm test` (16 files and 52 tests passing),
 ## 2026-08-14 — Founder-note copy refinement
 
 The About-page independent-project note now uses the user-supplied first-person Waypoint founder message. Full-page visual checks at 1280px and 375px confirm the additional paragraphs remain legible, the feedback call to action stays visible, the paired development-log card remains aligned, and no horizontal overflow is visible. `pnpm check`, `pnpm test` (17 files and 53 tests), and `pnpm build` also completed successfully.
+
+## 2026-08-14 — Remaining public-page audit
+
+The attached public-information plan was reconciled with the existing Waypoint implementation. The Changelog, authenticated Feedback, Privacy working draft, and Terms working draft are already registered as public routes, linked in the shared footer, and represented in route-specific metadata. Full-page checks at 1280px and 375px confirmed each page remains readable, uses the shared editorial presentation, retains the feedback privacy gate where applicable, and has no visible horizontal overflow.

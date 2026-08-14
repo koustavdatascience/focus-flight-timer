@@ -263,7 +263,7 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 - [x] Add SEO metadata, sitemap, crawl controls, and original launch content.
 - [x] Complete security, automated, browser, and production validation before release.
 - [x] Publish the verified expansion to GitHub and Vercel.
-- [ ] After the approved product expansion is fully verified and published, implement the separate public-information-pages planning addendum supplied by the user.
+- [x] After the approved product expansion is fully verified and published, implement the separate public-information-pages planning addendum supplied by the user.
 
 ## Public-pages planning addendum implementation
 
@@ -272,4 +272,4 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 - [x] Rebuild the About page as a content-led field guide with an honest virtual-flight explanation, four-step flow, verified shipped capabilities, independent-project note, technical transparency, factual development log, and working feedback path.
 - [x] Update factual changelog, legal-draft framing, feedback disclosures, and public-route metadata to reflect verified current capabilities without unsupported claims.
 - [x] Add focused public-page coverage and validate keyboard access, desktop/mobile layouts, build output, crawl controls, and production rendering.
-- [ ] Publish the completed public-pages addendum and save a recovery checkpoint.
+- [x] Publish the completed public-pages addendum and save a recovery checkpoint.

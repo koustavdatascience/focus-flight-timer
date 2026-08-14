@@ -37,12 +37,12 @@ export function SeoMeta() {
     }
     canonical.href = canonicalUrl;
 
-    document.head.querySelectorAll('script[data-focusflight-structured-data="true"]').forEach((script) => script.remove());
+    document.head.querySelectorAll('script[data-waypoint-structured-data="true"]').forEach((script) => script.remove());
     const structuredData = seo.structuredData ? (Array.isArray(seo.structuredData) ? seo.structuredData : [seo.structuredData]) : [];
     structuredData.forEach((entry) => {
       const script = document.createElement("script");
       script.type = "application/ld+json";
-      script.dataset.focusflightStructuredData = "true";
+      script.dataset.waypointStructuredData = "true";
       script.text = JSON.stringify(entry);
       document.head.appendChild(script);
     });

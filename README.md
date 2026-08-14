@@ -1,10 +1,10 @@
-# FocusFlight
+# Waypoint
 
 > An original, map-first focus timer that turns completed study sessions into virtual flights.
 
 [Live application](https://focus-flight-timer.vercel.app/) · [Deployment guide](docs/vercel-deployment.md) · [Product roadmap](docs/focusflight-product-expansion-roadmap.md)
 
-FocusFlight pairs a Pomodoro-style focus ritual with a real interactive map. Choose an origin and destination, begin a timed focus flight, and watch the aircraft travel a geographically grounded route while the timer counts down. Completed trips can be saved to a personal journey history through Supabase authentication.
+Waypoint pairs a Pomodoro-style focus ritual with a real interactive map. Choose an origin and destination, begin a timed focus flight, and watch the aircraft travel a geographically grounded route while the timer counts down. Completed trips can be saved to a personal journey history through Supabase authentication.
 
 ## What is implemented
 
@@ -21,7 +21,7 @@ FocusFlight pairs a Pomodoro-style focus ritual with a real interactive map. Cho
 
 1. Start on the landing map, which centres on New York for guests and new users.
 2. Select an origin and destination. Neither airport is selected by default.
-3. FocusFlight calculates route geometry, distance, and a duration from the flight-duration cache or a clearly labelled estimate.
+3. Waypoint calculates route geometry, distance, and a duration from the flight-duration cache or a clearly labelled estimate.
 4. Start the focus flight. The timer controls both the route reveal and the aircraft position.
 5. Pause and resume without losing the active trip state. When the timer reaches zero, the aircraft reaches the destination.
 6. Sign in to save completed journeys, profile information, and trip history.
@@ -79,7 +79,7 @@ Use Node.js 22 and pnpm 10, matching the project environment.
 pnpm install --frozen-lockfile
 ```
 
-FocusFlight requires these browser environment variables for authenticated journeys:
+Waypoint requires these browser environment variables for authenticated journeys:
 
 ```text
 VITE_SUPABASE_URL=
@@ -123,7 +123,7 @@ See the detailed [Vercel deployment guide](docs/vercel-deployment.md) for requir
 
 ## Data, privacy, and security
 
-FocusFlight stores personal profiles, saved trips, and flight-duration cache records in Supabase. The application is designed around user-scoped access policies: users should only read and update their own profile and journey records.
+Waypoint stores personal profiles, saved trips, and flight-duration cache records in Supabase. The application is designed around user-scoped access policies: users should only read and update their own profile and journey records.
 
 Before any public release or new social feature, review database policies, test the authenticated and unauthenticated paths, and confirm that public browser variables contain only the Supabase project URL and publishable key. Do not treat client-side UI visibility as an access-control mechanism; enforce privacy in database policies and server-side authorization where applicable.
 
@@ -138,7 +138,7 @@ Before any public release or new social feature, review database policies, test 
 
 ## Roadmap status
 
-The current released experience focuses on the solo flight ritual and personal trip history. Future work discussed in the planning documents—such as public profiles, password reset, Google sign-in, leaderboards, rooms, group flights, friends, blocking, and public information pages—is **not implemented yet**.
+The current released experience includes the solo flight ritual, personal trip history, password recovery, Google sign-in, public profiles, location-privacy controls, Co-Focus rooms, group-flight history, optional solo-location sync offers, friendships and blocking, separate Solo and Co-Focus leaderboards, public information pages, and crawl-ready launch content. The historical planning documents remain in the repository as product context.
 
 ## Contributing and open-source status
 
@@ -148,8 +148,8 @@ The package metadata currently identifies the project as `MIT`; add a root `LICE
 
 ## Attribution
 
-FocusFlight uses Leaflet and OpenStreetMap-compatible map data. Respect all third-party provider attribution, availability, and usage policies when replacing tiles, geocoding, or airport-data providers.
+Waypoint uses Leaflet and OpenStreetMap-compatible map data. Respect all third-party provider attribution, availability, and usage policies when replacing tiles, geocoding, or airport-data providers.
 
 ## Disclaimer
 
-FocusFlight is an independent project and is not affiliated with PomoFlight, any airline, or any aviation booking service. Flight durations are used for focus-simulation purposes and should not be treated as live schedules, travel advice, or booking information.
+Waypoint is an independent project and is not affiliated with PomoFlight, any airline, or any aviation booking service. Flight durations are used for focus-simulation purposes and should not be treated as live schedules, travel advice, or booking information.

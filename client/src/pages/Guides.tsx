@@ -5,8 +5,8 @@ import { focusGuides, guideForSlug } from "@/services/seo";
 
 function GuideIndex() {
   return (
-    <PublicPageLayout eyebrow="Focus guides" title={<>Make <em>attention</em> easier to begin.</>} intro="Practical, original field notes for calmer Pomodoro sessions, better study planning, and using FocusFlight’s journey metaphor with intention.">
-      <section className="guide-grid" aria-label="FocusFlight guides">
+    <PublicPageLayout eyebrow="Focus guides" title={<>Make <em>attention</em> easier to begin.</>} intro="Practical, original field notes for calmer Pomodoro sessions, better study planning, and using Waypoint’s journey metaphor with intention.">
+      <section className="guide-grid" aria-label="Waypoint guides">
         {focusGuides.map((guide) => (
           <article className="guide-card" key={guide.slug}>
             <span className="panel-label"><Compass size={14} /> {guide.eyebrow}</span>
@@ -46,9 +46,9 @@ export default function Guides() {
           {guide.faqs.map((faq) => <details key={faq.question}><summary>{faq.question}</summary><p>{faq.answer}</p></details>)}
         </section>
       </article>
-      <aside className="guide-next-steps" aria-label="More FocusFlight guides">
+      <aside className="guide-next-steps" aria-label="More Waypoint guides">
         <CheckCircle2 size={18} />
-        <div><strong>Continue the field notes</strong><p>Explore another guide or return to FocusFlight when you are ready to begin.</p></div>
+        <div><strong>Continue the field notes</strong><p>Explore another guide or return to Waypoint when you are ready to begin.</p></div>
         <Link href="/guides" className="public-text-button">All guides <ArrowRight size={15} /></Link>
       </aside>
     </PublicPageLayout>

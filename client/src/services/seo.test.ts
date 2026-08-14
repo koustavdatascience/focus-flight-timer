@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { canonicalForPath, seoForPath } from "./seo";
 
-describe("FocusFlight SEO routing", () => {
+describe("Waypoint SEO routing", () => {
   it("keeps the revised About page indexable with an accurate virtual-focus description", () => {
     const metadata = seoForPath("/about/");
 
     expect(metadata.indexable).toBe(true);
-    expect(metadata.title).toBe("About FocusFlight — A Virtual Focus Timer");
+    expect(metadata.title).toBe("About Waypoint — A Virtual Focus Timer");
     expect(metadata.description).toContain("virtual flights");
   });
 
@@ -29,6 +29,6 @@ describe("FocusFlight SEO routing", () => {
   });
 
   it("does not accidentally index an unknown route", () => {
-    expect(seoForPath("/not-a-focusflight-page").indexable).toBe(false);
+    expect(seoForPath("/not-a-waypoint-page").indexable).toBe(false);
   });
 });

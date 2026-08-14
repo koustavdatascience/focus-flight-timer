@@ -41,7 +41,7 @@ export const focusGuides: Guide[] = [
         heading: "Let completion create a visible ending",
         paragraphs: [
           "Close a session by recording one sentence about where you stopped and what comes next. This reduces the cost of returning later and gives the finished interval a clear boundary.",
-          "FocusFlight uses a flight as a gentle visual metaphor for that boundary: you choose a route, protect the time, and arrive when the session is complete. The map is a companion to your work, not a measure of your worth.",
+          "Waypoint uses a flight as a gentle visual metaphor for that boundary: you choose a route, protect the time, and arrive when the session is complete. The map is a companion to your work, not a measure of your worth.",
         ],
       },
     ],
@@ -54,7 +54,7 @@ export const focusGuides: Guide[] = [
     slug: "focus-session-planning",
     eyebrow: "Focus guide",
     title: "A simple way to plan a focus session before you press start",
-    description: "Plan a calmer, clearer study or work session with a practical focus-session checklist from FocusFlight.",
+    description: "Plan a calmer, clearer study or work session with a practical focus-session checklist from Waypoint.",
     intro: "A good focus session begins before the timer. Two minutes of planning can prevent twenty minutes of avoiding the work in front of you.",
     sections: [
       {
@@ -68,7 +68,7 @@ export const focusGuides: Guide[] = [
         heading: "Prepare the first minute",
         paragraphs: [
           "Open the document, book, problem set, or tab you need before the countdown starts. Remove the decisions that normally appear at the beginning of a session: where to begin, what file to use, and what to look up first.",
-          "If a route helps you make the commitment tangible, select an origin and destination in FocusFlight. The journey does not replace the work plan; it gives the time a quieter visual frame.",
+          "If a route helps you make the commitment tangible, select an origin and destination in Waypoint. The journey does not replace the work plan; it gives the time a quieter visual frame.",
         ],
       },
       {
@@ -86,15 +86,15 @@ export const focusGuides: Guide[] = [
   },
   {
     slug: "flight-metaphor-for-focus",
-    eyebrow: "How FocusFlight works",
-    title: "Why FocusFlight turns a focus session into a small journey",
-    description: "Learn how FocusFlight uses original flight and map metaphors to make a Pomodoro focus session feel clear, calm, and complete.",
-    intro: "FocusFlight is an original Pomodoro timer built around a simple idea: a session can feel more intentional when time has a beginning, a route, and an arrival.",
+    eyebrow: "How Waypoint works",
+    title: "Why Waypoint turns a focus session into a small journey",
+    description: "Learn how Waypoint uses original flight and map metaphors to make a Pomodoro focus session feel clear, calm, and complete.",
+    intro: "Waypoint is an original Pomodoro timer built around a simple idea: a session can feel more intentional when time has a beginning, a route, and an arrival.",
     sections: [
       {
         heading: "Choose a route, then protect the time",
         paragraphs: [
-          "You pick a starting location and destination from a real interactive map. FocusFlight calculates a geographic route and a duration so the flight has a concrete visual shape while you work.",
+          "You pick a starting location and destination from a real interactive map. Waypoint calculates a geographic route and a duration so the flight has a concrete visual shape while you work.",
           "The purpose is not to simulate real travel or optimize distance. It is to turn an abstract block of attention into a quiet commitment with an end in sight.",
         ],
       },
@@ -114,7 +114,7 @@ export const focusGuides: Guide[] = [
       },
     ],
     faqs: [
-      { question: "Is FocusFlight a real flight tracker?", answer: "No. FocusFlight is a focus timer with an original map-based journey metaphor. Routes visualize your session; they are not live aviation data." },
+      { question: "Is Waypoint a real flight tracker?", answer: "No. Waypoint is a focus timer with an original map-based journey metaphor. Routes visualize your session; they are not live aviation data." },
       { question: "Does a group flight change my personal journey?", answer: "No. Group history and solo history are separate. A completed group flight can only update a solo location through an explicit, eligible manual sync action." },
     ],
   },
@@ -134,7 +134,7 @@ type SeoDefinition = {
 const appStructuredData = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "FocusFlight",
+  name: "Waypoint",
   applicationCategory: "ProductivityApplication",
   operatingSystem: "Web",
   description: "An original Pomodoro timer that turns a focus session into a calm virtual journey.",
@@ -155,39 +155,39 @@ function faqStructuredData(faqs: FaqItem[]) {
 
 const staticPages: Record<string, SeoDefinition> = {
   "/": {
-    title: "FocusFlight — a calmer Pomodoro timer",
-    description: "FocusFlight turns a simple Pomodoro into a short, atmospheric journey for deep work.",
+    title: "Waypoint — a calmer Pomodoro timer",
+    description: "Waypoint turns a simple Pomodoro into a short, atmospheric journey for deep work.",
     indexable: true,
     structuredData: appStructuredData,
   },
   "/about": {
-    title: "About FocusFlight — A Virtual Focus Timer",
-    description: "Learn how FocusFlight turns focused study and work sessions into virtual flights on an interactive map.",
+    title: "About Waypoint — A Virtual Focus Timer",
+    description: "Learn how Waypoint turns focused study and work sessions into virtual flights on an interactive map.",
     indexable: true,
   },
   "/changelog": {
-    title: "FocusFlight Changelog",
-    description: "See completed updates and current development notes for FocusFlight.",
+    title: "Waypoint Changelog",
+    description: "See completed updates and current development notes for Waypoint.",
     indexable: true,
   },
   "/leaderboards": {
-    title: "FocusFlight Rankings — solo and co-focus time",
-    description: "Explore opt-in FocusFlight rankings for completed solo and co-focus time.",
+    title: "Waypoint Rankings — solo and co-focus time",
+    description: "Explore opt-in Waypoint rankings for completed solo and co-focus time.",
     indexable: true,
   },
   "/privacy": {
-    title: "FocusFlight Privacy Policy",
-    description: "Learn how FocusFlight handles account, focus-session, and virtual journey information.",
+    title: "Waypoint Privacy Policy",
+    description: "Learn how Waypoint handles account, focus-session, and virtual journey information.",
     indexable: true,
   },
   "/terms": {
-    title: "FocusFlight Terms of Service",
-    description: "Read the terms for using the FocusFlight virtual focus-timer application.",
+    title: "Waypoint Terms of Service",
+    description: "Read the terms for using the Waypoint virtual focus-timer application.",
     indexable: true,
   },
   "/feedback": {
-    title: "Feedback — FocusFlight",
-    description: "Share private, authenticated feedback to help improve FocusFlight.",
+    title: "Feedback — Waypoint",
+    description: "Share private, authenticated feedback to help improve Waypoint.",
     indexable: false,
   },
 };
@@ -199,7 +199,7 @@ export function seoForPath(pathname: string): SeoDefinition {
     const guide = guideForSlug(guideMatch[1]);
     if (guide) {
       return {
-        title: `${guide.title} | FocusFlight`,
+        title: `${guide.title} | Waypoint`,
         description: guide.description,
         indexable: true,
         structuredData: [appStructuredData, faqStructuredData(guide.faqs)],
@@ -209,15 +209,15 @@ export function seoForPath(pathname: string): SeoDefinition {
 
   if (normalizedPath === "/journey" || normalizedPath === "/cofocus" || normalizedPath.startsWith("/u/")) {
     return {
-      title: "FocusFlight — private journey",
-      description: "A private FocusFlight account area.",
+      title: "Waypoint — private journey",
+      description: "A private Waypoint account area.",
       indexable: false,
     };
   }
 
   return staticPages[normalizedPath] ?? {
-    title: "FocusFlight — a calmer Pomodoro timer",
-    description: "FocusFlight turns a simple Pomodoro into a short, atmospheric journey for deep work.",
+    title: "Waypoint — a calmer Pomodoro timer",
+    description: "Waypoint turns a simple Pomodoro into a short, atmospheric journey for deep work.",
     indexable: false,
   };
 }

@@ -24,7 +24,7 @@ export function PublicPageLayout({ eyebrow, title, intro, className = "", childr
   return (
     <main className={`public-page ${className}`}>
       <header className="public-page-header">
-        <button className="public-wordmark" onClick={() => navigate("/")}>FocusFlight</button>
+        <button className="public-wordmark" onClick={() => navigate("/")}>Waypoint</button>
         <nav aria-label="Public page navigation" className="public-page-nav">
           <button onClick={() => navigate("/about")}>About</button>
           <button onClick={() => navigate("/journey")}>My Journey</button>
@@ -39,7 +39,7 @@ export function PublicPageLayout({ eyebrow, title, intro, className = "", childr
       </section>
       <div className="public-page-content">{children}</div>
       <footer className="public-page-footer">
-        <span>FocusFlight · a virtual focus journey</span>
+        <span>Waypoint · a virtual focus journey</span>
         <nav aria-label="Footer navigation">{footerLinks.map(([label, path]) => <button key={path} onClick={() => navigate(path)}>{label}</button>)}</nav>
       </footer>
     </main>

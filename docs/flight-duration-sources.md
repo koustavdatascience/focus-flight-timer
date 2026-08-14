@@ -8,4 +8,4 @@ This project uses a two-tier duration model. The `flight_durations` table and ma
 | DEL → BOM | 2h 35m | Verified direct flight | [FlightsFrom: Delhi to Mumbai](https://www.flightsfrom.com/DEL-BOM) |
 | JFK → LAX | 6h 36m | Verified direct flight | [FlightsFrom: New York to Los Angeles](https://www.flightsfrom.com/JFK-LAX) |
 
-The source pages state that these routes have direct service and provide the listed scheduled flight times. FocusFlight uses these as simulations, not live operational predictions. The browser reads the cache before calculating a fallback, and preserves the duration provenance on each saved trip.
+The source pages state that these routes have direct service and provide the listed scheduled flight times. Waypoint uses these as simulations, not live operational predictions. The browser reads the cache before calculating a fallback, and preserves the duration provenance on each saved trip.

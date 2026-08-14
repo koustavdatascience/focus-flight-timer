@@ -138,18 +138,18 @@ export default function Journey() {
   }
 
   if (authLoading) {
-    return <main className="journey-page journey-gate"><span className="selection-eyebrow">FocusFlight</span><h1>Opening your journey…</h1></main>;
+    return <main className="journey-page journey-gate"><span className="selection-eyebrow">Waypoint</span><h1>Opening your journey…</h1></main>;
   }
 
   if (!isAuthenticated) {
-    return <main className="journey-page journey-gate"><span className="selection-eyebrow">FocusFlight account</span><h1>Your personal map<br /><em>awaits a sign in.</em></h1><p>Return to the flight planner to create an account or sign in, then every completed focus flight will appear here.</p><button className="journey-primary-button" onClick={() => navigate("/")}><ArrowLeft size={16} /> Return to FocusFlight</button></main>;
+    return <main className="journey-page journey-gate"><span className="selection-eyebrow">Waypoint account</span><h1>Your personal map<br /><em>awaits a sign in.</em></h1><p>Return to the flight planner to create an account or sign in, then every completed focus flight will appear here.</p><button className="journey-primary-button" onClick={() => navigate("/")}><ArrowLeft size={16} /> Return to Waypoint</button></main>;
   }
 
   return (
     <main className="journey-page">
       <header className="journey-header">
         <button className="journey-back-button" onClick={() => navigate("/")}><ArrowLeft size={17} /> Flight planner</button>
-        <div className="journey-wordmark">FocusFlight</div>
+        <div className="journey-wordmark">Waypoint</div>
         <button className="journey-signout" onClick={() => void signOut()}>Sign out</button>
       </header>
       <section className="journey-hero">

@@ -2,15 +2,15 @@
 
 ## Verified status — 14 August 2026
 
-The FocusFlight Supabase project (`pxicdashfmnqpobahify`) now lists the **Google** authentication provider as **Enabled**. A production sign-in test confirmed that a user can select a Google account, return to FocusFlight, and receive an active authenticated session.
+The Waypoint Supabase project (`pxicdashfmnqpobahify`) now lists the **Google** authentication provider as **Enabled**. A production sign-in test confirmed that a user can select a Google account, return to Waypoint, and receive an active authenticated session.
 
 ## Required configuration
 
-1. In Google Cloud Console, create or select an OAuth 2.0 Web application client for FocusFlight.
+1. In Google Cloud Console, create or select an OAuth 2.0 Web application client for Waypoint.
 2. Add `https://pxicdashfmnqpobahify.supabase.co/auth/v1/callback` as its Google **Authorized redirect URI**.
 3. In Supabase **Authentication → Sign In / Providers → Google**, enable the provider and enter the Google OAuth client ID and client secret.
 4. In Supabase **Authentication → URL Configuration**, ensure the production application URL and relevant development/preview return URLs are listed as allowed redirect URLs. The production URL is `https://focus-flight-timer.vercel.app/`.
-5. Complete a normal user sign-in to verify the browser returns to FocusFlight with an active Supabase session.
+5. Complete a normal user sign-in to verify the browser returns to Waypoint with an active Supabase session.
 
 ## Configuration incident resolved
 

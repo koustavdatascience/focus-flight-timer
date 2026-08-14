@@ -386,7 +386,7 @@ export default function Home() {
       <div className="landing-map-layer"><FlightMap mode="landing" landingFocus={landingMapDestination} /></div>
       <div className="map-wash" aria-hidden="true" />
       <header className="landing-header">
-        <button className="landing-wordmark" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>FocusFlight</button>
+        <button className="landing-wordmark" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Waypoint</button>
         <nav className="landing-nav" aria-label="Landing page navigation">
           {isAuthenticated && <button onClick={() => navigate("/journey")}>My Journey</button>}
           {authLoading ? <span className="nav-status">Connecting…</span> : isAuthenticated ? <button onClick={() => void signOut()}>Sign out</button> : <button onClick={() => { setAuthDialogMode("signin"); setAuthDialogOpen(true); }}>Sign In</button>}
@@ -415,7 +415,7 @@ export default function Home() {
         <div className="flight-status" aria-live="polite">{notice || (selectedOrigin ? "Select a destination to open the geographic flight map" : landingMapDestination ? `Your map is centred on your latest arrival: ${landingMapDestination.city}.` : "The live map is centred on New York City. Select a starting airport to begin.")}</div>
         {latestCompletedTrip && <button className="continue-journey-button" type="button" onClick={continueFromLastDestination}>Continue from your last destination <ChevronRight size={15} /></button>}
       </section>
-      <footer className="landing-footer"><span>FocusFlight / a small ritual for deep work</span><nav aria-label="Footer navigation"><button onClick={() => navigate("/about")}>About</button><button onClick={() => navigate("/changelog")}>Changelog</button><button onClick={() => navigate("/feedback")}>Feedback</button><button onClick={() => navigate("/privacy")}>Privacy</button><button onClick={() => navigate("/terms")}>Terms</button></nav></footer>
+      <footer className="landing-footer"><span>Waypoint / a small ritual for deep work</span><nav aria-label="Footer navigation"><button onClick={() => navigate("/about")}>About</button><button onClick={() => navigate("/changelog")}>Changelog</button><button onClick={() => navigate("/feedback")}>Feedback</button><button onClick={() => navigate("/privacy")}>Privacy</button><button onClick={() => navigate("/terms")}>Terms</button></nav></footer>
       <AuthDialog open={authDialogOpen} initialMode={authDialogMode} onOpenChange={setAuthDialogOpen} />
     </main>
   );

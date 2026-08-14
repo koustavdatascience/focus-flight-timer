@@ -79,13 +79,13 @@ export function AuthDialog({ open, onOpenChange, initialMode = "signin" }: AuthD
   const isCredentialMode = mode === "signin" || mode === "signup";
   const isPasswordUpdate = mode === "update-password";
   const title = mode === "signin" ? "Return to your journey." : mode === "signup" ? "Keep every journey." : isPasswordUpdate ? "Choose a new password." : "Recover your account.";
-  const description = mode === "signin" ? "Sign in to resume a saved focus flight or visit your personal map." : mode === "signup" ? "Create a private account to save every completed focus flight." : isPasswordUpdate ? "Set a fresh password for your FocusFlight account." : "Enter your email and we will send a secure password-reset link if an account exists.";
+  const description = mode === "signin" ? "Sign in to resume a saved focus flight or visit your personal map." : mode === "signup" ? "Create a private account to save every completed focus flight." : isPasswordUpdate ? "Set a fresh password for your Waypoint account." : "Enter your email and we will send a secure password-reset link if an account exists.";
 
   return (
     <div className="auth-dialog-backdrop" role="presentation" onMouseDown={() => onOpenChange(false)}>
       <section className="auth-dialog" role="dialog" aria-modal="true" aria-labelledby="auth-dialog-title" onMouseDown={(event) => event.stopPropagation()}>
         <button className="auth-dialog-close" type="button" onClick={() => onOpenChange(false)} aria-label="Close account dialog"><X size={18} /></button>
-        <span className="selection-eyebrow">FocusFlight account</span>
+        <span className="selection-eyebrow">Waypoint account</span>
         <h2 id="auth-dialog-title">{title}</h2>
         <p>{description}</p>
         {isCredentialMode ? <div className="auth-dialog-tabs" role="tablist" aria-label="Account actions">

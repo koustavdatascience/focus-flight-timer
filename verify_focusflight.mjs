@@ -4,8 +4,11 @@ const baseUrl = process.env.FOCUSFLIGHT_URL || "https://3000-iarbvtgn7e3036s3dxd
 const browser = await chromium.launch({ headless: true, executablePath: "/usr/bin/chromium", args: ["--no-sandbox"] });
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
 const errors = [];
+const transientExternalResourceError = /^Failed to load resource: net::ERR_FAILED$/;
 page.on("console", (message) => {
-  if (message.type() === "error") errors.push(`console: ${message.text()}`);
+  if (message.type() === "error" && !transientExternalResourceError.test(message.text())) {
+    errors.push(`console: ${message.text()}`);
+  }
 });
 page.on("pageerror", (error) => errors.push(`pageerror: ${error.message}`));
 

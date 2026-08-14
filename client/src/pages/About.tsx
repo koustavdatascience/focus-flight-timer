@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { PublicPageLayout } from "./PublicPageLayout";
 
 const steps = [
-  ["01", "Choose your route", "Search for a starting airport and a destination. FocusFlight uses those selected locations to place a virtual route on a real, interactive map."],
+  ["01", "Choose your route", "Search for a starting airport and a destination. Waypoint uses those selected locations to place a virtual route on a real, interactive map."],
   ["02", "Begin your flight", "Start the focus timer. The planned path and aircraft progress are tied to the same clock, so the visible journey moves with your session."],
   ["03", "Keep your focus", "Pause when life interrupts, then resume the same flight later. The route stays visible while you work, rather than resetting your progress."],
   ["04", "Arrive and remember", "Finish a solo flight to add it to your personal journey. An unfinished flight never changes your virtual solo location."],
@@ -31,13 +31,13 @@ export default function About() {
     <PublicPageLayout
       eyebrow="The field guide"
       title={<>Focus a little <em>farther.</em></>}
-      intro="FocusFlight is a virtual flight timer for study, work, and deliberate time. Choose an origin and destination, begin a focus session, and watch a real route move forward as your timer counts down."
+      intro="Waypoint is a virtual flight timer for study, work, and deliberate time. Choose an origin and destination, begin a focus session, and watch a real route move forward as your timer counts down."
     >
       <section className="about-intro-grid">
         <article className="public-panel public-prose">
           <span className="panel-label">The idea</span>
           <h2>A focused block of time can have a beginning, middle, and arrival.</h2>
-          <p>FocusFlight is not a booking tool and it does not track your physical location. Airports, routes, and current locations are virtual parts of the focus experience: a small way to make a deliberate block of time feel like a journey.</p>
+          <p>Waypoint is not a booking tool and it does not track your physical location. Airports, routes, and current locations are virtual parts of the focus experience: a small way to make a deliberate block of time feel like a journey.</p>
           <div className="about-hero-actions">
             <button className="public-primary-button" onClick={() => navigate("/")}>Start a focus flight <ArrowRight size={16} /></button>
             <a className="public-text-button" href="#how-it-works">See how it works <ArrowRight size={15} /></a>
@@ -51,7 +51,7 @@ export default function About() {
       </section>
 
       <section id="how-it-works" className="public-section" aria-labelledby="how-it-works-title">
-        <div className="section-heading"><span className="panel-label">How FocusFlight works</span><h2 id="how-it-works-title">Four calm steps, one shared clock.</h2></div>
+        <div className="section-heading"><span className="panel-label">How Waypoint works</span><h2 id="how-it-works-title">Four calm steps, one shared clock.</h2></div>
         <ol className="about-steps">{steps.map(([number, title, copy]) => <li key={number}><span>{number}</span><div><h3>{title}</h3><p>{copy}</p></div></li>)}</ol>
       </section>
 
@@ -62,7 +62,7 @@ export default function About() {
 
       <section className="public-section about-transparency" aria-labelledby="made-with-title">
         <div className="section-heading"><span className="panel-label">Made with maps, routes, and a little focus</span><h2 id="made-with-title">Technical choices, explained for people.</h2></div>
-        <p className="about-transparency-intro">FocusFlight uses an interactive map rather than a decorative background. Airports use real coordinates, routes are geographic, and the timer controls the visible journey. The technical details are kept purposeful so the experience can stay small and understandable.</p>
+        <p className="about-transparency-intro">Waypoint uses an interactive map rather than a decorative background. Airports use real coordinates, routes are geographic, and the timer controls the visible journey. The technical details are kept purposeful so the experience can stay small and understandable.</p>
         <dl className="about-transparency-grid">{foundations.map(([term, detail]) => <div key={term}><dt>{term}</dt><dd>{detail}</dd></div>)}</dl>
       </section>
 
@@ -70,7 +70,7 @@ export default function About() {
         <article className="public-panel public-prose">
           <span className="panel-label">Built while learning</span>
           <h2>An independent project, growing carefully.</h2>
-          <p>FocusFlight began as a way to make a timer feel less like a countdown in the corner of a screen. It became a map, then a route, then a personal flight log. The project is still being refined with care and kept intentionally simple.</p>
+          <p>Waypoint began as a way to make a timer feel less like a countdown in the corner of a screen. It became a map, then a route, then a personal flight log. The project is still being refined with care and kept intentionally simple.</p>
           <p>If something is confusing, broken, or worth trying, a short, specific note is genuinely useful. Feedback is reviewed to improve the project, but a reply cannot be guaranteed.</p>
           <button className="public-text-button" onClick={() => navigate("/feedback")}>Send feedback <ArrowRight size={15} /></button>
         </article>

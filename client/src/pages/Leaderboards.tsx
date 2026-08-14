@@ -41,7 +41,7 @@ export default function Leaderboards() {
   return (
     <main className="journey-page leaderboard-page">
       <header className="journey-header leaderboard-header">
-        <button className="journey-wordmark" onClick={() => navigate("/")}>FocusFlight</button>
+        <button className="journey-wordmark" onClick={() => navigate("/")}>Waypoint</button>
         <div className="leaderboard-header-actions">
           <button className="journey-back-button" onClick={() => navigate("/")}><ArrowLeft size={14} /> Back to timer</button>
         </div>
@@ -53,7 +53,7 @@ export default function Leaderboards() {
         <p>Rankings reflect completed focus time only. Solo and Co-Focus journeys are intentionally kept separate.</p>
       </section>
 
-      <section className="leaderboard-shell" aria-label="FocusFlight leaderboards">
+      <section className="leaderboard-shell" aria-label="Waypoint leaderboards">
         <div className="leaderboard-controls">
           <div className="leaderboard-tabs" role="tablist" aria-label="Leaderboard category">
             {(Object.keys(categoryCopy) as LeaderboardCategory[]).map((value) => {

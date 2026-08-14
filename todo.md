@@ -269,6 +269,8 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 
 - [x] Research Waypoint domain, app, and public brand conflicts before applying a rebrand.
 - [x] Close the Waypoint rebrand path after the availability audit found material conflicts; preserve the current brand until a more distinctive candidate is selected.
+- [x] Implement the user-approved final Waypoint rebrand across application copy, public pages, SEO, documentation, and project configuration.
+- [x] Update the external branding configuration checklist for Waypoint and validate the completed rebrand before publication.
 - [x] Research Meridian domain, app, and public brand conflicts before applying a rebrand.
 - [x] Close the Meridian rebrand path after the availability audit found a direct active productivity-app conflict; preserve the current brand until a more distinctive candidate is selected.
 - [x] Configure the currently disabled Google OAuth provider in Supabase and validate the FocusFlight sign-in return flow.

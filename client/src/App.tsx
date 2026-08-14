@@ -3,6 +3,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import CoFocus from "./pages/CoFocus";
 import Home from "./pages/Home";
 import Journey from "./pages/Journey";
 import NotFound from "./pages/NotFound";
@@ -14,6 +15,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/journey" component={Journey} />
+      <Route path="/cofocus" component={CoFocus} />
       <Route path="/u/:handle" component={PublicProfile} />
       <Route component={NotFound} />
     </Switch>

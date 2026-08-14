@@ -125,4 +125,76 @@
 .public-profile-note { max-width: 620px; margin: 30px 0 0; color: #71818b; font-size: 12px; line-height: 1.5; }
 .public-profile-state { min-height: 65svh; }
 .public-profile-state p { margin-bottom: 22px; }
+.cofocus-hero { padding-bottom: 31px; }
+.cofocus-principle-card svg { color: var(--blue); }
+.cofocus-layout { display: grid; grid-template-columns: minmax(250px, .42fr) minmax(0, 1fr); gap: 32px; align-items: start; }
+.cofocus-rooms-panel { position: sticky; top: 18px; padding: 20px; border: 1px solid rgba(24,44,66,.13); border-radius: 15px; background: rgba(255,255,255,.48); }
+.cofocus-rooms-panel .journey-section-heading { margin-bottom: 13px; }
+.cofocus-rooms-panel .journey-section-heading h2 { font-size: 25px; }
+.cofocus-room-list { display: grid; gap: 6px; margin-bottom: 17px; }
+.cofocus-room-list > button { display: grid; gap: 4px; padding: 11px 10px; border: 1px solid transparent; border-radius: 9px; color: var(--ink); background: transparent; text-align: left; cursor: pointer; }
+.cofocus-room-list > button:hover, .cofocus-room-list > button.active { border-color: rgba(13,120,206,.19); background: rgba(169,212,222,.27); }
+.cofocus-room-list span { font-size: 13px; font-weight: 700; }
+.cofocus-room-list small, .cofocus-empty-copy { color: #71818b; font-size: 10px; line-height: 1.45; }
+.cofocus-empty-copy { margin: 0 0 13px; }
+.cofocus-inline-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 7px; align-items: end; margin-top: 10px; }
+.cofocus-inline-form label { display: grid; gap: 5px; color: #63737d; font-size: 10px; font-weight: 700; letter-spacing: .04em; }
+.cofocus-inline-form input, .cofocus-picker input { height: 38px; padding: 0 10px; border: 1px solid rgba(24,44,66,.16); border-radius: 8px; outline: none; color: var(--ink); background: rgba(255,255,255,.88); font-size: 12px; }
+.cofocus-inline-form .journey-primary-button, .cofocus-secondary-button { min-height: 38px; padding: 8px 10px; border-radius: 8px; box-shadow: none; }
+.cofocus-secondary-button { display: inline-flex; align-items: center; gap: 5px; color: var(--blue); background: rgba(169,212,222,.26); font-size: 11px; font-weight: 700; cursor: pointer; }
+.cofocus-board { min-width: 0; }
+.cofocus-room-heading { display: flex; justify-content: space-between; gap: 20px; align-items: end; padding: 0 0 18px; border-bottom: 1px solid rgba(24,44,66,.12); }
+.cofocus-room-heading h2 { margin: 5px 0; color: var(--ink); font: 600 34px/1 "Playfair Display", Georgia, serif; letter-spacing: -.04em; }
+.cofocus-room-heading p { display: flex; align-items: center; gap: 5px; margin: 0; color: #71818b; font-size: 11px; }
+.cofocus-room-heading p strong { color: var(--blue); letter-spacing: .08em; }
+.cofocus-copy-button { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; color: var(--blue); background: rgba(169,212,222,.3); cursor: pointer; }
+.cofocus-member-count { display: grid; justify-items: end; gap: 1px; color: #71818b; font-size: 10px; }
+.cofocus-member-count svg { color: var(--blue); }
+.cofocus-member-count strong { color: var(--ink); font: 600 27px/1 "Playfair Display", Georgia, serif; }
+.cofocus-session, .cofocus-planning { margin-top: 24px; padding: 24px; border: 1px solid rgba(24,44,66,.14); border-radius: 15px; background: radial-gradient(circle at 92% 18%, rgba(169,212,222,.37), transparent 29%), rgba(255,255,255,.58); }
+.cofocus-session { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px 35px; }
+.cofocus-session-status > span, .cofocus-clock > span { color: var(--blue); font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.cofocus-session h3, .cofocus-planning h3 { margin: 7px 0; color: var(--ink); font: 600 25px/1.06 "Playfair Display", Georgia, serif; letter-spacing: -.03em; }
+.cofocus-session h3 i { display: inline-block; width: 28px; margin: 0 6px 4px; border-top: 1px dashed var(--blue); }
+.cofocus-session p, .cofocus-planning p { max-width: 520px; margin: 0; color: #63737d; font-size: 12px; line-height: 1.5; }
+.cofocus-clock { display: grid; align-content: center; justify-items: end; gap: 5px; min-width: 165px; text-align: right; }
+.cofocus-clock strong { color: var(--ink); font: 600 36px/1 "Playfair Display", Georgia, serif; letter-spacing: -.04em; }
+.cofocus-clock small { color: #71818b; font-size: 10px; }
+.cofocus-session-actions { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; }
+.cofocus-ready-button { padding: 10px 13px; border: 1px solid rgba(13,120,206,.28); border-radius: 999px; color: var(--blue); background: rgba(169,212,222,.25); font-size: 12px; font-weight: 700; cursor: pointer; }
+.cofocus-ready-button.is-ready { color: #2f6d58; border-color: rgba(47,109,88,.25); background: rgba(116,180,154,.17); }
+.cofocus-text-button { padding: 8px 2px; color: #8d5262; background: transparent; font-size: 11px; font-weight: 700; cursor: pointer; }
+.cofocus-planning { display: grid; gap: 20px; }
+.cofocus-route-pickers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
+.cofocus-picker { position: relative; display: grid; gap: 6px; color: #53636d; font-size: 10px; font-weight: 700; letter-spacing: .04em; }
+.cofocus-picker-results { position: absolute; z-index: 5; top: 63px; right: 0; left: 0; display: grid; overflow: hidden; border: 1px solid rgba(24,44,66,.16); border-radius: 8px; background: #f8f7f1; box-shadow: 0 14px 24px rgba(24,44,66,.13); }
+.cofocus-picker-results button { display: grid; gap: 2px; padding: 9px 10px; color: var(--ink); background: transparent; text-align: left; font-size: 11px; cursor: pointer; }
+.cofocus-picker-results button:hover { background: rgba(169,212,222,.29); }
+.cofocus-picker-results small { color: #71818b; font-size: 10px; }
+.cofocus-roster { margin-top: 42px; }
+.cofocus-roster-list { display: grid; border-top: 1px solid rgba(24,44,66,.12); }
+.cofocus-roster-list > div { display: grid; grid-template-columns: auto minmax(110px, 1fr) auto; align-items: center; gap: 9px; padding: 13px 0; border-bottom: 1px solid rgba(24,44,66,.12); }
+.cofocus-roster-list strong { font-size: 12px; }
+.cofocus-roster-list small { color: #71818b; font-size: 10px; }
+.cofocus-presence { width: 8px; height: 8px; border-radius: 50%; background: #c8b99f; }
+.cofocus-presence.online { background: #65a688; box-shadow: 0 0 0 3px rgba(101,166,136,.14); }
+.cofocus-empty-board { display: grid; place-items: start; gap: 8px; min-height: 350px; padding: 72px 14%; border: 1px dashed rgba(24,44,66,.22); border-radius: 15px; color: #71818b; }
+.cofocus-empty-board svg { color: var(--blue); transform: rotate(-14deg); }
+.cofocus-empty-board h2 { margin: 5px 0 0; color: var(--ink); font: 600 32px/1 "Playfair Display", Georgia, serif; }
+.cofocus-empty-board p { max-width: 360px; margin: 0; font-size: 12px; line-height: 1.55; }
+.cofocus-notice { margin-top: 18px; padding: 11px; border-radius: 9px; background: rgba(169,212,222,.24); }
 @media (max-width: 700px) { .auth-dialog { padding: 24px 19px 19px; } .journey-page, .public-profile-page { padding: 0 20px 42px; } .journey-header { min-height: 61px; } .journey-wordmark { font-size: 17px; } .journey-back-button, .journey-signout { font-size: 10px; } .journey-hero { grid-template-columns: 1fr; gap: 24px; padding: 48px 0 29px; } .journey-hero h1 { font-size: 42px; } .journey-profile-card { min-height: 0; } .journey-stats, .public-profile-stats, .journey-identity-form, .journey-switches { grid-template-columns: 1fr; } .journey-stats > div, .journey-stats > div:first-child { min-height: 90px; padding: 15px 0; border-right: 0; border-bottom: 1px solid rgba(24,44,66,.12); } .journey-stats > div:last-child { border-bottom: 0; } .resume-panel { align-items: flex-start; flex-direction: column; } .journey-section-heading { align-items: start; flex-direction: column; gap: 7px; } .journey-section-heading h2 { font-size: 27px; } .journey-map-frame { height: 370px; min-height: 0; } .journey-history-item { grid-template-columns: 1fr auto; gap: 8px 15px; } .journey-history-item > div:nth-child(2) { grid-column: 1; grid-row: 2; } .journey-history-item time { grid-column: 2; grid-row: 1 / span 2; align-self: center; } .journey-account-section { margin-top: 24px; padding: 19px; } .public-profile-content, .public-profile-state { padding-top: 62px; } .public-profile-hero { grid-template-columns: 1fr; gap: 22px; padding-bottom: 30px; } .public-profile-hero h1, .public-profile-state h1 { font-size: 47px; } }
+
+@media (max-width: 700px) {
+  .cofocus-layout { grid-template-columns: 1fr; gap: 22px; }
+  .cofocus-rooms-panel { position: static; padding: 17px; }
+  .cofocus-room-heading { align-items: start; flex-direction: column; gap: 12px; }
+  .cofocus-member-count { justify-items: start; }
+  .cofocus-session { grid-template-columns: 1fr; gap: 18px; padding: 19px; }
+  .cofocus-clock { justify-items: start; min-width: 0; text-align: left; }
+  .cofocus-session-actions { align-items: start; flex-direction: column; }
+  .cofocus-route-pickers { grid-template-columns: 1fr; }
+  .cofocus-planning { padding: 19px; }
+  .cofocus-inline-form { grid-template-columns: 1fr; }
+  .cofocus-empty-board { min-height: 260px; padding: 48px 10%; }
+}

@@ -255,7 +255,7 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 - [x] Establish shared Supabase data models, RLS policies, and migration foundations for profiles, social features, rooms, group flights, and leaderboard aggregates.
 - [x] Add password recovery and Google authentication entry points while retaining email/password sign-in.
 - [x] Build profile identity, solo statistics, location privacy, and public-profile routing.
-- [ ] Build persistent rooms, authoritative all-member presence, and synchronized group-flight lifecycle controls.
+- [x] Build persistent rooms, authoritative all-member presence, and synchronized group-flight lifecycle controls.
 - [ ] Add separate group histories and valid optional solo-location sync offers.
 - [ ] Add friendship, blocking, and privacy-enforced friend-gated profile access.
 - [ ] Add Solo and Co-Focus leaderboards with monthly and all-time completed-focus-time rankings.
@@ -263,3 +263,4 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 - [ ] Add SEO metadata, sitemap, crawl controls, and original launch content.
 - [ ] Complete security, automated, browser, and production validation before release.
 - [ ] Publish the verified expansion to GitHub and Vercel.
+- [ ] After the approved product expansion is fully verified and published, implement the separate public-information-pages planning addendum supplied by the user.

@@ -27,9 +27,9 @@ export function PublicPageLayout({ eyebrow, title, intro, className = "", childr
         <button className="public-wordmark" onClick={() => navigate("/")}>FocusFlight</button>
         <nav aria-label="Public page navigation" className="public-page-nav">
           <button onClick={() => navigate("/about")}>About</button>
-          <button onClick={() => navigate("/guides")}>Guides</button>
-          <button onClick={() => navigate("/leaderboards")}>Rankings</button>
-          <button onClick={() => navigate("/")}><ArrowLeft size={14} /> Timer</button>
+          <button onClick={() => navigate("/journey")}>My Journey</button>
+          <button onClick={() => navigate("/cofocus")}>Co-Focus</button>
+          <button onClick={() => navigate("/")}><ArrowLeft size={14} /> Home</button>
         </nav>
       </header>
       <section className="public-page-hero">

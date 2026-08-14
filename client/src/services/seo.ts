@@ -161,13 +161,13 @@ const staticPages: Record<string, SeoDefinition> = {
     structuredData: appStructuredData,
   },
   "/about": {
-    title: "About FocusFlight — a virtual focus journey",
-    description: "Learn how FocusFlight combines a calm Pomodoro timer, a real map, and an original flight metaphor for focused work.",
+    title: "About FocusFlight — A Virtual Focus Timer",
+    description: "Learn how FocusFlight turns focused study and work sessions into virtual flights on an interactive map.",
     indexable: true,
   },
   "/changelog": {
-    title: "FocusFlight Changelog — product updates",
-    description: "Read verified FocusFlight releases, product updates, and improvements to the virtual focus journey.",
+    title: "FocusFlight Changelog",
+    description: "See completed updates and current development notes for FocusFlight.",
     indexable: true,
   },
   "/leaderboards": {
@@ -176,17 +176,17 @@ const staticPages: Record<string, SeoDefinition> = {
     indexable: true,
   },
   "/privacy": {
-    title: "FocusFlight Privacy Policy — draft for review",
-    description: "Read the FocusFlight privacy-policy draft and the product’s data, visibility, and privacy controls.",
+    title: "FocusFlight Privacy Policy",
+    description: "Learn how FocusFlight handles account, focus-session, and virtual journey information.",
     indexable: true,
   },
   "/terms": {
-    title: "FocusFlight Terms of Use — draft for review",
-    description: "Read the FocusFlight terms-of-use draft and product participation guidelines.",
+    title: "FocusFlight Terms of Service",
+    description: "Read the terms for using the FocusFlight virtual focus-timer application.",
     indexable: true,
   },
   "/feedback": {
-    title: "Send FocusFlight feedback",
+    title: "Feedback — FocusFlight",
     description: "Share private, authenticated feedback to help improve FocusFlight.",
     indexable: false,
   },

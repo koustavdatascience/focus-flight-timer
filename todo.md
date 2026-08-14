@@ -264,3 +264,12 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 - [x] Complete security, automated, browser, and production validation before release.
 - [x] Publish the verified expansion to GitHub and Vercel.
 - [ ] After the approved product expansion is fully verified and published, implement the separate public-information-pages planning addendum supplied by the user.
+
+## Public-pages planning addendum implementation
+
+- [x] Repair the Supabase Preview workflow failure caused by remote migration versions missing from the local migration directory.
+- [x] Refine the shared public-page information architecture while keeping primary navigation intentionally light and public destinations reachable in the footer.
+- [x] Rebuild the About page as a content-led field guide with an honest virtual-flight explanation, four-step flow, verified shipped capabilities, independent-project note, technical transparency, factual development log, and working feedback path.
+- [x] Update factual changelog, legal-draft framing, feedback disclosures, and public-route metadata to reflect verified current capabilities without unsupported claims.
+- [ ] Add focused public-page coverage and validate keyboard access, desktop/mobile layouts, build output, crawl controls, and production rendering.
+- [ ] Publish the completed public-pages addendum and save a recovery checkpoint.

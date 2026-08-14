@@ -39,3 +39,7 @@ The About-page independent-project note now uses the user-supplied first-person 
 ## 2026-08-14 — Remaining public-page audit
 
 The attached public-information plan was reconciled with the existing Waypoint implementation. The Changelog, authenticated Feedback, Privacy working draft, and Terms working draft are already registered as public routes, linked in the shared footer, and represented in route-specific metadata. Full-page checks at 1280px and 375px confirmed each page remains readable, uses the shared editorial presentation, retains the feedback privacy gate where applicable, and has no visible horizontal overflow.
+
+## 2026-08-14 — Legal working-draft refinement
+
+Waypoint's Privacy Policy and Terms working drafts were rewritten around the user-supplied policy structure and limited to current, verified product capabilities. Both drafts retain clear qualified-counsel review framing, distinguish virtual focus data from physical location or travel data, avoid unsupported paid-service and account-deletion claims, and publish the user-supplied legal contact address. Full-page checks at 1280px and 375px confirmed readable long-form copy, visible contact details, functional shared navigation and footer links, and no visible horizontal overflow. `pnpm check`, `pnpm test` (18 files and 56 tests), and `pnpm build` completed successfully.

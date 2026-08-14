@@ -284,3 +284,6 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 - [x] Replace the About-page independent-project section with the user-provided founder note and preserve its accessible editorial presentation.
 - [x] Reconcile the Changelog, Feedback, Privacy, and Terms pages with the attached public-information plan and complete any absent page content or integrations.
 - [x] Verify the remaining public-page routes, metadata, footer links, and responsive behavior before publishing the update.
+- [x] Replace the Privacy Policy and Terms working drafts with an accurate Waypoint-specific adaptation of the user-supplied legal copy, retaining explicit attorney-review framing.
+- [x] Verify legal-page copy, public metadata, desktop/mobile layout, and automated coverage before publication.
+- [x] Publish the user-supplied Waypoint legal contact address in the Privacy Policy and Terms working drafts.

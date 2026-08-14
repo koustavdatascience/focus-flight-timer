@@ -37,6 +37,27 @@ export type GroupFlightRosterMember = {
   last_seen_at: string | null;
 };
 
+export type GroupTrip = {
+  id: string;
+  session_id: string;
+  room_id: string;
+  origin_airport_id: string;
+  destination_airport_id: string;
+  distance_km: number;
+  focus_duration_seconds: number;
+  completed_at: string;
+  rooms: { name: string } | null;
+};
+
+export type GroupLocationSyncOffer = {
+  id: string;
+  group_session_id: string;
+  origin_airport_id: string;
+  destination_airport_id: string;
+  status: "pending" | "used" | "invalidated_by_new_solo_flight" | "unavailable_after_location_change";
+  created_at: string;
+};
+
 async function callRoomRpc<T>(name: string, args: Record<string, unknown>) {
   const { data, error } = await supabase.rpc(name as never, args as never);
   if (error) throw error;
@@ -99,4 +120,30 @@ export async function getGroupFlightRoster(sessionId: string) {
   const { data, error } = await supabase.rpc("get_group_flight_roster" as never, { p_session_id: sessionId } as never);
   if (error) throw error;
   return (data ?? []) as GroupFlightRosterMember[];
+}
+
+export async function getGroupTripHistory(roomId: string) {
+  const { data, error } = await supabase
+    .from("group_trips")
+    .select("id, session_id, room_id, origin_airport_id, destination_airport_id, distance_km, focus_duration_seconds, completed_at, rooms(name)")
+    .eq("room_id", roomId)
+    .order("completed_at", { ascending: false })
+    .limit(30);
+  if (error) throw error;
+  return (data ?? []) as unknown as GroupTrip[];
+}
+
+export async function getGroupLocationSyncOffers(sessionIds: string[]) {
+  if (sessionIds.length === 0) return [];
+  const { data, error } = await supabase
+    .from("group_location_sync_offers")
+    .select("id, group_session_id, origin_airport_id, destination_airport_id, status, created_at")
+    .in("group_session_id", sessionIds)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as GroupLocationSyncOffer[];
+}
+
+export function acceptGroupLocationSyncOffer(offerId: string) {
+  return callRoomRpc<"used" | "unavailable_after_location_change" | "invalidated_by_new_solo_flight">("accept_group_location_sync_offer", { p_offer_id: offerId });
 }

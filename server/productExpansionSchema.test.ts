@@ -10,6 +10,7 @@ const migration = (name: string) => readFileSync(
 describe("FocusFlight product expansion database contract", () => {
   const foundation = migration("202608142345_product_expansion_foundations.sql");
   const publicProjection = migration("202608142355_public_projection_security.sql");
+  const groupHistoryAndSync = migration("202608150030_group_history_and_sync_offers.sql");
 
   it("keeps solo completion, group history, and sync offers as separate models", () => {
     expect(foundation).toContain("create table if not exists public.solo_location_events");
@@ -44,5 +45,14 @@ describe("FocusFlight product expansion database contract", () => {
     expect(publicProjection).toContain("alter table public.public_profile_cards enable row level security");
     expect(publicProjection).toContain("alter table public.public_leaderboard_rows enable row level security");
     expect(publicProjection).toContain("case when card_profile.location_visibility = 'public'");
+  });
+
+  it("creates optional group sync offers only at completion and accepts them without solo-trip credit", () => {
+    expect(groupHistoryAndSync).toContain("create_group_location_sync_offers");
+    expect(groupHistoryAndSync).toContain("new.status = 'completed'");
+    expect(groupHistoryAndSync).toContain("profile.solo_current_airport_id = new.origin_airport_id");
+    expect(groupHistoryAndSync).toContain("accept_group_location_sync_offer");
+    expect(groupHistoryAndSync).toContain("event_type,\n    airport_id,\n    source_group_session_id");
+    expect(groupHistoryAndSync).toContain("Optional post-completion manual solo-location update. It does not create a solo trip");
   });
 });

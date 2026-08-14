@@ -6,11 +6,12 @@ import { getAirportById, searchAirports, type Destination } from "@/services/air
 import { getFlightDuration } from "@/services/flightDurations";
 import { distanceBetween } from "@/services/route";
 import {
-  abandonGroupFlight, createFocusRoom, getGroupFlightRoster, getLatestGroupFlight, getMyFocusRooms,
-  heartbeatGroupFlight, joinFocusRoom, setGroupFlightReady, startGroupFlight,
-  type FocusRoom, type GroupFlightRosterMember, type GroupFlightSession,
+  abandonGroupFlight, acceptGroupLocationSyncOffer, createFocusRoom, getGroupFlightRoster, getGroupLocationSyncOffers,
+  getGroupTripHistory, getLatestGroupFlight, getMyFocusRooms, heartbeatGroupFlight, joinFocusRoom, setGroupFlightReady,
+  startGroupFlight, type FocusRoom, type GroupFlightRosterMember, type GroupFlightSession, type GroupLocationSyncOffer, type GroupTrip,
 } from "@/services/groupRooms";
 import { formatGroupFlightClock, getGroupFlightRemainingSeconds, groupFlightStatusCopy } from "@/services/groupFlightState";
+import { groupSyncOfferCopy } from "@/services/groupSyncOffers";
 
 function airportLabel(airportId: string) {
   const airport = getAirportById(airportId);
@@ -30,6 +31,8 @@ export default function CoFocus() {
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [session, setSession] = useState<GroupFlightSession | null>(null);
   const [roster, setRoster] = useState<GroupFlightRosterMember[]>([]);
+  const [groupTrips, setGroupTrips] = useState<GroupTrip[]>([]);
+  const [syncOffers, setSyncOffers] = useState<GroupLocationSyncOffer[]>([]);
   const [roomName, setRoomName] = useState("");
   const [inviteCode, setInviteCode] = useState("");
   const [origin, setOrigin] = useState<Destination | null>(null);
@@ -49,17 +52,20 @@ export default function CoFocus() {
     setRooms(nextRooms);
     const nextRoomId = roomId ?? selectedRoomId ?? nextRooms[0]?.id ?? null;
     setSelectedRoomId(nextRoomId);
-    if (!nextRoomId) { setSession(null); setRoster([]); return; }
+    if (!nextRoomId) { setSession(null); setRoster([]); setGroupTrips([]); setSyncOffers([]); return; }
     const nextSession = await getLatestGroupFlight(nextRoomId);
+    const nextTrips = await getGroupTripHistory(nextRoomId);
     setSession(nextSession);
     setRoster(nextSession ? await getGroupFlightRoster(nextSession.id) : []);
+    setGroupTrips(nextTrips);
+    setSyncOffers(await getGroupLocationSyncOffers(nextTrips.map((trip) => trip.session_id)));
   }, [isAuthenticated, selectedRoomId]);
 
   useEffect(() => { void refresh(); }, [refresh]);
   useEffect(() => { if (selectedRoomId) void refresh(selectedRoomId); }, [selectedRoomId]);
 
   useEffect(() => {
-    if (!session || !selectedRoomId) return;
+    if (!session || !selectedRoomId || session.status === "completed" || session.status === "abandoned") return;
     const pulse = () => void heartbeatGroupFlight(session.id, document.visibilityState === "visible").then(() => refresh(selectedRoomId)).catch(() => undefined);
     pulse();
     const timer = window.setInterval(pulse, 20_000);
@@ -115,6 +121,16 @@ export default function CoFocus() {
     finally { setBusy(false); }
   }
 
+  async function acceptLocationSync(offer: GroupLocationSyncOffer) {
+    setBusy(true); setNotice("");
+    try {
+      const outcome = await acceptGroupLocationSyncOffer(offer.id);
+      setNotice(outcome === "used" ? `Your solo location is now ${airportLabel(offer.destination_airport_id)}. This remains separate from solo flight history.` : "That location option is no longer available because your solo journey changed.");
+      await refresh(selectedRoomId);
+    } catch (caught) { setNotice(caught instanceof Error ? caught.message : "We could not update your solo location."); }
+    finally { setBusy(false); }
+  }
+
   if (authLoading) return <main className="journey-page journey-gate"><span className="selection-eyebrow">Co-Focus</span><h1>Opening your<br /><em>crew board…</em></h1></main>;
   if (!isAuthenticated) return <main className="journey-page journey-gate"><span className="selection-eyebrow">Co-Focus rooms</span><h1>Focus together,<br /><em>after sign in.</em></h1><p>Group flights use a private shared roster. Sign in from the flight planner to create or join a room.</p><button className="journey-primary-button" onClick={() => navigate("/")}><ArrowLeft size={16} /> Return to FocusFlight</button></main>;
 
@@ -128,6 +144,7 @@ export default function CoFocus() {
       <section className="cofocus-board">{selectedRoom ? <><div className="cofocus-room-heading"><div><span className="selection-eyebrow">Private room</span><h2>{selectedRoom.name}</h2><p>Boarding code <strong>{selectedRoom.invite_code}</strong><button className="cofocus-copy-button" onClick={() => { void navigator.clipboard?.writeText(selectedRoom.invite_code); setNotice("Boarding code copied."); }} aria-label="Copy room invitation code"><Copy size={13} /></button></p></div><div className="cofocus-member-count"><Users size={18} /><strong>{roster.length || "—"}</strong><span>crew members</span></div></div>
         {session && status ? <section className={`cofocus-session cofocus-session-${session.status}`}><div className="cofocus-session-status"><span>{status.label}</span><h3>{airportLabel(session.origin_airport_id)} <i /> {airportLabel(session.destination_airport_id)}</h3><p>{status.description}</p></div><div className="cofocus-clock"><span>Shared focus remaining</span><strong>{formatGroupFlightClock(remaining)}</strong><small>{session.status === "active" ? "All pilots are currently present" : `${roster.filter((member) => member.is_ready && member.is_present).length}/${roster.length} ready and present`}</small></div><div className="cofocus-session-actions">{session.status !== "completed" && session.status !== "abandoned" && <button className={myRosterEntry?.is_ready ? "cofocus-ready-button is-ready" : "journey-primary-button"} disabled={busy} onClick={() => void toggleReady()}>{myRosterEntry?.is_ready ? "Ready for takeoff" : "I’m ready"}</button>}{session.created_by === me && session.status !== "completed" && session.status !== "abandoned" && <button className="cofocus-text-button" disabled={busy} onClick={() => void closeFlight()}>Close this flight</button>}</div></section> : <section className="cofocus-planning"><div><span className="selection-eyebrow">Plan the next route</span><h3>Choose a shared origin and destination.</h3><p>The room owner opens boarding; every room member must then be ready and present before the shared timer moves.</p></div><div className="cofocus-route-pickers"><AirportPicker label="Starting airport" value={origin} onChange={setOrigin} /><AirportPicker label="Destination airport" value={destination} onChange={setDestination} /></div><button className="journey-primary-button" disabled={busy || !origin || !destination} onClick={() => void handleStartFlight()}><Plane size={15} fill="currentColor" /> Open boarding</button></section>}
         {session && <section className="cofocus-roster"><div className="journey-section-heading"><div><span className="selection-eyebrow">Current session roster</span><h2>Everyone flies or the clock waits.</h2></div><span>{allPresent ? "Ready for shared focus" : "Waiting for the full crew"}</span></div><div className="cofocus-roster-list">{roster.map((member, index) => <div key={member.user_id}><span className={member.is_ready && member.is_present ? "cofocus-presence online" : "cofocus-presence"} /><strong>{member.user_id === me ? "You" : `Crew member ${index + 1}`}</strong><small>{member.is_ready ? (member.is_present ? "ready and present" : "ready, reconnecting") : "not ready"}</small></div>)}</div></section>}
+        <section className="cofocus-history"><div className="journey-section-heading"><div><span className="selection-eyebrow">Co-Focus history</span><h2>Shared flights, kept separate.</h2></div><span>{groupTrips.length ? `${groupTrips.length} completed` : "No completed flights yet"}</span></div><p className="cofocus-history-intro">These completed routes belong only to this group trail. They never appear in your solo journey or move your solo location automatically.</p>{groupTrips.length ? <div className="cofocus-history-list">{groupTrips.map((trip) => { const offer = syncOffers.find((candidate) => candidate.group_session_id === trip.session_id); const offerCopy = offer ? groupSyncOfferCopy(offer.status, airportLabel(offer.destination_airport_id)) : null; return <article key={trip.id} className="cofocus-history-item"><div><span>{new Date(trip.completed_at).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}</span><h3>{airportLabel(trip.origin_airport_id)} <i /> {airportLabel(trip.destination_airport_id)}</h3><small>{formatGroupFlightClock(trip.focus_duration_seconds)} shared focus · {trip.distance_km.toLocaleString()} km</small></div>{offer && offerCopy ? <aside className={`cofocus-sync-offer is-${offer.status}`}><strong>{offerCopy.title}</strong><p>{offerCopy.description}</p>{offerCopy.action && <button className="cofocus-ready-button" disabled={busy} onClick={() => void acceptLocationSync(offer)}>{offerCopy.action}</button>}</aside> : <p className="cofocus-no-sync">No solo-location update was offered for this route.</p>}</article>; })}</div> : <div className="cofocus-history-empty">Complete a shared flight to create this room’s separate Co-Focus trail.</div>}</section>
       </> : <section className="cofocus-empty-board"><Plane size={28} /><h2>Choose a crew to begin.</h2><p>Your rooms will stay here between flights, ready for the next shared focus session.</p></section>}
       {notice && <p className="profile-message cofocus-notice" role="status">{notice}</p>}</section>
     </section>

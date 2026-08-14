@@ -257,7 +257,7 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 - [x] Build profile identity, solo statistics, location privacy, and public-profile routing.
 - [x] Build persistent rooms, authoritative all-member presence, and synchronized group-flight lifecycle controls.
 - [x] Add separate group histories and valid optional solo-location sync offers.
-- [ ] Add friendship, blocking, and privacy-enforced friend-gated profile access.
+- [x] Add friendship, blocking, and privacy-enforced friend-gated profile access.
 - [ ] Add Solo and Co-Focus leaderboards with monthly and all-time completed-focus-time rankings.
 - [ ] Create About, Feedback, Changelog, Privacy, and Terms pages.
 - [ ] Add SEO metadata, sitemap, crawl controls, and original launch content.

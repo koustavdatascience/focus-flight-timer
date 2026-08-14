@@ -1,5 +1,5 @@
 import { ArrowLeft, ArrowUpRight, Edit3, MapPin, Plane, Play, Save } from "lucide-react";
-import { type FormEvent, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { useLocation } from "wouter";
 import { JourneyMap, type JourneyRoute } from "@/components/map/JourneyMap";
 import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
@@ -7,6 +7,8 @@ import { useFocusJourney } from "@/hooks/useFocusJourney";
 import { getAirportById } from "@/services/airportSearch";
 import { getHandleIssue, normalizeHandle } from "@/services/profileIdentity";
 import { getSoloProfileStats } from "@/services/profileStats";
+import { getFocusSocialOverview, respondToFocusflightFriendRequest, unblockFocusflightUser, type FocusSocialOverviewEntry } from "@/lib/supabase";
+import { socialEmptyStateCopy, socialRelationLabel } from "@/services/socialState";
 
 function formatDuration(totalSeconds: number) {
   const totalMinutes = Math.round(totalSeconds / 60);
@@ -39,6 +41,9 @@ export default function Journey() {
   const [leaderboardOptIn, setLeaderboardOptIn] = useState(true);
   const [saving, setSaving] = useState(false);
   const [profileMessage, setProfileMessage] = useState("");
+  const [socialOverview, setSocialOverview] = useState<FocusSocialOverviewEntry[]>([]);
+  const [socialMessage, setSocialMessage] = useState("");
+  const [socialBusy, setSocialBusy] = useState<string | null>(null);
 
   const completedTrips = useMemo(() => trips.filter((trip) => trip.status === "completed"), [trips]);
   const resumableTrips = useMemo(() => trips.filter((trip) => trip.status === "in_progress"), [trips]);
@@ -56,6 +61,36 @@ export default function Journey() {
     return Array.from(visits, ([airportId, count]) => ({ airportId, count })).sort((a, b) => b.count - a.count);
   }, [completedTrips]);
   const mostVisitedAirport = airportVisits[0];
+  const friends = useMemo(() => socialOverview.filter((entry) => entry.relation === "friend"), [socialOverview]);
+  const incomingRequests = useMemo(() => socialOverview.filter((entry) => entry.relation === "incoming"), [socialOverview]);
+  const outgoingRequests = useMemo(() => socialOverview.filter((entry) => entry.relation === "outgoing"), [socialOverview]);
+  const blockedPilots = useMemo(() => socialOverview.filter((entry) => entry.relation === "blocked"), [socialOverview]);
+
+  async function refreshSocial() {
+    try {
+      setSocialOverview(await getFocusSocialOverview());
+    } catch {
+      setSocialMessage("Your social connections could not be loaded right now.");
+    }
+  }
+
+  useEffect(() => {
+    if (isAuthenticated) void refreshSocial();
+  }, [isAuthenticated]);
+
+  async function manageSocial(key: string, action: () => Promise<unknown>, success: string) {
+    setSocialBusy(key);
+    setSocialMessage("");
+    try {
+      await action();
+      await refreshSocial();
+      setSocialMessage(success);
+    } catch (caught) {
+      setSocialMessage(caught instanceof Error ? caught.message : "That social action could not be completed.");
+    } finally {
+      setSocialBusy(null);
+    }
+  }
 
   function beginEditing() {
     setNameInput(profile?.display_name || displayName || "");
@@ -148,6 +183,16 @@ export default function Journey() {
         <div><span>Time in focus</span><strong>{formatDuration(soloStats.totalFocusSeconds)}</strong><small>completed solo focus</small></div>
         <div><span>Distance covered</span><strong>{soloStats.totalDistanceKm.toLocaleString()} <em>km</em></strong><small>great-circle routes</small></div>
         <div><span>Active streak</span><strong>{soloStats.activeStreakDays} <em>days</em></strong><small>{mostVisitedAirport ? `frequent stop: ${airportCode(mostVisitedAirport.airportId)}` : "complete a flight to begin"}</small></div>
+      </section>
+      <section className="journey-social-section" aria-labelledby="social-heading">
+        <div className="journey-section-heading"><div><span className="selection-eyebrow">Social flight deck</span><h2 id="social-heading">Friends and safety controls.</h2></div><span>{friends.length} friends</span></div>
+        <p className="journey-social-intro">Friends are separate from room membership. Friendship unlocks deeper profile totals; your solo location still follows the visibility level you chose.</p>
+        <div className="journey-social-grid">
+          <div><strong>Friends</strong>{friends.length ? <ul>{friends.map((entry) => <li key={entry.profile_id}><button onClick={() => navigate(`/u/${entry.handle}`)}>{entry.display_name || `@${entry.handle}`}<small>@{entry.handle}</small></button><span>{socialRelationLabel(entry.relation)}</span></li>)}</ul> : <p>{socialEmptyStateCopy("friends")}</p>}</div>
+          <div><strong>Requests</strong>{incomingRequests.length || outgoingRequests.length ? <ul>{incomingRequests.map((entry) => <li key={entry.request_id}><button onClick={() => navigate(`/u/${entry.handle}`)}>{entry.display_name || `@${entry.handle}`}<small>Incoming request</small></button><span className="journey-social-actions"><button disabled={socialBusy === entry.request_id} onClick={() => void manageSocial(entry.request_id || entry.profile_id, () => respondToFocusflightFriendRequest(entry.request_id!, true), "Friend request accepted.")}>Accept</button><button disabled={socialBusy === entry.request_id} onClick={() => void manageSocial(entry.request_id || entry.profile_id, () => respondToFocusflightFriendRequest(entry.request_id!, false), "Friend request declined.")}>Decline</button></span></li>)}{outgoingRequests.map((entry) => <li key={entry.request_id}><button onClick={() => navigate(`/u/${entry.handle}`)}>{entry.display_name || `@${entry.handle}`}<small>Request sent</small></button><span>{socialRelationLabel(entry.relation)}</span></li>)}</ul> : <p>{socialEmptyStateCopy("requests")}</p>}</div>
+          <div><strong>Blocked pilots</strong>{blockedPilots.length ? <ul>{blockedPilots.map((entry) => <li key={entry.profile_id}><span>{entry.display_name || `@${entry.handle}`}<small>@{entry.handle}</small></span><button disabled={socialBusy === entry.profile_id} onClick={() => void manageSocial(entry.profile_id, () => unblockFocusflightUser(entry.profile_id), "Pilot unblocked.")}>Unblock</button></li>)}</ul> : <p>{socialEmptyStateCopy("blocked")}</p>}</div>
+        </div>
+        {socialMessage && <p className="profile-message" role="status">{socialMessage}</p>}
       </section>
       {resumableTrips.length > 0 && <section className="resume-panel"><div><span className="selection-eyebrow">Paused flight</span><strong>{airportCode(resumableTrips[0].origin_airport_id)} → {airportCode(resumableTrips[0].destination_airport_id)}</strong><small>{Math.max(0, resumableTrips[0].focus_duration_seconds - resumableTrips[0].elapsed_seconds)} seconds remaining</small></div><button className="journey-primary-button" onClick={() => navigate(`/?resume=${resumableTrips[0].id}`)}><Play size={15} fill="currentColor" /> Resume flight</button></section>}
       <section className="journey-map-section">

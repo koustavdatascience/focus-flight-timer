@@ -40,12 +40,24 @@ export type PublicProfileCard = {
   bio: string | null;
   avatar_path: string | null;
   current_airport_id: string | null;
-  solo_completed_focus_seconds: number;
-  solo_completed_flights: number;
-  cofocus_completed_focus_seconds: number;
-  cofocus_completed_flights: number;
+  solo_completed_focus_seconds: number | null;
+  solo_completed_flights: number | null;
+  cofocus_completed_focus_seconds: number | null;
+  cofocus_completed_flights: number | null;
   pilot_since: string;
-  updated_at: string;
+  access_level: "self" | "friend" | "public";
+};
+
+export type FocusSocialRelation = "friend" | "incoming" | "outgoing" | "blocked";
+
+export type FocusSocialOverviewEntry = {
+  relation: FocusSocialRelation;
+  request_id: string | null;
+  profile_id: string;
+  handle: string | null;
+  display_name: string | null;
+  avatar_path: string | null;
+  created_at: string;
 };
 
 export type FocusTripStatus = "in_progress" | "completed";
@@ -104,13 +116,40 @@ export async function updateFocusProfile(input: FocusProfileUpdate) {
 }
 
 export async function getPublicProfileCard(handle: string) {
-  const { data, error } = await supabase
-    .from("public_profile_cards")
-    .select("*")
-    .eq("handle", handle.toLowerCase())
-    .maybeSingle();
+  const { data, error } = await supabase.rpc("get_focusflight_profile", { p_handle: handle.trim().toLowerCase() });
   if (error) throw error;
-  return data as PublicProfileCard | null;
+  return (data?.[0] ?? null) as PublicProfileCard | null;
+}
+
+export async function getFocusSocialOverview() {
+  const { data, error } = await supabase.rpc("get_focusflight_social_overview");
+  if (error) throw error;
+  return (data ?? []) as FocusSocialOverviewEntry[];
+}
+
+async function invokeSocialAction(functionName: string, args: Record<string, unknown>) {
+  const { error } = await supabase.rpc(functionName, args);
+  if (error) throw error;
+}
+
+export async function sendFocusflightFriendRequest(recipientId: string) {
+  return invokeSocialAction("send_focusflight_friend_request", { p_recipient_id: recipientId });
+}
+
+export async function respondToFocusflightFriendRequest(requestId: string, accept: boolean) {
+  return invokeSocialAction("respond_to_focusflight_friend_request", { p_request_id: requestId, p_accept: accept });
+}
+
+export async function cancelFocusflightFriendRequest(requestId: string) {
+  return invokeSocialAction("cancel_focusflight_friend_request", { p_request_id: requestId });
+}
+
+export async function blockFocusflightUser(profileId: string) {
+  return invokeSocialAction("block_focusflight_user", { p_blocked_id: profileId });
+}
+
+export async function unblockFocusflightUser(profileId: string) {
+  return invokeSocialAction("unblock_focusflight_user", { p_blocked_id: profileId });
 }
 
 export async function getFocusTrips() {

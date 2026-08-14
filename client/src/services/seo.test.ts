@@ -2,6 +2,14 @@ import { describe, expect, it } from "vitest";
 import { canonicalForPath, seoForPath } from "./seo";
 
 describe("FocusFlight SEO routing", () => {
+  it("keeps the revised About page indexable with an accurate virtual-focus description", () => {
+    const metadata = seoForPath("/about/");
+
+    expect(metadata.indexable).toBe(true);
+    expect(metadata.title).toBe("About FocusFlight — A Virtual Focus Timer");
+    expect(metadata.description).toContain("virtual flights");
+  });
+
   it("marks private account, room, feedback, and pilot routes as non-indexable", () => {
     expect(seoForPath("/journey").indexable).toBe(false);
     expect(seoForPath("/cofocus").indexable).toBe(false);
@@ -18,5 +26,9 @@ describe("FocusFlight SEO routing", () => {
 
   it("uses the production domain and normalizes trailing slashes for canonicals", () => {
     expect(canonicalForPath("/about/")).toBe("https://focus-flight-timer.vercel.app/about");
+  });
+
+  it("does not accidentally index an unknown route", () => {
+    expect(seoForPath("/not-a-focusflight-page").indexable).toBe(false);
   });
 });

@@ -8,12 +8,12 @@ const migration = (name: string) => readFileSync(
 );
 
 describe("FocusFlight product expansion database contract", () => {
-  const foundation = migration("202608142345_product_expansion_foundations.sql");
-  const publicProjection = migration("202608142355_public_projection_security.sql");
-  const groupHistoryAndSync = migration("202608150030_group_history_and_sync_offers.sql");
-  const socialPrivacy = migration("202608150045_social_privacy_and_profile_access.sql");
-  const socialGrantRestriction = migration("202608150050_restrict_social_rpc_grants.sql");
-  const feedback = migration("202608150100_feedback_submissions.sql");
+  const foundation = migration("20260813234254_product_expansion_foundations.sql");
+  const publicProjection = migration("20260813234439_public_projection_security.sql");
+  const groupHistoryAndSync = migration("20260814001834_group_history_and_sync_offers.sql");
+  const socialPrivacy = migration("20260814002506_social_privacy_and_profile_access.sql");
+  const socialGrantRestriction = migration("20260814002936_restrict_social_rpc_grants.sql");
+  const feedback = migration("20260814004107_feedback_submissions.sql");
 
   it("keeps solo completion, group history, and sync offers as separate models", () => {
     expect(foundation).toContain("create table if not exists public.solo_location_events");

@@ -60,6 +60,19 @@ export type FocusSocialOverviewEntry = {
   created_at: string;
 };
 
+export type PublicLeaderboardRow = {
+  user_id: string;
+  category: "solo" | "cofocus";
+  period_type: "monthly" | "all_time";
+  period_start_utc: string;
+  completed_focus_seconds: number;
+  completed_flights: number;
+  last_score_at: string | null;
+  handle: string;
+  display_name: string | null;
+  avatar_path: string | null;
+};
+
 export type FocusTripStatus = "in_progress" | "completed";
 
 export type FocusTrip = {
@@ -150,6 +163,23 @@ export async function blockFocusflightUser(profileId: string) {
 
 export async function unblockFocusflightUser(profileId: string) {
   return invokeSocialAction("unblock_focusflight_user", { p_blocked_id: profileId });
+}
+
+export async function getFocusLeaderboard(category: PublicLeaderboardRow["category"], period: PublicLeaderboardRow["period_type"], now = new Date()) {
+  const periodStart = period === "all_time"
+    ? "1970-01-01"
+    : `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}-01`;
+  const { data, error } = await supabase
+    .from("public_leaderboard_rows")
+    .select("user_id, category, period_type, period_start_utc, completed_focus_seconds, completed_flights, last_score_at, handle, display_name, avatar_path")
+    .eq("category", category)
+    .eq("period_type", period)
+    .eq("period_start_utc", periodStart)
+    .order("completed_focus_seconds", { ascending: false })
+    .order("last_score_at", { ascending: true, nullsFirst: false })
+    .limit(100);
+  if (error) throw error;
+  return (data ?? []) as PublicLeaderboardRow[];
 }
 
 export async function getFocusTrips() {

@@ -390,10 +390,10 @@ export default function Home() {
         <nav className="landing-nav" aria-label="Landing page navigation">
           {isAuthenticated && <button onClick={() => navigate("/journey")}>My Journey</button>}
           {authLoading ? <span className="nav-status">Connecting…</span> : isAuthenticated ? <button onClick={() => void signOut()}>Sign out</button> : <button onClick={() => { setAuthDialogMode("signin"); setAuthDialogOpen(true); }}>Sign In</button>}
-          <button onClick={() => navigate("/cofocus")}>Co-Focus</button><button onClick={() => showNotice("A calmer Pomodoro, framed as a short journey")}>About</button>
+          <button onClick={() => navigate("/cofocus")}>Co-Focus</button><button onClick={() => navigate("/leaderboards")}>Rankings</button><button onClick={() => showNotice("A calmer Pomodoro, framed as a short journey")}>About</button>
         </nav>
         <button className="mobile-menu-trigger" aria-label="Open menu" aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}>{menuOpen ? <X size={18} /> : <Menu size={18} />}</button>
-        {menuOpen && <div className="landing-mobile-menu">{isAuthenticated && <button onClick={() => navigate("/journey")}>My Journey</button>}{isAuthenticated ? <button onClick={() => void signOut()}>Sign out</button> : <button onClick={() => { setAuthDialogMode("signin"); setAuthDialogOpen(true); }}>Sign in</button>}<button onClick={() => navigate("/cofocus")}>Co-Focus</button><button onClick={() => showNotice("A calmer Pomodoro, framed as a short journey")}>About</button></div>}
+        {menuOpen && <div className="landing-mobile-menu">{isAuthenticated && <button onClick={() => navigate("/journey")}>My Journey</button>}{isAuthenticated ? <button onClick={() => void signOut()}>Sign out</button> : <button onClick={() => { setAuthDialogMode("signin"); setAuthDialogOpen(true); }}>Sign in</button>}<button onClick={() => navigate("/cofocus")}>Co-Focus</button><button onClick={() => navigate("/leaderboards")}>Rankings</button><button onClick={() => showNotice("A calmer Pomodoro, framed as a short journey")}>About</button></div>}
       </header>
       <section className="flight-content" aria-labelledby="flight-title">
         <div className="flight-kicker"><Plane size={17} fill="currentColor" /><span>{selectedOrigin ? "Choose a destination," : "Choose a starting airport,"}</span><strong>keep your focus.</strong></div>

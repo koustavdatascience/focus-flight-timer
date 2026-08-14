@@ -6,6 +6,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import CoFocus from "./pages/CoFocus";
 import Home from "./pages/Home";
 import Journey from "./pages/Journey";
+import Leaderboards from "./pages/Leaderboards";
 import NotFound from "./pages/NotFound";
 import PublicProfile from "./pages/PublicProfile";
 
@@ -16,6 +17,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/journey" component={Journey} />
       <Route path="/cofocus" component={CoFocus} />
+      <Route path="/leaderboards" component={Leaderboards} />
       <Route path="/u/:handle" component={PublicProfile} />
       <Route component={NotFound} />
     </Switch>

@@ -49,6 +49,16 @@ describe("FocusFlight product expansion database contract", () => {
     expect(publicProjection).toContain("case when card_profile.location_visibility = 'public'");
   });
 
+  it("aggregates completed focus time into separate UTC leaderboard periods and removes opted-out pilots", () => {
+    expect(foundation).toContain("create or replace function focusflight_private.increment_leaderboard(");
+    expect(foundation).toContain("date_trunc('month', p_completed_at at time zone 'UTC')::date");
+    expect(foundation).toContain("'all_time'");
+    expect(foundation).toContain("'solo'");
+    expect(publicProjection).toContain("board_profile.leaderboard_opt_in");
+    expect(publicProjection).toContain("delete from public.public_leaderboard_rows");
+    expect(publicProjection).toContain("public_leaderboard_rows_rank_lookup_idx");
+  });
+
   it("creates optional group sync offers only at completion and accepts them without solo-trip credit", () => {
     expect(groupHistoryAndSync).toContain("create_group_location_sync_offers");
     expect(groupHistoryAndSync).toContain("new.status = 'completed'");

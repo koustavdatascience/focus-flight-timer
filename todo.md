@@ -267,6 +267,8 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 
 ## Public-pages planning addendum implementation
 
+- [x] Configure the currently disabled Google OAuth provider in Supabase and validate the FocusFlight sign-in return flow.
+- [x] Repair successful Google OAuth returns that leave FocusFlight displaying the unauthenticated Sign In state.
 - [x] Repair the Supabase Preview workflow failure caused by remote migration versions missing from the local migration directory.
 - [x] Refine the shared public-page information architecture while keeping primary navigation intentionally light and public destinations reachable in the footer.
 - [x] Rebuild the About page as a content-led field guide with an honest virtual-flight explanation, four-step flow, verified shipped capabilities, independent-project note, technical transparency, factual development log, and working feedback path.

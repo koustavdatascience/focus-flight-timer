@@ -13,6 +13,7 @@ describe("FocusFlight product expansion database contract", () => {
   const groupHistoryAndSync = migration("202608150030_group_history_and_sync_offers.sql");
   const socialPrivacy = migration("202608150045_social_privacy_and_profile_access.sql");
   const socialGrantRestriction = migration("202608150050_restrict_social_rpc_grants.sql");
+  const feedback = migration("202608150100_feedback_submissions.sql");
 
   it("keeps solo completion, group history, and sync offers as separate models", () => {
     expect(foundation).toContain("create table if not exists public.solo_location_events");
@@ -86,5 +87,14 @@ describe("FocusFlight product expansion database contract", () => {
     expect(socialGrantRestriction).toContain("revoke execute on function public.get_focusflight_social_overview() from anon");
     expect(socialGrantRestriction).toContain("revoke execute on function public.block_focusflight_user(uuid) from anon");
     expect(socialGrantRestriction).toContain("grant execute on function public.send_focusflight_friend_request(uuid) to authenticated");
+  });
+
+  it("keeps feedback private behind an authenticated, validated, rate-limited submission RPC", () => {
+    expect(feedback).toContain("alter table public.feedback_submissions enable row level security");
+    expect(feedback).toContain("revoke all on table public.feedback_submissions from anon, authenticated");
+    expect(feedback).toContain("create or replace function public.submit_focusflight_feedback(");
+    expect(feedback).toContain("created_at > now() - interval '60 seconds'");
+    expect(feedback).toContain("revoke all on function public.submit_focusflight_feedback(text, text, text) from public, anon");
+    expect(feedback).toContain("grant execute on function public.submit_focusflight_feedback(text, text, text) to authenticated");
   });
 });

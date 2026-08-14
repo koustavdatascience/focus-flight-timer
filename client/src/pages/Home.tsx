@@ -390,10 +390,10 @@ export default function Home() {
         <nav className="landing-nav" aria-label="Landing page navigation">
           {isAuthenticated && <button onClick={() => navigate("/journey")}>My Journey</button>}
           {authLoading ? <span className="nav-status">Connecting…</span> : isAuthenticated ? <button onClick={() => void signOut()}>Sign out</button> : <button onClick={() => { setAuthDialogMode("signin"); setAuthDialogOpen(true); }}>Sign In</button>}
-          <button onClick={() => navigate("/cofocus")}>Co-Focus</button><button onClick={() => navigate("/leaderboards")}>Rankings</button><button onClick={() => showNotice("A calmer Pomodoro, framed as a short journey")}>About</button>
+          <button onClick={() => navigate("/cofocus")}>Co-Focus</button><button onClick={() => navigate("/leaderboards")}>Rankings</button><button onClick={() => navigate("/about")}>About</button>
         </nav>
         <button className="mobile-menu-trigger" aria-label="Open menu" aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}>{menuOpen ? <X size={18} /> : <Menu size={18} />}</button>
-        {menuOpen && <div className="landing-mobile-menu">{isAuthenticated && <button onClick={() => navigate("/journey")}>My Journey</button>}{isAuthenticated ? <button onClick={() => void signOut()}>Sign out</button> : <button onClick={() => { setAuthDialogMode("signin"); setAuthDialogOpen(true); }}>Sign in</button>}<button onClick={() => navigate("/cofocus")}>Co-Focus</button><button onClick={() => navigate("/leaderboards")}>Rankings</button><button onClick={() => showNotice("A calmer Pomodoro, framed as a short journey")}>About</button></div>}
+        {menuOpen && <div className="landing-mobile-menu">{isAuthenticated && <button onClick={() => navigate("/journey")}>My Journey</button>}{isAuthenticated ? <button onClick={() => void signOut()}>Sign out</button> : <button onClick={() => { setAuthDialogMode("signin"); setAuthDialogOpen(true); }}>Sign in</button>}<button onClick={() => navigate("/cofocus")}>Co-Focus</button><button onClick={() => navigate("/leaderboards")}>Rankings</button><button onClick={() => navigate("/about")}>About</button></div>}
       </header>
       <section className="flight-content" aria-labelledby="flight-title">
         <div className="flight-kicker"><Plane size={17} fill="currentColor" /><span>{selectedOrigin ? "Choose a destination," : "Choose a starting airport,"}</span><strong>keep your focus.</strong></div>
@@ -415,7 +415,7 @@ export default function Home() {
         <div className="flight-status" aria-live="polite">{notice || (selectedOrigin ? "Select a destination to open the geographic flight map" : landingMapDestination ? `Your map is centred on your latest arrival: ${landingMapDestination.city}.` : "The live map is centred on New York City. Select a starting airport to begin.")}</div>
         {latestCompletedTrip && <button className="continue-journey-button" type="button" onClick={continueFromLastDestination}>Continue from your last destination <ChevronRight size={15} /></button>}
       </section>
-      <footer className="landing-footer"><span>FocusFlight / a small ritual for deep work</span><span>Choose your origin · choose your destination</span></footer>
+      <footer className="landing-footer"><span>FocusFlight / a small ritual for deep work</span><nav aria-label="Footer navigation"><button onClick={() => navigate("/about")}>About</button><button onClick={() => navigate("/changelog")}>Changelog</button><button onClick={() => navigate("/feedback")}>Feedback</button><button onClick={() => navigate("/privacy")}>Privacy</button><button onClick={() => navigate("/terms")}>Terms</button></nav></footer>
       <AuthDialog open={authDialogOpen} initialMode={authDialogMode} onOpenChange={setAuthDialogOpen} />
     </main>
   );

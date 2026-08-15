@@ -297,3 +297,4 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 - [x] Create a dedicated Project Waypoint Google Cloud project, configure a replacement OAuth web client, and connect its credentials to Supabase.
 - [x] Verify password recovery and Google sign-in on the new production address before retiring the legacy redirect address.
 - [x] Replace the stale FocusFlight GitHub About description and legacy homepage link with current Project Waypoint content and `https://project-waypoint-app.vercel.app`.
+- [x] Inspect the narrow-screen landing map and ensure airport selectors and focus-flight controls remain accessible without unintended clipping.

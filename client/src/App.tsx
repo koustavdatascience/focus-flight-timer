@@ -1,6 +1,7 @@
 // Design philosophy: Cloud Atlas Editorial — a calm, cartographic focus ritual with tactile controls.
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SeoMeta } from "@/components/SeoMeta";
+import { Analytics } from "@vercel/analytics/react";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -46,6 +47,7 @@ export default function App() {
       <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Router />
+          <Analytics />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>

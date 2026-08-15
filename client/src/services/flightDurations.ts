@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import type { Destination } from "@/services/airportSearch";
+import { distanceBetween } from "@/services/route";
 
 export type FlightDurationSource = "verified_direct" | "estimated";
 
@@ -10,6 +11,14 @@ export type FlightDuration = {
   sourceLabel: string;
   sourceUrl: string | null;
   isDirect: boolean;
+};
+
+export type RandomRouteRecommendation = {
+  destination: Destination;
+  duration: FlightDuration;
+  distanceKm: number;
+  durationDifferenceSeconds: number;
+  candidateCount: number;
 };
 
 type CachedFlightDurationRow = {
@@ -93,6 +102,49 @@ export function estimateFlightDuration(distanceKm: number, routeKey = "estimated
     sourceLabel: `Estimated · ${ESTIMATED_CRUISE_SPEED_KPH} km/h typical cruise plus ${SCHEDULE_ALLOWANCE_MINUTES} min departure/arrival allowance`,
     sourceUrl: null,
     isDirect: false,
+  };
+}
+
+/**
+ * Chooses from airports with a transparent duration estimate closest to a focus-time
+ * target. The selected route is still resolved by getFlightDuration afterwards so
+ * shared or local direct-flight records take precedence whenever available.
+ */
+export function pickRandomDestinationForDuration(
+  origin: Destination,
+  targetDurationSeconds: number,
+  airports: Destination[],
+  random: () => number = Math.random,
+): RandomRouteRecommendation | null {
+  const target = Math.max(35 * 60, Math.round(targetDurationSeconds));
+  const candidates = airports
+    .filter((airport) => String(airport.id) !== String(origin.id) && airport.scheduledService && Boolean(airport.iata || airport.icao))
+    .map((destination) => {
+      const distanceKm = distanceBetween(origin, destination);
+      const routeKey = flightDurationRouteKey(origin, destination);
+      const duration = getBootstrapFlightDuration(routeKey) ?? estimateFlightDuration(distanceKm, routeKey);
+      return {
+        destination,
+        duration,
+        distanceKm,
+        durationDifferenceSeconds: Math.abs(duration.durationSeconds - target),
+      };
+    })
+    .sort((a, b) => a.durationDifferenceSeconds - b.durationDifferenceSeconds || b.destination.priority - a.destination.priority || a.destination.city.localeCompare(b.destination.city));
+
+  const closest = candidates[0];
+  if (!closest) return null;
+
+  const closeWindowSeconds = Math.max(10 * 60, Math.round(target * 0.12));
+  const shortList = candidates
+    .filter((candidate) => candidate.durationDifferenceSeconds <= closest.durationDifferenceSeconds + closeWindowSeconds)
+    .slice(0, 8);
+  const safeRandom = Math.min(0.999999, Math.max(0, random()));
+  const selected = shortList[Math.floor(safeRandom * shortList.length)] ?? closest;
+
+  return {
+    ...selected,
+    candidateCount: shortList.length,
   };
 }
 

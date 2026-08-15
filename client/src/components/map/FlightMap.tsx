@@ -74,7 +74,7 @@ export function FlightMap({ origin, destination, progress = 0, mode, landingFocu
   const renderedDestination = route?.animationCoordinates.at(-1) ?? (destination ? { latitude: destination.latitude, longitude: destination.longitude } : null);
 
   return (
-    <MapContainer className="flight-map-canvas" center={MAP_CONFIG.defaultCenter} zoom={MAP_CONFIG.defaultZoom} minZoom={2} maxZoom={12} scrollWheelZoom doubleClickZoom dragging zoomControl attributionControl>
+    <MapContainer className="flight-map-canvas" center={MAP_CONFIG.defaultCenter} zoom={MAP_CONFIG.defaultZoom} minZoom={2} maxZoom={12} scrollWheelZoom doubleClickZoom dragging zoomControl={false} attributionControl>
       <TileLayer url={MAP_CONFIG.tileUrl} attribution={MAP_CONFIG.attribution} crossOrigin />
       <MapViewport origin={origin} destination={destination} mode={mode} landingFocus={landingFocus} route={route} />
       <MapClickHandler onMapClick={onMapClick} />

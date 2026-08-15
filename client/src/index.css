@@ -7,9 +7,9 @@
 * { box-sizing: border-box; }
 html, body, #root { min-height: 100%; margin: 0; }
 body { background: var(--sky); color: var(--ink); font-family: "DM Sans", sans-serif; -webkit-font-smoothing: antialiased; }
-button, input { font: inherit; }
+button, input, select { font: inherit; }
 button { border: 0; }
-button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
 
 .flight-landing { min-height: 100svh; position: relative; overflow: hidden; background: var(--sky); isolation: isolate; }
 .landing-map-layer { position: absolute; inset: 0; z-index: 0; filter: saturate(.75) contrast(.96); }
@@ -51,6 +51,13 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outl
 .choose-route-button svg { opacity: .4; }
 .location-button { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; color: var(--pink); }
 .location-button.located { background: var(--pink); color: white; }
+.random-route-generator { width: min(440px, 88vw); display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: stretch; gap: 8px; margin-top: 14px; padding: 7px 7px 7px 14px; border: 1px solid rgba(24,44,66,.09); border-radius: 13px; background: rgba(255,255,255,.79); box-shadow: 0 8px 19px rgba(29,62,76,.1); text-align: left; }
+.random-route-generator label { min-width: 0; display: grid; gap: 2px; }
+.random-route-generator label span { color: rgba(24,44,66,.56); font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.random-route-generator select { min-width: 0; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 13px; font-weight: 600; cursor: pointer; }
+.random-route-button { min-height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 0 13px; border-radius: 9px; background: var(--blue); color: white; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; transition: transform .18s ease, background .18s ease; }
+.random-route-button:hover:not(:disabled) { transform: translateY(-1px); background: #0869b5; }
+.random-route-button:disabled { background: rgba(24,44,66,.28); cursor: not-allowed; }
 .destination-form { width: min(440px, 88vw); height: 40px; display: flex; align-items: center; gap: 10px; margin-top: 29px; padding: 0 8px 0 17px; border: 1px solid rgba(24,44,66,.08); border-radius: 999px; background: rgba(255,255,255,.8); box-shadow: 0 8px 19px rgba(29,62,76,.1); }
 .destination-form input { min-width: 0; flex: 1; border: 0; outline: none; background: transparent; color: var(--ink); font-size: 12px; }
 .destination-form input::placeholder { color: #7d8d95; opacity: 1; }
@@ -118,7 +125,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outl
   .route-code-simple, .route-minutes-simple { font-size: 10px; }
   .route-controls { margin-top: 113px; }
   .route-controls-compact { margin-top: 30px; }
-  .destination-form { margin-top: 24px; }
+  .destination-form { margin-top: 18px; }
   .landing-footer { padding: 0 20px; }
   .landing-footer span:last-child { display: none; }
   .pin-one { left: 49%; top: 39%; }
@@ -143,8 +150,6 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outl
 .active-flight-shell .flight-map-canvas { z-index: 2; }
 .flight-map-canvas .flight-route-planned { filter: drop-shadow(0 0 2px rgba(255,255,255,.95)); }
 .flight-map-canvas .flight-route-travelled { filter: drop-shadow(0 0 3px rgba(255,255,255,.95)); }
-.flight-map-canvas .leaflet-control-zoom { margin: 88px 22px 0 0; border: 0; box-shadow: 0 7px 18px rgba(29,62,76,.14); }
-.flight-map-canvas .leaflet-control-zoom a { width: 34px; height: 34px; line-height: 34px; border: 0; color: var(--ink); background: rgba(255,255,255,.9); }
 .flight-map-canvas .leaflet-control-attribution { padding: 3px 6px; color: rgba(24,44,66,.68); background: rgba(255,255,255,.76); }
 .flight-map-canvas .leaflet-control-attribution a { color: var(--blue); }
 .flight-map-canvas .leaflet-popup-content-wrapper, .flight-map-canvas .leaflet-popup-tip { background: rgba(255,255,255,.95); color: var(--ink); }
@@ -177,6 +182,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outl
 .selection-destination-card small { margin-top: 3px; color: #72808a; font-size: 10px; }
 .duration-provenance { margin: 2px 0 0; color: #60717e; font-size: 10px; line-height: 1.35; }
 .duration-provenance a { color: var(--blue); text-decoration: underline; text-underline-offset: 2px; }
+.random-route-summary { margin: 2px 0 0; color: #60717e; font-size: 10px; line-height: 1.35; }
 .start-flight-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: max-content; margin-top: 9px; padding: 9px 14px; border-radius: 999px; background: var(--blue); color: white; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 7px 14px rgba(13,120,206,.2); transition: transform .18s ease, background .18s ease; }
 .start-flight-button:hover { background: #0968b1; transform: translateY(-2px); }
 .start-flight-button:disabled { cursor: wait; opacity: .62; transform: none; }
@@ -189,7 +195,6 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outl
 .active-flight-shell .distance-card { right: 24px; }
 
 @media (max-width: 700px) {
-  .flight-map-canvas .leaflet-control-zoom { margin: 75px 12px 0 0; }
   .selection-map-search { top: 16px; width: calc(100vw - 104px); }
   .selection-destination-card { left: 14px; bottom: 26px; width: calc(100vw - 28px); }
   .active-flight-shell .flight-back-button { top: 15px; left: 15px; }
@@ -199,4 +204,10 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--blue); outl
   .active-flight-shell .time-card { left: 14px; }
   .active-flight-shell .distance-card { right: 14px; }
   .active-map-credit, .selecting-map-credit { right: 14px; bottom: 8px; font-size: 8px; }
+}
+
+@media (max-width: 340px) {
+  .random-route-generator { width: calc(100vw - 28px); gap: 5px; padding-left: 10px; }
+  .random-route-button { min-width: 38px; padding: 0 10px; }
+  .random-route-button span { display: none; }
 }

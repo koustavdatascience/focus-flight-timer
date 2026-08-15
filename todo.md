@@ -298,3 +298,6 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 - [x] Verify password recovery and Google sign-in on the new production address before retiring the legacy redirect address.
 - [x] Replace the stale FocusFlight GitHub About description and legacy homepage link with current Project Waypoint content and `https://project-waypoint-app.vercel.app`.
 - [x] Inspect the narrow-screen landing map and ensure airport selectors and focus-flight controls remain accessible without unintended clipping.
+- [x] Remove Leaflet’s visible plus/minus zoom controls while preserving map interaction.
+- [x] Add a random-destination generator that accepts a preferred focus duration and proposes an eligible airport whose realistic flight duration is closest to that target.
+- [x] Add automated coverage and validate the updated random-route journey at desktop and mobile widths.

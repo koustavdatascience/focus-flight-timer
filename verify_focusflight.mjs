@@ -15,12 +15,19 @@ page.on("pageerror", (error) => errors.push(`pageerror: ${error.message}`));
 await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
 const initialSelectionCards = await page.locator(".selection-destination-card").count();
 const initialMapCanvases = await page.locator(".leaflet-container").count();
-const initialOriginPrompt = await page.getByText("The live map is centred on New York City. Select a starting airport to begin.").count();
+const initialOriginPrompt = await page.getByText("The live map is centred on New York City. Pick an airport or let Waypoint choose a starting airport.").count();
 const initialTiles = await page.locator(".leaflet-tile-loaded").count();
+await page.getByRole("button", { name: "Find a place" }).click();
+await page.locator(".route-card-simple").first().waitFor({ state: "visible" });
+const firstUseOriginText = await page.locator(".route-card-simple").first().innerText();
+const firstUseDestinationText = await page.locator(".route-card-simple").nth(1).innerText();
+const firstUseSelectedOriginOnly = !firstUseOriginText.includes("Pick origin") && firstUseDestinationText.includes("Pick destination") && await page.locator(".selection-destination-card").count() === 0;
+
+await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
 await page.getByRole("textbox", { name: "Search starting airport" }).fill("SIN");
-await page.getByRole("option").first().click();
+await page.locator(".airport-suggestions [role=option]").first().click();
 await page.getByRole("textbox", { name: "Search destination" }).fill("HND");
-await page.getByRole("option").first().click();
+await page.locator(".airport-suggestions [role=option]").first().click();
 await page.locator(".leaflet-container").waitFor({ state: "visible" });
 await page.waitForFunction(() => document.querySelectorAll(".leaflet-tile-loaded").length > 0, null, { timeout: 15000 });
 await page.getByRole("button", { name: /Start focus flight/i }).waitFor({ state: "visible" });
@@ -44,7 +51,7 @@ const timeAfterPause = await page.locator(".time-card strong").innerText();
 
 await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
 await page.getByRole("textbox", { name: "Search starting airport" }).fill("SIN");
-await page.getByRole("option").first().click();
+await page.locator(".airport-suggestions [role=option]").first().click();
 await page.getByRole("textbox", { name: "Search destination" }).fill("Cambridge, Massachusetts");
 await page.getByRole("button", { name: "Search destination" }).click();
 await page.locator(".selection-destination-card").waitFor({ state: "visible", timeout: 20000 });
@@ -57,6 +64,9 @@ console.log(JSON.stringify({
   initialMapCanvases,
   initialOriginPrompt,
   initialTiles,
+  firstUseOriginText,
+  firstUseDestinationText,
+  firstUseSelectedOriginOnly,
   selectingRouteLines,
   selectedText,
   durationDisclosureWorked,
@@ -68,7 +78,7 @@ console.log(JSON.stringify({
   geocodedText,
   geocodingWorked,
   errors,
-  pass: initialSelectionCards === 0 && initialMapCanvases === 1 && initialOriginPrompt === 1 && initialTiles > 0 && selectingTiles > 0 && selectingRouteLines > 0 && durationDisclosureWorked && activeTiles > 0 && activeMarkers >= 3 && pausedButton === 1 && timeBeforePause === timeAfterPause && geocodingWorked && errors.length === 0,
+  pass: initialSelectionCards === 0 && initialMapCanvases === 1 && initialOriginPrompt === 1 && initialTiles > 0 && firstUseSelectedOriginOnly && selectingTiles > 0 && selectingRouteLines > 0 && durationDisclosureWorked && activeTiles > 0 && activeMarkers >= 3 && pausedButton === 1 && timeBeforePause === timeAfterPause && geocodingWorked && errors.length === 0,
 }, null, 2));
 
 await browser.close();

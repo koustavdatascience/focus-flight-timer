@@ -7,7 +7,7 @@ import { FlightMap } from "@/components/map/FlightMap";
 import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
 import { useFocusJourney } from "@/hooks/useFocusJourney";
 import { completeFocusTrip, startFocusTrip, updateFocusTripProgress, type FocusTrip } from "@/lib/supabase";
-import { estimateFlightDuration, formatFlightClock, formatFlightDuration, getFlightDuration, pickRandomDestinationForDuration, pickRandomOriginRouteForDuration, type FlightDuration } from "@/services/flightDurations";
+import { estimateFlightDuration, formatFlightClock, formatFlightDuration, getFlightDuration, pickRandomDestinationForDuration, pickRandomOrigin, type FlightDuration } from "@/services/flightDurations";
 import { geocodePlace } from "@/services/geocoding";
 import { AIRPORTS, findNearestAirport, getAirportById, searchAirports, type Destination } from "@/services/airportSearch";
 import { distanceBetween } from "@/services/route";
@@ -339,14 +339,13 @@ export default function Home() {
   async function generateRandomDestination() {
     const targetSeconds = randomFocusMinutes * 60;
     if (!selectedOrigin) {
-      const randomRoute = pickRandomOriginRouteForDuration(targetSeconds, AIRPORTS);
-      if (!randomRoute) {
-        setNotice("No eligible airport matches that focus duration just now. Try another time.");
+      const randomOrigin = pickRandomOrigin(AIRPORTS);
+      if (!randomOrigin) {
+        setNotice("No eligible starting airport is available just now. Try again shortly.");
         return;
       }
-      const summary = `Random start: ${airportLabel(randomRoute.origin)} · ${randomRoute.origin.city}. Route for a ${formatFlightDuration(targetSeconds)} focus target — initial match ${formatFlightDuration(randomRoute.duration.durationSeconds)}, ${Math.round(randomRoute.durationDifferenceSeconds / 60)} minutes away.`;
-      await selectDestination(randomRoute.destination, summary, randomRoute.origin);
-      setNotice(`Random route ready: ${randomRoute.origin.city} → ${randomRoute.destination.city} is a close match for your ${formatFlightDuration(targetSeconds)} focus target.`);
+      selectOrigin(randomOrigin);
+      setNotice(`Random start set to ${randomOrigin.city}. Now choose a destination for your ${formatFlightDuration(targetSeconds)} focus time.`);
       return;
     }
 
@@ -414,7 +413,7 @@ export default function Home() {
 
   return (
     <main className="flight-landing">
-      <div className="landing-map-layer"><FlightMap mode="landing" landingFocus={landingMapDestination} /></div>
+      <div className="landing-map-layer"><FlightMap mode="landing" landingFocus={selectedOrigin ?? landingMapDestination} /></div>
       <div className="map-wash" aria-hidden="true" />
       <header className="landing-header">
         <button className="landing-wordmark" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Waypoint</button>
@@ -452,7 +451,7 @@ export default function Home() {
           <button className="random-route-button" type="button" onClick={() => void generateRandomDestination()}><Shuffle size={15} aria-hidden="true" /><span>Find a place</span></button>
         </div>
         {renderSearchForm()}
-        <div className="flight-status" aria-live="polite">{notice || (selectedOrigin ? "Select a destination to open the geographic flight map" : landingMapDestination ? `Your map is centred on your latest arrival: ${landingMapDestination.city}.` : "The live map is centred on New York City. Pick an airport or let Waypoint generate a route.")}</div>
+        <div className="flight-status" aria-live="polite">{notice || (selectedOrigin ? "Select a destination to open the geographic flight map" : landingMapDestination ? `Your map is centred on your latest arrival: ${landingMapDestination.city}.` : "The live map is centred on New York City. Pick an airport or let Waypoint choose a starting airport.")}</div>
         {latestCompletedTrip && <button className="continue-journey-button" type="button" onClick={continueFromLastDestination}>Continue from your last destination <ChevronRight size={15} /></button>}
       </section>
       <footer className="landing-footer"><span>Waypoint / a small ritual for deep work</span><nav aria-label="Footer navigation"><button onClick={() => navigate("/about")}>About</button><button onClick={() => navigate("/changelog")}>Changelog</button><button onClick={() => navigate("/feedback")}>Feedback</button><button onClick={() => navigate("/privacy")}>Privacy</button><button onClick={() => navigate("/terms")}>Terms</button></nav></footer>

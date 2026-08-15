@@ -153,6 +153,22 @@ export function pickRandomDestinationForDuration(
 }
 
 /**
+ * Selects a commercial airport for an unplanned first-use starting location.
+ * It deliberately does not infer or reserve a destination; the traveller chooses
+ * that next, and the duration matcher then operates from this selected origin.
+ */
+export function pickRandomOrigin(
+  airports: Destination[],
+  random: () => number = Math.random,
+): Destination | null {
+  const eligibleOrigins = airports.filter((airport) => airport.scheduledService && Boolean(airport.iata || airport.icao));
+  if (!eligibleOrigins.length) return null;
+
+  const safeRandom = Math.min(0.999999, Math.max(0, random()));
+  return eligibleOrigins[Math.floor(safeRandom * eligibleOrigins.length)] ?? null;
+}
+
+/**
  * Picks a commercial starting airport first, then selects a duration-matched
  * destination from the same eligible catalogue. The caller may provide a
  * deterministic random function for tests.

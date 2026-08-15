@@ -303,3 +303,5 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 - [x] Add automated coverage and validate the updated random-route journey at desktop and mobile widths.
 - [x] Extend Find a place to choose a random valid origin when none is selected, then choose a duration-matched eligible destination while retaining New York as the initial landing-map view.
 - [x] Add regression coverage and validate the random-origin route flow at desktop and mobile widths.
+- [x] Change first-use Find a place so it selects and centers a random starting airport only, leaving destination selection empty for the user.
+- [x] Add regression coverage and validate the destination-free first-use and subsequent destination-selection flows.

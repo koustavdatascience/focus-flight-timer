@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Destination } from "./airportSearch";
-import { estimateFlightDuration, formatFlightClock, formatFlightDuration, getBootstrapFlightDuration, pickRandomDestinationForDuration, pickRandomOriginRouteForDuration } from "./flightDurations";
+import { estimateFlightDuration, formatFlightClock, formatFlightDuration, getBootstrapFlightDuration, pickRandomDestinationForDuration, pickRandomOrigin, pickRandomOriginRouteForDuration } from "./flightDurations";
 
 function airport(id: string, latitude: number, longitude: number, scheduledService = true): Destination {
   return {
@@ -61,6 +61,14 @@ describe("flight duration formatting and estimation", () => {
     const unavailable = airport("OFF", 0, 2, false);
 
     expect(pickRandomDestinationForDuration(origin, 60 * 60, [origin, unavailable])).toBeNull();
+  });
+
+  it("selects only an eligible random origin for a first-use route", () => {
+    const first = airport("FIRST", 0, 0);
+    const second = airport("SECOND", 0, 3);
+    const unavailable = airport("OFF", 0, 2, false);
+
+    expect(pickRandomOrigin([first, second, unavailable], () => 0.99)?.id).toBe("SECOND");
   });
 
   it("generates a valid random origin and a distinct duration-matched destination", () => {

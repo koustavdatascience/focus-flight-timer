@@ -292,4 +292,8 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 - [x] Rename the Vercel project to `project-waypoint` and inspect the generated deployment address.
 - [x] Assign the alternate `project-waypoint-app.vercel.app` production address and verify the resulting public deployment configuration.
 - [x] Replace stale Vercel deployment references in Waypoint documentation and public metadata with `project-waypoint-app.vercel.app`, preserving the old URL only where migration guidance requires it.
-- [ ] Update Supabase and Google OAuth authorized origins for `project-waypoint-app.vercel.app`, then verify email recovery and Google sign-in on the new production address.
+- [x] Update Supabase Site URL and redirect allow list for `project-waypoint-app.vercel.app` while retaining the legacy address during transition.
+- [x] Add `project-waypoint-app.vercel.app` to Google OAuth authorized JavaScript origins and configure the replacement Google OAuth client in Supabase.
+- [x] Create a dedicated Project Waypoint Google Cloud project, configure a replacement OAuth web client, and connect its credentials to Supabase.
+- [x] Verify password recovery and Google sign-in on the new production address before retiring the legacy redirect address.
+- [x] Replace the stale FocusFlight GitHub About description and legacy homepage link with current Project Waypoint content and `https://project-waypoint-app.vercel.app`.

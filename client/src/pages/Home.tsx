@@ -7,7 +7,7 @@ import { FlightMap } from "@/components/map/FlightMap";
 import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
 import { useFocusJourney } from "@/hooks/useFocusJourney";
 import { completeFocusTrip, startFocusTrip, updateFocusTripProgress, type FocusTrip } from "@/lib/supabase";
-import { estimateFlightDuration, formatFlightClock, formatFlightDuration, getFlightDuration, pickRandomDestinationForDuration, type FlightDuration } from "@/services/flightDurations";
+import { estimateFlightDuration, formatFlightClock, formatFlightDuration, getFlightDuration, pickRandomDestinationForDuration, pickRandomOriginRouteForDuration, type FlightDuration } from "@/services/flightDurations";
 import { geocodePlace } from "@/services/geocoding";
 import { AIRPORTS, findNearestAirport, getAirportById, searchAirports, type Destination } from "@/services/airportSearch";
 import { distanceBetween } from "@/services/route";
@@ -151,13 +151,15 @@ export default function Home() {
     }
   }
 
-  async function selectDestination(destination: Destination, randomSummary = "") {
-    if (!selectedOrigin) {
+  async function selectDestination(destination: Destination, randomSummary = "", originOverride?: Destination) {
+    const origin = originOverride ?? selectedOrigin;
+    if (!origin) {
       setSearchMode("origin");
       setNotice("Choose a starting airport before selecting a destination.");
       return;
     }
-    const distance = distanceBetween(selectedOrigin, destination);
+    const distance = distanceBetween(origin, destination);
+    setSelectedOrigin(origin);
     setSelectedDestination(destination);
     setRandomRouteSummary(randomSummary);
     setRouteDuration(null);
@@ -169,7 +171,7 @@ export default function Home() {
     setQuery("");
     setMenuOpen(false);
     try {
-      const duration = await getFlightDuration(selectedOrigin, destination, distance);
+      const duration = await getFlightDuration(origin, destination, distance);
       setRouteDuration(duration);
       setRemaining(duration.durationSeconds);
       setNotice(`${destination.city} selected — ${duration.source === "verified_direct" ? "direct-flight duration found" : "estimated duration prepared"}.`);
@@ -335,12 +337,19 @@ export default function Home() {
   }
 
   async function generateRandomDestination() {
+    const targetSeconds = randomFocusMinutes * 60;
     if (!selectedOrigin) {
-      setSearchMode("origin");
-      setNotice("Choose a starting airport before asking Waypoint for a random route.");
+      const randomRoute = pickRandomOriginRouteForDuration(targetSeconds, AIRPORTS);
+      if (!randomRoute) {
+        setNotice("No eligible airport matches that focus duration just now. Try another time.");
+        return;
+      }
+      const summary = `Random start: ${airportLabel(randomRoute.origin)} · ${randomRoute.origin.city}. Route for a ${formatFlightDuration(targetSeconds)} focus target — initial match ${formatFlightDuration(randomRoute.duration.durationSeconds)}, ${Math.round(randomRoute.durationDifferenceSeconds / 60)} minutes away.`;
+      await selectDestination(randomRoute.destination, summary, randomRoute.origin);
+      setNotice(`Random route ready: ${randomRoute.origin.city} → ${randomRoute.destination.city} is a close match for your ${formatFlightDuration(targetSeconds)} focus target.`);
       return;
     }
-    const targetSeconds = randomFocusMinutes * 60;
+
     const match = pickRandomDestinationForDuration(selectedOrigin, targetSeconds, AIRPORTS);
     if (!match) {
       setNotice("No eligible airport matches that focus duration just now. Try another time.");
@@ -348,7 +357,7 @@ export default function Home() {
     }
     const summary = `Random route for a ${formatFlightDuration(targetSeconds)} focus target — initial match ${formatFlightDuration(match.duration.durationSeconds)}, ${Math.round(match.durationDifferenceSeconds / 60)} minutes away.`;
     await selectDestination(match.destination, summary);
-    setNotice(`Random route ready: ${match.destination.city} is a close match for your ${formatFlightDuration(targetSeconds)} focus target.`);
+    setNotice(`Random route ready: ${selectedOrigin.city} → ${match.destination.city} is a close match for your ${formatFlightDuration(targetSeconds)} focus target.`);
   }
 
   function renderSearchForm(className = "destination-form", mode: SearchMode = searchMode) {
@@ -433,17 +442,17 @@ export default function Home() {
           </button>
         </div>
         <div className="route-controls route-controls-compact"><button className={`location-button ${located ? "located" : ""}`} aria-label="Use my location as starting airport" onClick={handleUseMyLocation}><MapPin size={16} fill="currentColor" /></button></div>
-        <div className="random-route-generator" aria-label="Random destination generator">
+        <div className="random-route-generator" aria-label="Random route generator">
           <label>
             <span>How long do you have?</span>
             <select value={randomFocusMinutes} onChange={(event) => setRandomFocusMinutes(Number(event.target.value))} aria-label="Preferred focus duration">
               <option value={45}>45 minutes</option><option value={60}>1 hour</option><option value={90}>1 hour 30 minutes</option><option value={120}>2 hours</option><option value={180}>3 hours</option><option value={240}>4 hours</option><option value={360}>6 hours</option><option value={480}>8 hours</option>
             </select>
           </label>
-          <button className="random-route-button" type="button" onClick={() => void generateRandomDestination()} disabled={!selectedOrigin}><Shuffle size={15} aria-hidden="true" /><span>Find a place</span></button>
+          <button className="random-route-button" type="button" onClick={() => void generateRandomDestination()}><Shuffle size={15} aria-hidden="true" /><span>Find a place</span></button>
         </div>
         {renderSearchForm()}
-        <div className="flight-status" aria-live="polite">{notice || (selectedOrigin ? "Select a destination to open the geographic flight map" : landingMapDestination ? `Your map is centred on your latest arrival: ${landingMapDestination.city}.` : "The live map is centred on New York City. Select a starting airport to begin.")}</div>
+        <div className="flight-status" aria-live="polite">{notice || (selectedOrigin ? "Select a destination to open the geographic flight map" : landingMapDestination ? `Your map is centred on your latest arrival: ${landingMapDestination.city}.` : "The live map is centred on New York City. Pick an airport or let Waypoint generate a route.")}</div>
         {latestCompletedTrip && <button className="continue-journey-button" type="button" onClick={continueFromLastDestination}>Continue from your last destination <ChevronRight size={15} /></button>}
       </section>
       <footer className="landing-footer"><span>Waypoint / a small ritual for deep work</span><nav aria-label="Footer navigation"><button onClick={() => navigate("/about")}>About</button><button onClick={() => navigate("/changelog")}>Changelog</button><button onClick={() => navigate("/feedback")}>Feedback</button><button onClick={() => navigate("/privacy")}>Privacy</button><button onClick={() => navigate("/terms")}>Terms</button></nav></footer>

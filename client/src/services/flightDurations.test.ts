@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Destination } from "./airportSearch";
-import { estimateFlightDuration, formatFlightClock, formatFlightDuration, getBootstrapFlightDuration, pickRandomDestinationForDuration } from "./flightDurations";
+import { estimateFlightDuration, formatFlightClock, formatFlightDuration, getBootstrapFlightDuration, pickRandomDestinationForDuration, pickRandomOriginRouteForDuration } from "./flightDurations";
 
 function airport(id: string, latitude: number, longitude: number, scheduledService = true): Destination {
   return {
@@ -61,5 +61,17 @@ describe("flight duration formatting and estimation", () => {
     const unavailable = airport("OFF", 0, 2, false);
 
     expect(pickRandomDestinationForDuration(origin, 60 * 60, [origin, unavailable])).toBeNull();
+  });
+
+  it("generates a valid random origin and a distinct duration-matched destination", () => {
+    const origin = airport("START", 0, 0);
+    const nearby = airport("NEAR", 0, 3);
+    const unavailable = airport("OFF", 0, 2, false);
+
+    const recommendation = pickRandomOriginRouteForDuration(60 * 60, [origin, nearby, unavailable], () => 0);
+
+    expect(recommendation?.origin.id).toBe("START");
+    expect(recommendation?.destination.id).toBe("NEAR");
+    expect(recommendation?.origin.id).not.toBe(recommendation?.destination.id);
   });
 });

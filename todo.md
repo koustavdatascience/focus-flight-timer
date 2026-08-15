@@ -301,3 +301,5 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 - [x] Remove Leaflet’s visible plus/minus zoom controls while preserving map interaction.
 - [x] Add a random-destination generator that accepts a preferred focus duration and proposes an eligible airport whose realistic flight duration is closest to that target.
 - [x] Add automated coverage and validate the updated random-route journey at desktop and mobile widths.
+- [x] Extend Find a place to choose a random valid origin when none is selected, then choose a duration-matched eligible destination while retaining New York as the initial landing-map view.
+- [x] Add regression coverage and validate the random-origin route flow at desktop and mobile widths.

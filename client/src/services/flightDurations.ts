@@ -21,6 +21,10 @@ export type RandomRouteRecommendation = {
   candidateCount: number;
 };
 
+export type RandomOriginRouteRecommendation = RandomRouteRecommendation & {
+  origin: Destination;
+};
+
 type CachedFlightDurationRow = {
   route_key: string;
   duration_seconds: number;
@@ -146,6 +150,28 @@ export function pickRandomDestinationForDuration(
     ...selected,
     candidateCount: shortList.length,
   };
+}
+
+/**
+ * Picks a commercial starting airport first, then selects a duration-matched
+ * destination from the same eligible catalogue. The caller may provide a
+ * deterministic random function for tests.
+ */
+export function pickRandomOriginRouteForDuration(
+  targetDurationSeconds: number,
+  airports: Destination[],
+  random: () => number = Math.random,
+): RandomOriginRouteRecommendation | null {
+  const eligibleOrigins = airports.filter((airport) => airport.scheduledService && Boolean(airport.iata || airport.icao));
+  if (eligibleOrigins.length < 2) return null;
+
+  const startIndex = Math.floor(Math.min(0.999999, Math.max(0, random())) * eligibleOrigins.length);
+  for (let offset = 0; offset < eligibleOrigins.length; offset += 1) {
+    const origin = eligibleOrigins[(startIndex + offset) % eligibleOrigins.length];
+    const recommendation = pickRandomDestinationForDuration(origin, targetDurationSeconds, airports, random);
+    if (recommendation) return { origin, ...recommendation };
+  }
+  return null;
 }
 
 function isFresh(row: CachedFlightDurationRow) {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Destination } from "./airportSearch";
-import { estimateFlightDuration, formatFlightClock, formatFlightDuration, getBootstrapFlightDuration, pickRandomDestinationForDuration, pickRandomOrigin, pickRandomOriginRouteForDuration } from "./flightDurations";
+import { estimateFlightDuration, formatFlightClock, formatFlightDuration, getBootstrapFlightDuration, pickRandomDestination, pickRandomDestinationForDuration, pickRandomOrigin, pickRandomOriginRouteForDuration } from "./flightDurations";
 
 function airport(id: string, latitude: number, longitude: number, scheduledService = true): Destination {
   return {
@@ -61,6 +61,16 @@ describe("flight duration formatting and estimation", () => {
     const unavailable = airport("OFF", 0, 2, false);
 
     expect(pickRandomDestinationForDuration(origin, 60 * 60, [origin, unavailable])).toBeNull();
+  });
+
+  it("cycles through eligible destinations without applying the focus-time matcher", () => {
+    const origin = airport("ORG", 0, 0);
+    const first = airport("FIRST", 0, 2);
+    const second = airport("SECOND", 0, 20);
+
+    expect(pickRandomDestination(origin, [origin, first, second], () => 0)?.id).toBe("FIRST");
+    expect(pickRandomDestination(origin, [origin, first, second], () => 0.99)?.id).toBe("SECOND");
+    expect(pickRandomDestination(origin, [origin], () => 0)).toBeNull();
   });
 
   it("selects only an eligible random origin for a first-use route", () => {

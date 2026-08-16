@@ -8,7 +8,7 @@ import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
 import { useFocusJourney } from "@/hooks/useFocusJourney";
 import { useWaypointPresence } from "@/hooks/useWaypointPresence";
 import { completeFocusTrip, startFocusTrip, updateFocusTripProgress, type FocusTrip } from "@/lib/supabase";
-import { estimateFlightDuration, formatFlightClock, formatFlightDuration, getFlightDuration, pickRandomDestinationForDuration, pickRandomOrigin, type FlightDuration } from "@/services/flightDurations";
+import { estimateFlightDuration, formatFlightClock, formatFlightDuration, getFlightDuration, pickRandomDestination, pickRandomDestinationForDuration, pickRandomOrigin, type FlightDuration } from "@/services/flightDurations";
 import { geocodePlace } from "@/services/geocoding";
 import { AIRPORTS, findNearestAirport, getAirportById, searchAirports, type Destination } from "@/services/airportSearch";
 import { distanceBetween } from "@/services/route";
@@ -159,7 +159,7 @@ export default function Home() {
     }
   }
 
-  async function selectDestination(destination: Destination, randomSummary = "", originOverride?: Destination) {
+  async function selectDestination(destination: Destination, randomSummary = "", originOverride?: Destination, transitionToSelection = true) {
     const origin = originOverride ?? selectedOrigin;
     if (!origin) {
       setSearchMode("origin");
@@ -174,7 +174,7 @@ export default function Home() {
     setDurationLoading(true);
     setRemaining(0);
     setRunning(false);
-    setView("selecting");
+    if (transitionToSelection) setView("selecting");
     setNotice(`Checking the flight duration for ${destination.city}…`);
     setQuery("");
     setMenuOpen(false);
@@ -290,6 +290,34 @@ export default function Home() {
     setMenuOpen(false);
   }
 
+  function cycleRandomOrigin() {
+    const randomOrigin = pickRandomOrigin(AIRPORTS);
+    if (!randomOrigin) {
+      setNotice("No eligible starting airport is available just now. Try again shortly.");
+      return;
+    }
+    selectOrigin(randomOrigin);
+  }
+
+  function cycleRandomDestination() {
+    if (!selectedOrigin) {
+      setNotice("Choose a starting airport first, then browse destination options.");
+      return;
+    }
+    const randomDestination = pickRandomDestination(selectedOrigin, AIRPORTS);
+    if (!randomDestination) {
+      setNotice("No eligible destination is available just now. Try again shortly.");
+      return;
+    }
+    void selectDestination(randomDestination, "", undefined, false);
+  }
+
+  function confirmRoute() {
+    if (!selectedOrigin || !selectedDestination || !routeDuration || durationLoading) return;
+    setView("selecting");
+    setNotice(`${selectedOrigin.city} → ${selectedDestination.city} confirmed. Review the route, then start your focus flight.`);
+  }
+
   function openLocationSearch(mode: SearchMode) {
     if (mode === "destination" && !selectedOrigin) {
       setSearchMode("origin");
@@ -363,8 +391,8 @@ export default function Home() {
       return;
     }
     const summary = `Random route for a ${formatFlightDuration(targetSeconds)} focus target — initial match ${formatFlightDuration(match.duration.durationSeconds)}, ${Math.round(match.durationDifferenceSeconds / 60)} minutes away.`;
-    await selectDestination(match.destination, summary);
-    setNotice(`Random route ready: ${selectedOrigin.city} → ${match.destination.city} is a close match for your ${formatFlightDuration(targetSeconds)} focus target.`);
+    await selectDestination(match.destination, summary, undefined, false);
+    setNotice(`Suggestion ready: ${selectedOrigin.city} → ${match.destination.city} is a close match for your ${formatFlightDuration(targetSeconds)} focus target. Browse another option or confirm when ready.`);
   }
 
   function renderSearchForm(className = "destination-form", mode: SearchMode = searchMode) {
@@ -438,15 +466,15 @@ export default function Home() {
         <div className="flight-kicker"><Plane size={17} fill="currentColor" /><span>{selectedOrigin ? "Choose a destination," : "Choose a starting airport,"}</span><strong>keep your focus.</strong></div>
         <h1 id="flight-title">Your next focus flight<br /><em>starts here.</em></h1>
         <div className="route-cards route-cards-two" aria-label="Starting location and destination">
-          <button className={`route-card-simple route-location-card ${selectedOrigin ? "active" : ""}`} onClick={() => openLocationSearch("origin")}>
-            <span className="route-card-label">Starting location</span>
+          <button className={`route-card-simple route-location-card ${selectedOrigin ? "active" : ""}`} onClick={cycleRandomOrigin} aria-label="Cycle through random starting airports">
+            <span className="route-card-label">Starting location <small>click to shuffle</small></span>
             <span className="route-code-simple">{selectedOrigin ? airportLabel(selectedOrigin) : "FROM"}</span>
             <span className="route-place-simple">{selectedOrigin ? selectedOrigin.city : "Pick origin"}</span>
           </button>
-          <button className={`route-card-simple route-location-card ${selectedDestination ? "active" : ""}`} onClick={() => openLocationSearch("destination")}>
-            <span className="route-card-label">Destination</span>
+          <button className={`route-card-simple route-location-card ${selectedDestination ? "active" : ""}`} onClick={cycleRandomDestination} aria-label="Cycle through random destinations">
+            <span className="route-card-label">Destination <small>click to shuffle</small></span>
             <span className="route-code-simple">{selectedDestination ? airportLabel(selectedDestination) : "TO"}</span>
-            <span className="route-place-simple">{selectedDestination ? selectedDestination.city : "Pick destination"}</span>
+            <span className="route-place-simple">{selectedDestination ? `${selectedDestination.city}${routeDuration ? ` · ${formatFlightDuration(routeDuration.durationSeconds)}` : ""}` : "Pick destination"}</span>
           </button>
         </div>
         <div className="route-controls route-controls-compact"><button className={`location-button ${located ? "located" : ""}`} aria-label="Use my location as starting airport" onClick={handleUseMyLocation}><MapPin size={16} fill="currentColor" /></button></div>
@@ -460,7 +488,8 @@ export default function Home() {
           <button className="random-route-button" type="button" onClick={() => void generateRandomDestination()}><Shuffle size={15} aria-hidden="true" /><span>Find a place</span></button>
         </div>
         {renderSearchForm()}
-        <div className="flight-status" aria-live="polite">{notice || (selectedOrigin ? "Select a destination to open the geographic flight map" : landingMapDestination ? `Your map is centred on your latest arrival: ${landingMapDestination.city}.` : "The live map is centred on New York City. Pick an airport or let Waypoint choose a starting airport.")}</div>
+        <div className="flight-status" aria-live="polite">{notice || (selectedOrigin ? selectedDestination ? "Review your route, or browse another option before confirming." : "Select a destination to open the geographic flight map" : landingMapDestination ? `Your map is centred on your latest arrival: ${landingMapDestination.city}.` : "The live map is centred on New York City. Pick an airport or let Waypoint choose a starting airport.")}</div>
+        {selectedOrigin && selectedDestination && routeDuration && <button className="continue-journey-button route-confirm-button" type="button" onClick={confirmRoute} disabled={durationLoading}>Done — review this route <ChevronRight size={15} /></button>}
         {latestCompletedTrip && <button className="continue-journey-button" type="button" onClick={continueFromLastDestination}>Continue from your last destination <ChevronRight size={15} /></button>}
       </section>
       <footer className="landing-footer"><span>Waypoint / a small ritual for deep work</span><nav aria-label="Footer navigation"><button onClick={() => navigate("/about")}>About</button><button onClick={() => navigate("/changelog")}>Changelog</button><button onClick={() => navigate("/feedback")}>Feedback</button><button onClick={() => navigate("/privacy")}>Privacy</button><button onClick={() => navigate("/terms")}>Terms</button></nav></footer>

@@ -168,6 +168,21 @@ export function pickRandomOrigin(
   return eligibleOrigins[Math.floor(safeRandom * eligibleOrigins.length)] ?? null;
 }
 
+/** Free-form destination browsing for the landing-page route card. */
+export function pickRandomDestination(
+  origin: Destination,
+  airports: Destination[],
+  random: () => number = Math.random,
+): Destination | null {
+  const eligibleDestinations = airports.filter(
+    (airport) => String(airport.id) !== String(origin.id) && airport.scheduledService && Boolean(airport.iata || airport.icao),
+  );
+  if (!eligibleDestinations.length) return null;
+
+  const safeRandom = Math.min(0.999999, Math.max(0, random()));
+  return eligibleDestinations[Math.floor(safeRandom * eligibleDestinations.length)] ?? null;
+}
+
 /**
  * Picks a commercial starting airport first, then selects a duration-matched
  * destination from the same eligible catalogue. The caller may provide a

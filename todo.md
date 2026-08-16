@@ -312,3 +312,15 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 - [x] Add automated coverage and validate the active-flight camera behavior at desktop and mobile widths.
 - [x] Rotate the active-flight map with the aircraft bearing so the plane remains vertically oriented toward the top of the screen.
 - [x] Add camera-orientation regression coverage and validate the rotated active-flight experience at desktop and mobile widths.
+- [x] Make the starting-location card generate and cycle through random origins when clicked.
+- [x] Make the destination card generate and cycle through random destinations when clicked, showing each route duration regardless of the selected focus-time target.
+- [x] Keep Find a place as the only duration-matched destination action, without locking the result, and add a Done / Continue to flight action after route finalization.
+- [x] Add regression coverage and validate the updated card-selection and active-flight flow.
+
+## Interactive route-selection UX refinement
+
+- [x] Make the Starting location card cycle through random eligible airports on click without auto-selecting a destination.
+- [x] Make the Destination card cycle through random eligible airports on click and display the resolved flight duration.
+- [x] Refine Find a place so it suggests duration-matched options without locking the route, while preserving duration-aware recommendations.
+- [x] Add a clear Done/Continue confirmation action before entering the active flight view.
+- [x] Update route-selection validation notes and run the full test suite across desktop and mobile flows.

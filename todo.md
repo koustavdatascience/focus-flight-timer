@@ -339,5 +339,5 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 
 ## GitHub-hosted favicon asset link
 
-- [ ] Upload the Waypoint route-mark image to the public GitHub repository.
-- [ ] Link the tab-logo metadata to the public repository-hosted asset and verify the URL.
+- [x] Upload the Waypoint route-mark image to the public GitHub repository.
+- [x] Link the tab-logo metadata to the public repository-hosted asset and verify the URL.

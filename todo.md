@@ -310,3 +310,5 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 - [x] Add and validate a responsive lower-corner live-activity indicator using the real presence counts.
 - [x] Add an active-flight follow camera that zooms toward the aircraft and smoothly keeps it in view with forward-looking heading context.
 - [x] Add automated coverage and validate the active-flight camera behavior at desktop and mobile widths.
+- [x] Rotate the active-flight map with the aircraft bearing so the plane remains vertically oriented toward the top of the screen.
+- [x] Add camera-orientation regression coverage and validate the rotated active-flight experience at desktop and mobile widths.

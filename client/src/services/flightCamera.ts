@@ -11,3 +11,9 @@ export function forwardHeadingOffset(bearing: number, distance: number) {
     y: -Math.cos(headingRadians) * distance,
   };
 }
+
+/** Rotate the map opposite the aircraft heading so its nose stays vertical on screen. */
+export function navigationMapRotation(bearing: number) {
+  const normalizedBearing = ((bearing % 360) + 360) % 360;
+  return normalizedBearing === 0 ? 0 : -normalizedBearing;
+}

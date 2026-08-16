@@ -1,12 +1,13 @@
 /* Cloud Atlas Editorial map: real OSM geography with compact floating UI layered above it. */
 
 import { divIcon, latLngBounds } from "leaflet";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { CircleMarker, MapContainer, Marker, Polyline, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { MAP_CONFIG } from "@/config/map";
 import type { Destination } from "@/services/airportSearch";
-import { aircraftAtProgress, gentleFlightRoute, routeCoordinatesAtProgress, type Coordinate, type GeodesicRoute } from "@/services/route";
+import { ACTIVE_FLIGHT_MIN_ZOOM, forwardCameraDistance, forwardHeadingOffset } from "@/services/flightCamera";
+import { aircraftAtProgress, gentleFlightRoute, routeCoordinatesAtProgress, type AircraftState, type Coordinate, type GeodesicRoute } from "@/services/route";
 
 type MapMode = "landing" | "selecting" | "active";
 
@@ -39,13 +40,40 @@ function MapViewport({ origin, destination, mode, landingFocus, route }: Pick<Fl
       map.flyTo(center, landingFocus ? 7 : MAP_CONFIG.landingZoom, { duration: 1.1 });
       return;
     }
+    if (mode === "active") return;
     if (!origin || !destination) return;
     const routeCoordinates = route?.animationCoordinates;
     const bounds = routeCoordinates && routeCoordinates.length > 1
       ? latLngBounds(routeCoordinates.map((coordinate) => [coordinate.latitude, coordinate.longitude] as [number, number]))
       : latLngBounds([[origin.latitude, origin.longitude], [destination.latitude, destination.longitude]]);
-    map.flyToBounds(bounds, { padding: [110, 110], maxZoom: mode === "active" ? 5 : 6, duration: 1.25 });
+    map.flyToBounds(bounds, { padding: [110, 110], maxZoom: 6, duration: 1.25 });
   }, [destination?.latitude, destination?.longitude, landingFocus?.id, landingFocus?.latitude, landingFocus?.longitude, mode, origin?.latitude, origin?.longitude, route, map]);
+  return null;
+}
+
+/** Keeps an active aircraft in the lower portion of the viewport with geographic context ahead of its heading. */
+function ActiveFlightCamera({ aircraft }: { aircraft: AircraftState | null }) {
+  const map = useMap();
+  const hasCentered = useRef(false);
+
+  useEffect(() => {
+    if (!aircraft) return;
+
+    const cameraZoom = Math.max(map.getZoom(), ACTIVE_FLIGHT_MIN_ZOOM);
+    const aircraftPoint = map.project([aircraft.coordinate.latitude, aircraft.coordinate.longitude], cameraZoom);
+    const viewport = map.getSize();
+    const forwardPixels = forwardCameraDistance(viewport.x, viewport.y);
+    const offset = forwardHeadingOffset(aircraft.bearing, forwardPixels);
+    const aheadPoint = aircraftPoint.add([offset.x, offset.y]);
+    const forwardLookingCenter = map.unproject(aheadPoint, cameraZoom);
+
+    map.setView(forwardLookingCenter, cameraZoom, {
+      animate: hasCentered.current,
+      duration: hasCentered.current ? 0.75 : 0,
+    });
+    hasCentered.current = true;
+  }, [aircraft?.bearing, aircraft?.coordinate.latitude, aircraft?.coordinate.longitude, map]);
+
   return null;
 }
 
@@ -77,6 +105,7 @@ export function FlightMap({ origin, destination, progress = 0, mode, landingFocu
     <MapContainer className="flight-map-canvas" center={MAP_CONFIG.defaultCenter} zoom={MAP_CONFIG.defaultZoom} minZoom={2} maxZoom={12} scrollWheelZoom doubleClickZoom dragging zoomControl={false} attributionControl>
       <TileLayer url={MAP_CONFIG.tileUrl} attribution={MAP_CONFIG.attribution} crossOrigin />
       <MapViewport origin={origin} destination={destination} mode={mode} landingFocus={landingFocus} route={route} />
+      {mode === "active" && <ActiveFlightCamera aircraft={aircraft} />}
       <MapClickHandler onMapClick={onMapClick} />
       {hasRoute && origin && destination && <>
         {plannedRoute.length > 1 && <Polyline

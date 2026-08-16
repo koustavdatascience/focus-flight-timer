@@ -305,3 +305,8 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 - [x] Add regression coverage and validate the random-origin route flow at desktop and mobile widths.
 - [x] Change first-use Find a place so it selects and centers a random starting airport only, leaving destination selection empty for the user.
 - [x] Add regression coverage and validate the destination-free first-use and subsequent destination-selection flows.
+- [x] Add an on-brand Waypoint favicon for browser tabs and public pages.
+- [x] Implement shared, non-personal live presence that counts current Waypoint explorers and active flights through Supabase Realtime.
+- [x] Add and validate a responsive lower-corner live-activity indicator using the real presence counts.
+- [x] Add an active-flight follow camera that zooms toward the aircraft and smoothly keeps it in view with forward-looking heading context.
+- [x] Add automated coverage and validate the active-flight camera behavior at desktop and mobile widths.

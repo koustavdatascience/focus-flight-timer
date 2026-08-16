@@ -1,11 +1,12 @@
 // Cloud Atlas Editorial page: an explicit-airport focus ritual on a real map, with sourced or transparent estimated flight durations.
-import { ArrowLeft, ChevronRight, Info, MapPin, Menu, Pause, Plane, Play, Search, Shuffle, Volume2, VolumeX, X } from "lucide-react";
+import { ArrowLeft, ChevronRight, Info, MapPin, Menu, Pause, Plane, Play, Radio, Search, Shuffle, Volume2, VolumeX, X } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { AuthDialog, type AuthDialogMode } from "@/components/auth/AuthDialog";
 import { FlightMap } from "@/components/map/FlightMap";
 import { useSupabaseAuth } from "@/contexts/SupabaseAuthContext";
 import { useFocusJourney } from "@/hooks/useFocusJourney";
+import { useWaypointPresence } from "@/hooks/useWaypointPresence";
 import { completeFocusTrip, startFocusTrip, updateFocusTripProgress, type FocusTrip } from "@/lib/supabase";
 import { estimateFlightDuration, formatFlightClock, formatFlightDuration, getFlightDuration, pickRandomDestinationForDuration, pickRandomOrigin, type FlightDuration } from "@/services/flightDurations";
 import { geocodePlace } from "@/services/geocoding";
@@ -58,6 +59,13 @@ export default function Home() {
   const progress = totalSeconds === 0 ? 0 : 1 - remaining / totalSeconds;
   const latestCompletedTrip = useMemo(() => getLatestCompletedTrip(trips), [trips]);
   const landingMapDestination = useMemo(() => latestCompletedTrip ? getAirportById(latestCompletedTrip.destination_airport_id) : null, [latestCompletedTrip]);
+  const livePresence = useWaypointPresence(view === "active" && running ? "flying" : "exploring");
+  const liveActivity = (
+    <aside className={`live-activity-card ${view === "active" ? "active-flight-activity" : ""}`} aria-live="polite" aria-label="Live Waypoint activity">
+      <Radio size={14} aria-hidden="true" />
+      {livePresence.connected ? <span><strong>{livePresence.explorers}</strong> {livePresence.explorers === 1 ? "traveler" : "travelers"} here <i>·</i> <strong>{livePresence.flyers}</strong> flying</span> : <span>Connecting live activity…</span>}
+    </aside>
+  );
 
   useEffect(() => {
     const authAction = new URLSearchParams(location.split("?")[1] || window.location.search).get("auth");
@@ -388,6 +396,7 @@ export default function Home() {
         <div className="active-notice" aria-live="polite">{notice || (persistingTrip ? "Saving this flight…" : remaining === 0 ? "Landed — take a good break." : running ? `${selectedDestination.city} is in progress` : "Flight paused")}</div>
         <div className="flight-stat-card time-card"><span>Time</span><strong>{formatCompactTime(remaining)}</strong><small>{running ? "in the air" : remaining === 0 ? "arrived" : "paused"}</small></div>
         <div className="flight-stat-card distance-card"><span>Distance</span><strong>{routeDistance.toLocaleString()} km</strong><small>{airportLabel(selectedOrigin)} → {airportLabel(selectedDestination)}</small></div>
+        {liveActivity}
       </main>
     );
   }
@@ -455,6 +464,7 @@ export default function Home() {
         {latestCompletedTrip && <button className="continue-journey-button" type="button" onClick={continueFromLastDestination}>Continue from your last destination <ChevronRight size={15} /></button>}
       </section>
       <footer className="landing-footer"><span>Waypoint / a small ritual for deep work</span><nav aria-label="Footer navigation"><button onClick={() => navigate("/about")}>About</button><button onClick={() => navigate("/changelog")}>Changelog</button><button onClick={() => navigate("/feedback")}>Feedback</button><button onClick={() => navigate("/privacy")}>Privacy</button><button onClick={() => navigate("/terms")}>Terms</button></nav></footer>
+      {liveActivity}
       <AuthDialog open={authDialogOpen} initialMode={authDialogMode} onOpenChange={setAuthDialogOpen} />
     </main>
   );

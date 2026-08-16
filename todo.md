@@ -324,3 +324,8 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 - [x] Refine Find a place so it suggests duration-matched options without locking the route, while preserving duration-aware recommendations.
 - [x] Add a clear Done/Continue confirmation action before entering the active flight view.
 - [x] Update route-selection validation notes and run the full test suite across desktop and mobile flows.
+
+## Browser-tab logo refinement
+
+- [x] Replace the current Waypoint browser-tab logo with the user-provided or user-approved favicon asset.
+- [x] Verify the favicon metadata and production build after the replacement.

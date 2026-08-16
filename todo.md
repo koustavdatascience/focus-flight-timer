@@ -351,3 +351,8 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 
 - [x] Prepare the supplied black-and-white star image for efficient browser-tab use.
 - [x] Replace the current favicon asset and metadata with the user-approved star image, then push and verify it.
+
+## Launch and sharing strategy
+
+- [x] Research relevant focus, student, productivity, indie-maker, travel, and design communities alongside their promotion norms.
+- [x] Create an automation-ready multi-channel Waypoint sharing strategy with platform-specific content, approvals, cadence, tracking, and anti-spam safeguards.

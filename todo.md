@@ -336,3 +336,8 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 - [x] Verify the deployed favicon metadata and document any required Vercel redeploy or browser-cache refresh.
 
 - [x] Replace the generated storage URL with a source-controlled favicon asset so Vercel serves the tab logo instead of SPA fallback HTML.
+
+## GitHub-hosted favicon asset link
+
+- [ ] Upload the Waypoint route-mark image to the public GitHub repository.
+- [ ] Link the tab-logo metadata to the public repository-hosted asset and verify the URL.

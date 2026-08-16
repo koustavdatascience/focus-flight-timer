@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Waypoint route mark</title>
+  <desc id="desc">A midnight waypoint dot connected to a coral flight arc on warm paper.</desc>
+  <rect width="64" height="64" rx="16" fill="#f6f1e7"/>
+  <path d="M14 43c7-18 17-26 29-25 5 .4 8 2.2 10 5" fill="none" stroke="#e9675d" stroke-width="5" stroke-linecap="round"/>
+  <path d="M43 15l10 8-12 2z" fill="#e9675d"/>
+  <circle cx="15" cy="43" r="8" fill="#172943"/>
+  <circle cx="15" cy="43" r="3" fill="#f6f1e7"/>
+</svg>

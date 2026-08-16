@@ -26,3 +26,13 @@ The interactive flow was verified in the browser as follows:
 5. The route-review map showed the origin marker, destination marker, dashed geographic route, distance, duration provenance, and the existing **Start focus flight** action.
 
 The live preview still reports the expected Vite asset warning for the existing `/manus-storage/focusflight-hero-map_6e4d3ba6.png` reference; it is an existing runtime-resolved asset warning and does not block the route-selection flow or production build.
+
+## Vercel favicon diagnosis
+
+The public GitHub repository was one commit behind the favicon checkpoint: GitHub served the old SVG reference while the local checkpoint contained the new PNG reference. The favicon checkpoint was pushed to `main` as `2f486e3`. The first live Vercel inspection occurred before Vercel rebuilt, so the deployed icon may remain cached or may still reflect the prior deployment.
+
+Deployed favicon links observed during the inspection: [(['icon'], 'image/svg+xml', '/manus-storage/waypoint-tab-icon_ce1ae494.svg')]
+
+## Vercel favicon deployment verification
+
+Vercel created a READY production deployment from commit `2f486e3` and assigned all four project domains, including `project-waypoint-app.vercel.app`, to it. The live HTML now references `/manus-storage/waypoint-route-mark_f7ed2e54.png`; the earlier inspection showed the old SVG only because it ran before the new deployment completed. If the tab still shows the prior mark, force-refresh the site or close and reopen the tab; the favicon image itself may also still be finishing background generation.

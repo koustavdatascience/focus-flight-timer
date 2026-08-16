@@ -329,3 +329,10 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 
 - [x] Replace the current Waypoint browser-tab logo with the user-provided or user-approved favicon asset.
 - [x] Verify the favicon metadata and production build after the replacement.
+
+## Deployed favicon verification
+
+- [x] Synchronize the new favicon checkpoint to the public GitHub/Vercel source branch.
+- [x] Verify the deployed favicon metadata and document any required Vercel redeploy or browser-cache refresh.
+
+- [x] Replace the generated storage URL with a source-controlled favicon asset so Vercel serves the tab logo instead of SPA fallback HTML.

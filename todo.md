@@ -344,10 +344,10 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 
 ## Replacement tab-logo concept
 
-- [ ] Create a new Waypoint browser-tab logo concept and replace the existing route-mark asset.
-- [ ] Update the GitHub-hosted favicon link, verify the public image, and push the replacement.
+- [x] Explore a new Waypoint browser-tab logo concept; superseded by the user's supplied star mark before publication.
+- [x] Update the GitHub-hosted favicon link, verify the public image, and push the replacement.
 
 ## User-provided star favicon
 
-- [ ] Prepare the supplied black-and-white star image for efficient browser-tab use.
-- [ ] Replace the current favicon asset and metadata with the user-approved star image, then push and verify it.
+- [x] Prepare the supplied black-and-white star image for efficient browser-tab use.
+- [x] Replace the current favicon asset and metadata with the user-approved star image, then push and verify it.

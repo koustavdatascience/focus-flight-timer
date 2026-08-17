@@ -370,4 +370,4 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 
 ## README visual preview
 
-- [ ] Embed the published Waypoint landing and active-flight images in the public GitHub README.
+- [x] Embed the published Waypoint landing and active-flight images in the public GitHub README.

@@ -371,3 +371,12 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 ## README visual preview
 
 - [x] Embed the published Waypoint landing and active-flight images in the public GitHub README.
+
+## Public repository security review
+
+- [x] Inspect tracked Waypoint files for common secret-exposure risks and document the safe credential-handling approach.
+
+## Checkpoint media migration
+
+- [ ] Preserve the public Product Hunt image while removing the oversized local repository copy that blocks managed checkpoints.
+- [ ] Verify README previews remain available and save a successful checkpoint after the media migration.

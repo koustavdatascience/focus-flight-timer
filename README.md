@@ -6,6 +6,16 @@
 
 Waypoint pairs a Pomodoro-style focus ritual with a real interactive map. Choose an origin and destination, begin a timed focus flight, and watch the aircraft travel a geographically grounded route while the timer counts down. Completed trips can be saved to a personal journey history through Supabase authentication.
 
+## A quick look
+
+**Choose a route.** Select where you start and where you want the next focus session to take you.
+
+![Waypoint landing page with interactive map, route cards, and focus-duration control](https://raw.githubusercontent.com/koustavdatascience/project-waypoint/main/assets/product-hunt/01-waypoint-route-selection.png)
+
+**Fly while you focus.** The live timer controls both the aircraft’s position and the route reveal.
+
+![Waypoint active-flight map with aircraft, timer, route progress, and flight controls](https://raw.githubusercontent.com/koustavdatascience/project-waypoint/main/assets/product-hunt/02-waypoint-active-flight.png)
+
 ## What is implemented
 
 | Area             | Current capability                                                                                                                                                            |
@@ -144,7 +154,7 @@ The current released experience includes the solo flight ritual, personal trip h
 
 The repository is public and maintained as an independent project. Contributions should follow a future contributor guide and security reporting policy; avoid sharing secrets or production-only data in issues, pull requests, or commits.
 
-The package metadata currently identifies the project as `MIT`; add a root `LICENSE` file before representing the repository as publicly licensed.
+Waypoint is released under the [MIT License](LICENSE).
 
 ## Attribution
 

@@ -367,3 +367,7 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 
 - [x] Add a standalone MIT license file to the public Waypoint repository.
 - [x] Add selected truthful Product Hunt launch images and their usage notes to the public Waypoint repository.
+
+## README visual preview
+
+- [ ] Embed the published Waypoint landing and active-flight images in the public GitHub README.

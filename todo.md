@@ -362,3 +362,8 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 - [x] Create an original Product Hunt thumbnail and gallery image set that communicates Waypoint’s focus-flight product experience.
 - [x] Review the assets for clear product positioning and deliver them for launch-page selection.
 - [x] Capture and prepare a truthful Product Hunt gallery from real Waypoint route-selection, route-review, and active-flight screens while AI image generation is unavailable.
+
+## Open-source repository housekeeping
+
+- [ ] Add a standalone MIT license file to the public Waypoint repository.
+- [ ] Add selected truthful Product Hunt launch images and their usage notes to the public Waypoint repository.

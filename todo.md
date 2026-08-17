@@ -356,3 +356,9 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 
 - [x] Research relevant focus, student, productivity, indie-maker, travel, and design communities alongside their promotion norms.
 - [x] Create an automation-ready multi-channel Waypoint sharing strategy with platform-specific content, approvals, cadence, tracking, and anti-spam safeguards.
+
+## Product Hunt launch images
+
+- [x] Create an original Product Hunt thumbnail and gallery image set that communicates Waypoint’s focus-flight product experience.
+- [x] Review the assets for clear product positioning and deliver them for launch-page selection.
+- [x] Capture and prepare a truthful Product Hunt gallery from real Waypoint route-selection, route-review, and active-flight screens while AI image generation is unavailable.

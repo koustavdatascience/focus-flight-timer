@@ -365,5 +365,5 @@ The user selected the Vercel new-project flow for `koustavdatascience/focus-flig
 
 ## Open-source repository housekeeping
 
-- [ ] Add a standalone MIT license file to the public Waypoint repository.
-- [ ] Add selected truthful Product Hunt launch images and their usage notes to the public Waypoint repository.
+- [x] Add a standalone MIT license file to the public Waypoint repository.
+- [x] Add selected truthful Product Hunt launch images and their usage notes to the public Waypoint repository.

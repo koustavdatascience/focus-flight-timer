@@ -14,6 +14,8 @@ import { AIRPORTS, findNearestAirport, getAirportById, searchAirports, type Dest
 import { distanceBetween } from "@/services/route";
 import { getLatestCompletedTrip } from "@/services/tripHistory";
 import { createFocusTripInput } from "@/services/tripPersistence";
+import { getSimulatedTravelerCount } from "@/services/simulatedPresence";
+import { getDestinationBrief } from "@/services/destinationFacts";
 
 type ViewState = "landing" | "selecting" | "active";
 type SearchMode = "origin" | "destination";
@@ -51,6 +53,8 @@ export default function Home() {
   const [activeTrip, setActiveTrip] = useState<FocusTrip | null>(null);
   const [persistingTrip, setPersistingTrip] = useState(false);
   const [completionRecorded, setCompletionRecorded] = useState(false);
+  const [lastSelectedLocation, setLastSelectedLocation] = useState<Destination | null>(null);
+  const [simulatedTravelers, setSimulatedTravelers] = useState(() => getSimulatedTravelerCount());
   const inputRef = useRef<HTMLInputElement>(null);
   const resumedTripId = useRef<string | null>(null);
   const localSuggestions = useMemo(() => searchAirports(query, 6), [query]);
@@ -59,13 +63,21 @@ export default function Home() {
   const progress = totalSeconds === 0 ? 0 : 1 - remaining / totalSeconds;
   const latestCompletedTrip = useMemo(() => getLatestCompletedTrip(trips), [trips]);
   const landingMapDestination = useMemo(() => latestCompletedTrip ? getAirportById(latestCompletedTrip.destination_airport_id) : null, [latestCompletedTrip]);
+  const destinationBrief = selectedDestination ? getDestinationBrief(selectedDestination) : null;
   const livePresence = useWaypointPresence(view === "active" && running ? "flying" : "exploring");
   const liveActivity = (
-    <aside className={`live-activity-card ${view === "active" ? "active-flight-activity" : ""}`} aria-live="polite" aria-label="Live Waypoint activity">
+    <aside className={`live-activity-card ${view === "active" ? "active-flight-activity" : ""}`} aria-live="polite" aria-label="Estimated Waypoint activity">
       <Radio size={14} aria-hidden="true" />
-      {livePresence.connected ? <span><strong>{livePresence.explorers}</strong> {livePresence.explorers === 1 ? "traveler" : "travelers"} here <i>·</i> <strong>{livePresence.flyers}</strong> flying</span> : <span>Connecting live activity…</span>}
+      <span><strong>{simulatedTravelers}</strong> estimated travelers here <small>simulated</small> <i>·</i> <strong>{livePresence.connected ? livePresence.flyers : 0}</strong> flying</span>
     </aside>
   );
+
+  useEffect(() => {
+    const updateSimulatedTravelers = () => setSimulatedTravelers(getSimulatedTravelerCount());
+    updateSimulatedTravelers();
+    const interval = window.setInterval(updateSimulatedTravelers, 60_000);
+    return () => window.clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const authAction = new URLSearchParams(location.split("?")[1] || window.location.search).get("auth");
@@ -89,6 +101,7 @@ export default function Home() {
     resumedTripId.current = tripId;
     setSelectedOrigin(origin);
     setSelectedDestination(destination);
+    setLastSelectedLocation(destination);
     setRouteDuration({
       routeKey: savedTrip.flight_duration_route_key || `${airportLabel(origin)}-${airportLabel(destination)}`,
       durationSeconds: savedTrip.focus_duration_seconds,
@@ -140,6 +153,7 @@ export default function Home() {
 
   function selectOrigin(origin: Destination) {
     setSelectedOrigin(origin);
+    setLastSelectedLocation(origin);
     setSelectedDestination(null);
     setRouteDuration(null);
     setRandomRouteSummary("");
@@ -169,6 +183,7 @@ export default function Home() {
     const distance = distanceBetween(origin, destination);
     setSelectedOrigin(origin);
     setSelectedDestination(destination);
+    setLastSelectedLocation(destination);
     setRandomRouteSummary(randomSummary);
     setRouteDuration(null);
     setDurationLoading(true);
@@ -424,6 +439,11 @@ export default function Home() {
         <div className="active-notice" aria-live="polite">{notice || (persistingTrip ? "Saving this flight…" : remaining === 0 ? "Landed — take a good break." : running ? `${selectedDestination.city} is in progress` : "Flight paused")}</div>
         <div className="flight-stat-card time-card"><span>Time</span><strong>{formatCompactTime(remaining)}</strong><small>{running ? "in the air" : remaining === 0 ? "arrived" : "paused"}</small></div>
         <div className="flight-stat-card distance-card"><span>Distance</span><strong>{routeDistance.toLocaleString()} km</strong><small>{airportLabel(selectedOrigin)} → {airportLabel(selectedDestination)}</small></div>
+        {destinationBrief && <aside className="destination-brief-card" aria-label={`About ${destinationBrief.title}`}>
+          <span className="destination-brief-eyebrow">{destinationBrief.sourceLabel}</span>
+          <strong>On your way to {destinationBrief.title}</strong>
+          <p>{destinationBrief.fact}</p>
+        </aside>}
         {liveActivity}
       </main>
     );
@@ -450,7 +470,7 @@ export default function Home() {
 
   return (
     <main className="flight-landing">
-      <div className="landing-map-layer"><FlightMap mode="landing" landingFocus={selectedOrigin ?? landingMapDestination} /></div>
+      <div className="landing-map-layer"><FlightMap mode="landing" landingFocus={lastSelectedLocation ?? landingMapDestination} /></div>
       <div className="map-wash" aria-hidden="true" />
       <header className="landing-header">
         <button className="landing-wordmark" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Waypoint</button>

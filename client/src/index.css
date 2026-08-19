@@ -193,6 +193,10 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .active-flight-shell .flight-stat-card { bottom: 25px; }
 .active-flight-shell .time-card { left: 24px; }
 .active-flight-shell .distance-card { right: 24px; }
+.destination-brief-card { position: absolute; top: 22px; left: 50%; z-index: 5; width: min(340px, calc(100vw - 160px)); transform: translateX(-50%); display: grid; gap: 5px; padding: 13px 16px; border: 1px solid rgba(24,44,66,.11); border-radius: 12px; background: rgba(255,255,255,.9); box-shadow: 0 10px 24px rgba(24,44,66,.13); color: var(--ink); backdrop-filter: blur(10px); }
+.destination-brief-eyebrow { color: var(--blue); font-size: 9px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+.destination-brief-card strong { font-size: 14px; font-weight: 700; }
+.destination-brief-card p { margin: 0; color: #61727d; font-size: 10px; line-height: 1.45; }
 
 @media (max-width: 700px) {
   .selection-map-search { top: 16px; width: calc(100vw - 104px); }
@@ -203,6 +207,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   .active-flight-shell .flight-stat-card { bottom: 25px; min-width: 105px; }
   .active-flight-shell .time-card { left: 14px; }
   .active-flight-shell .distance-card { right: 14px; }
+  .destination-brief-card { top: 70px; width: calc(100vw - 28px); }
   .active-map-credit, .selecting-map-credit { right: 14px; bottom: 8px; font-size: 8px; }
 }
 
@@ -216,6 +221,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .live-activity-card svg { color: var(--blue); animation: waypoint-live-pulse 1.8s ease-in-out infinite; }
 .live-activity-card strong { color: var(--ink); font-weight: 800; }
 .live-activity-card i { padding: 0 .08rem; color: #8ca0af; font-style: normal; }
+.live-activity-card small { color: #6d7c86; font-size: .58rem; letter-spacing: .04em; text-transform: uppercase; }
 .active-flight-activity { right: auto; left: 50%; bottom: 5.75rem; transform: translateX(-50%); }
 @keyframes waypoint-live-pulse { 0%, 100% { opacity: .5; transform: scale(.88); } 50% { opacity: 1; transform: scale(1); } }
 

@@ -1,5 +1,5 @@
 // Cloud Atlas Editorial page: an explicit-airport focus ritual on a real map, with sourced or transparent estimated flight durations.
-import { ArrowLeft, ChevronRight, Info, MapPin, Menu, Pause, Plane, Play, Radio, Scissors, Search, Shuffle, Ticket, Volume2, VolumeX, X } from "lucide-react";
+import { ArrowLeft, ChevronRight, Download, Info, MapPin, Menu, Pause, Plane, Play, Printer, Radio, Scissors, Search, Shuffle, Ticket, Volume2, VolumeX, X } from "lucide-react";
 import { FormEvent, PointerEvent as ReactPointerEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { AuthDialog, type AuthDialogMode } from "@/components/auth/AuthDialog";
@@ -17,6 +17,7 @@ import { createFocusTripInput } from "@/services/tripPersistence";
 import { getSimulatedTravelerCount } from "@/services/simulatedPresence";
 import { getDestinationBrief } from "@/services/destinationFacts";
 import { createWaypointTicket, type WaypointTicket } from "@/services/onboardingTicket";
+import { downloadWaypointTicket } from "@/services/ticketExport";
 
 type ViewState = "landing" | "selecting" | "onboarding" | "active";
 type SearchMode = "origin" | "destination";
@@ -302,6 +303,15 @@ export default function Home() {
     completeTicketTear();
   }
 
+  function saveTicketImage() {
+    if (!onboardingTicket) return;
+    downloadWaypointTicket(onboardingTicket);
+  }
+
+  function printTicket() {
+    window.print();
+  }
+
   function pauseAndSyncActiveTrip() {
     if (activeTrip && remaining > 0) {
       void updateFocusTripProgress(activeTrip.id, totalSeconds - remaining, true).catch(() => undefined);
@@ -563,6 +573,10 @@ export default function Home() {
             <strong>Boarding begins {onboardingTicket.boardingAt}</strong>
             <div className="ticket-barcode" aria-label={`Waypoint ticket ${onboardingTicket.tripCode}`} role="img" />
             <small>Unique focus ticket · not an airline boarding pass</small>
+          </div>
+          <div className="ticket-save-actions" aria-label="Save your Waypoint ticket">
+            <button type="button" className="ticket-save-button" onClick={saveTicketImage}><Download size={14} aria-hidden="true" /> Save image</button>
+            <button type="button" className="ticket-save-button" onClick={printTicket}><Printer size={14} aria-hidden="true" /> Print / PDF</button>
           </div>
         </section>
         <div className="ticket-helper-text">Drag the handle across the perforation when you are ready to leave the map behind. Tap it if you are on a touchscreen.</div>

@@ -1,5 +1,5 @@
 // Cloud Atlas Editorial page: an explicit-airport focus ritual on a real map, with sourced or transparent estimated flight durations.
-import { ArrowLeft, ChevronRight, Info, MapPin, Menu, Pause, Plane, Play, Radio, Search, Shuffle, Volume2, VolumeX, X } from "lucide-react";
+import { ArrowLeft, ChevronRight, Info, MapPin, Menu, Pause, Plane, Play, Radio, Scissors, Search, Shuffle, Ticket, Volume2, VolumeX, X } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { AuthDialog, type AuthDialogMode } from "@/components/auth/AuthDialog";
@@ -16,8 +16,9 @@ import { getLatestCompletedTrip } from "@/services/tripHistory";
 import { createFocusTripInput } from "@/services/tripPersistence";
 import { getSimulatedTravelerCount } from "@/services/simulatedPresence";
 import { getDestinationBrief } from "@/services/destinationFacts";
+import { createWaypointTicket, type WaypointTicket } from "@/services/onboardingTicket";
 
-type ViewState = "landing" | "selecting" | "active";
+type ViewState = "landing" | "selecting" | "onboarding" | "active";
 type SearchMode = "origin" | "destination";
 
 function formatCompactTime(seconds: number) {
@@ -54,6 +55,8 @@ export default function Home() {
   const [persistingTrip, setPersistingTrip] = useState(false);
   const [completionRecorded, setCompletionRecorded] = useState(false);
   const [lastSelectedLocation, setLastSelectedLocation] = useState<Destination | null>(null);
+  const [onboardingTicket, setOnboardingTicket] = useState<WaypointTicket | null>(null);
+  const [tearingTicket, setTearingTicket] = useState(false);
   const [simulatedTravelers, setSimulatedTravelers] = useState(() => getSimulatedTravelerCount());
   const inputRef = useRef<HTMLInputElement>(null);
   const resumedTripId = useRef<string | null>(null);
@@ -212,6 +215,7 @@ export default function Home() {
     if (!selectedOrigin || !selectedDestination || !routeDuration || durationLoading || totalSeconds <= 0) return;
     setRemaining(routeDuration.durationSeconds);
     setRunning(true);
+    setTearingTicket(false);
     setView("active");
     setNotice("");
     setActiveTrip(null);
@@ -235,6 +239,12 @@ export default function Home() {
       .finally(() => setPersistingTrip(false));
   }
 
+  function tearTicket() {
+    if (!onboardingTicket || tearingTicket) return;
+    setTearingTicket(true);
+    window.setTimeout(() => startFlight(), 720);
+  }
+
   function pauseAndSyncActiveTrip() {
     if (activeTrip && remaining > 0) {
       void updateFocusTripProgress(activeTrip.id, totalSeconds - remaining, true).catch(() => undefined);
@@ -250,6 +260,8 @@ export default function Home() {
     setDurationLoading(false);
     setSearchMode("origin");
     setRemaining(0);
+    setOnboardingTicket(null);
+    setTearingTicket(false);
     setView("landing");
     setNotice("");
     setActiveTrip(null);
@@ -258,6 +270,8 @@ export default function Home() {
   function returnToSelection() {
     pauseAndSyncActiveTrip();
     setRunning(false);
+    setOnboardingTicket(null);
+    setTearingTicket(false);
     setView("selecting");
     setNotice("");
   }
@@ -327,10 +341,12 @@ export default function Home() {
     void selectDestination(randomDestination, "", undefined, false);
   }
 
-  function confirmRoute() {
+  function beginOnboarding() {
     if (!selectedOrigin || !selectedDestination || !routeDuration || durationLoading) return;
-    setView("selecting");
-    setNotice(`${selectedOrigin.city} → ${selectedDestination.city} confirmed. Review the route, then start your focus flight.`);
+    setOnboardingTicket(createWaypointTicket(selectedOrigin, selectedDestination, routeDuration.durationSeconds));
+    setTearingTicket(false);
+    setNotice("");
+    setView("onboarding");
   }
 
   function openLocationSearch(mode: SearchMode) {
@@ -449,6 +465,44 @@ export default function Home() {
     );
   }
 
+  if (view === "onboarding" && selectedOrigin && selectedDestination && routeDuration && onboardingTicket) {
+    return (
+      <main className="geo-flight-shell onboarding-shell">
+        <FlightMap origin={selectedOrigin} destination={selectedDestination} progress={0} mode="selecting" />
+        <button className="flight-back-button" onClick={returnToSelection} aria-label="Back to route review"><ArrowLeft size={20} /></button>
+        <section className={`onboarding-ticket ${tearingTicket ? "is-tearing" : ""}`} aria-labelledby="onboarding-ticket-title">
+          <div className="ticket-header-row">
+            <span className="ticket-overline"><Ticket size={14} aria-hidden="true" /> Waypoint focus flight</span>
+            <span className="ticket-trip-code">{onboardingTicket.tripCode}</span>
+          </div>
+          <h1 id="onboarding-ticket-title">Your focus flight</h1>
+          <div className="ticket-flight-line"><strong>{onboardingTicket.flightNumber}</strong><span>{formatFlightDuration(onboardingTicket.durationSeconds)} in the air</span></div>
+          <div className="ticket-route-line">
+            <div><span>From</span><strong>{onboardingTicket.originCode}</strong><small>{onboardingTicket.originCity}</small></div>
+            <span className="ticket-route-arrow">→</span>
+            <div><span>To</span><strong>{onboardingTicket.destinationCode}</strong><small>{onboardingTicket.destinationCity}</small></div>
+          </div>
+          <div className="ticket-detail-grid">
+            <div><span>Departure</span><strong>{onboardingTicket.departureAt}</strong><small>{onboardingTicket.originTimezone}</small></div>
+            <div><span>Arrival</span><strong>{onboardingTicket.arrivalAt}</strong><small>{onboardingTicket.destinationTimezone}</small></div>
+            <div><span>Gate</span><strong>{onboardingTicket.gate}</strong><small>Focus room</small></div>
+            <div><span>Seat</span><strong>{onboardingTicket.seat}</strong><small>Quiet cabin</small></div>
+          </div>
+          <div className="ticket-perforation-wrap">
+            <button className="ticket-perforation" type="button" onClick={tearTicket} disabled={tearingTicket} aria-label="Tear ticket and begin focus flight"><span><Scissors size={14} aria-hidden="true" /> Tear here to begin</span></button>
+          </div>
+          <div className="ticket-boarding-section">
+            <span className="ticket-boarding-label">Boarding pass</span>
+            <strong>Boarding begins {onboardingTicket.boardingAt}</strong>
+            <div className="ticket-barcode" aria-label={`Waypoint ticket ${onboardingTicket.tripCode}`} role="img" />
+            <small>Unique focus ticket · not an airline boarding pass</small>
+          </div>
+        </section>
+        <div className="ticket-helper-text">Tear the line when you are ready to leave the map behind and enter your focus flight.</div>
+      </main>
+    );
+  }
+
   if (view === "selecting" && selectedOrigin && selectedDestination) {
     return (
       <main className="geo-flight-shell selecting-flight-shell">
@@ -462,7 +516,7 @@ export default function Home() {
           <small>{airportLabel(selectedOrigin)} → {airportLabel(selectedDestination)} · {routeDistance.toLocaleString()} km · {durationLoading ? "checking duration…" : routeDuration ? `${formatFlightDuration(routeDuration.durationSeconds)} ${routeDuration.source === "verified_direct" ? "direct flight" : "estimated flight"}` : "duration unavailable"}</small>
           {routeDuration && <p className="duration-provenance">{routeDuration.sourceUrl ? <a href={routeDuration.sourceUrl} target="_blank" rel="noreferrer">{routeDuration.sourceLabel}</a> : routeDuration.sourceLabel}</p>}
           {randomRouteSummary && <p className="random-route-summary">{randomRouteSummary}</p>}
-          <button className="start-flight-button" onClick={startFlight} disabled={!routeDuration || durationLoading}>{durationLoading ? "Preparing route…" : "Start focus flight"} <Plane size={15} fill="currentColor" /></button>
+          <button className="start-flight-button" onClick={beginOnboarding} disabled={!routeDuration || durationLoading}>{durationLoading ? "Preparing route…" : "Begin onboarding"} <Ticket size={15} /></button>
         </div>
       </main>
     );
@@ -509,7 +563,7 @@ export default function Home() {
         </div>
         {renderSearchForm()}
         <div className="flight-status" aria-live="polite">{notice || (selectedOrigin ? selectedDestination ? "Review your route, or browse another option before confirming." : "Select a destination to open the geographic flight map" : landingMapDestination ? `Your map is centred on your latest arrival: ${landingMapDestination.city}.` : "The live map is centred on New York City. Pick an airport or let Waypoint choose a starting airport.")}</div>
-        {selectedOrigin && selectedDestination && routeDuration && <button className="continue-journey-button route-confirm-button" type="button" onClick={confirmRoute} disabled={durationLoading}>Done — review this route <ChevronRight size={15} /></button>}
+        {selectedOrigin && selectedDestination && routeDuration && <button className="continue-journey-button route-confirm-button" type="button" onClick={beginOnboarding} disabled={durationLoading}>Begin onboarding <Ticket size={15} /></button>}
         {latestCompletedTrip && <button className="continue-journey-button" type="button" onClick={continueFromLastDestination}>Continue from your last destination <ChevronRight size={15} /></button>}
       </section>
       <footer className="landing-footer"><span>Waypoint / a small ritual for deep work</span><nav aria-label="Footer navigation"><button onClick={() => navigate("/about")}>About</button><button onClick={() => navigate("/changelog")}>Changelog</button><button onClick={() => navigate("/feedback")}>Feedback</button><button onClick={() => navigate("/privacy")}>Privacy</button><button onClick={() => navigate("/terms")}>Terms</button></nav></footer>

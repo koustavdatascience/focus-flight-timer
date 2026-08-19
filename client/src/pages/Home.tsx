@@ -1,6 +1,6 @@
 // Cloud Atlas Editorial page: an explicit-airport focus ritual on a real map, with sourced or transparent estimated flight durations.
 import { ArrowLeft, ChevronRight, Info, MapPin, Menu, Pause, Plane, Play, Radio, Scissors, Search, Shuffle, Ticket, Volume2, VolumeX, X } from "lucide-react";
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, PointerEvent as ReactPointerEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { AuthDialog, type AuthDialogMode } from "@/components/auth/AuthDialog";
 import { FlightMap } from "@/components/map/FlightMap";
@@ -57,8 +57,14 @@ export default function Home() {
   const [lastSelectedLocation, setLastSelectedLocation] = useState<Destination | null>(null);
   const [onboardingTicket, setOnboardingTicket] = useState<WaypointTicket | null>(null);
   const [tearingTicket, setTearingTicket] = useState(false);
+  const [tearProgress, setTearProgress] = useState(0);
+  const [draggingTear, setDraggingTear] = useState(false);
   const [simulatedTravelers, setSimulatedTravelers] = useState(() => getSimulatedTravelerCount());
   const inputRef = useRef<HTMLInputElement>(null);
+  const tearLineRef = useRef<HTMLDivElement>(null);
+  const tearDragRef = useRef<{ pointerId: number; startX: number; width: number; moved: boolean } | null>(null);
+  const suppressTearClickRef = useRef(false);
+  const tearTimerRef = useRef<number | null>(null);
   const resumedTripId = useRef<string | null>(null);
   const localSuggestions = useMemo(() => searchAirports(query, 6), [query]);
   const routeDistance = selectedOrigin && selectedDestination ? distanceBetween(selectedOrigin, selectedDestination) : 0;
@@ -216,6 +222,9 @@ export default function Home() {
     setRemaining(routeDuration.durationSeconds);
     setRunning(true);
     setTearingTicket(false);
+    setTearProgress(0);
+    setDraggingTear(false);
+    tearDragRef.current = null;
     setView("active");
     setNotice("");
     setActiveTrip(null);
@@ -239,10 +248,58 @@ export default function Home() {
       .finally(() => setPersistingTrip(false));
   }
 
-  function tearTicket() {
+  function completeTicketTear() {
     if (!onboardingTicket || tearingTicket) return;
+    if (tearTimerRef.current !== null) window.clearTimeout(tearTimerRef.current);
+    setTearProgress(1);
+    setDraggingTear(false);
     setTearingTicket(true);
-    window.setTimeout(() => startFlight(), 720);
+    tearTimerRef.current = window.setTimeout(() => {
+      tearTimerRef.current = null;
+      startFlight();
+    }, 820);
+  }
+
+  function handleTearPointerDown(event: ReactPointerEvent<HTMLButtonElement>) {
+    if (tearingTicket) return;
+    const line = tearLineRef.current;
+    if (!line) return;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    tearDragRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      width: Math.max(line.clientWidth - 46, 160),
+      moved: false,
+    };
+    setDraggingTear(true);
+  }
+
+  function handleTearPointerMove(event: ReactPointerEvent<HTMLButtonElement>) {
+    const drag = tearDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId || tearingTicket) return;
+    const distance = Math.max(0, drag.startX - event.clientX);
+    if (distance > 6) drag.moved = true;
+    const nextProgress = Math.min(1, distance / drag.width);
+    setTearProgress(nextProgress);
+    if (nextProgress >= 0.96) completeTicketTear();
+  }
+
+  function handleTearPointerEnd(event: ReactPointerEvent<HTMLButtonElement>) {
+    const drag = tearDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+    suppressTearClickRef.current = drag.moved;
+    if (!tearingTicket && tearProgress < 0.96) {
+      setDraggingTear(false);
+      setTearProgress(0);
+    }
+    tearDragRef.current = null;
+    if (drag.moved) window.setTimeout(() => { suppressTearClickRef.current = false; }, 0);
+  }
+
+  function handleTearClick() {
+    if (suppressTearClickRef.current) return;
+    completeTicketTear();
   }
 
   function pauseAndSyncActiveTrip() {
@@ -262,6 +319,9 @@ export default function Home() {
     setRemaining(0);
     setOnboardingTicket(null);
     setTearingTicket(false);
+    setTearProgress(0);
+    setDraggingTear(false);
+    tearDragRef.current = null;
     setView("landing");
     setNotice("");
     setActiveTrip(null);
@@ -272,6 +332,9 @@ export default function Home() {
     setRunning(false);
     setOnboardingTicket(null);
     setTearingTicket(false);
+    setTearProgress(0);
+    setDraggingTear(false);
+    tearDragRef.current = null;
     setView("selecting");
     setNotice("");
   }
@@ -488,17 +551,21 @@ export default function Home() {
             <div><span>Gate</span><strong>{onboardingTicket.gate}</strong><small>Focus room</small></div>
             <div><span>Seat</span><strong>{onboardingTicket.seat}</strong><small>Quiet cabin</small></div>
           </div>
-          <div className="ticket-perforation-wrap">
-            <button className="ticket-perforation" type="button" onClick={tearTicket} disabled={tearingTicket} aria-label="Tear ticket and begin focus flight"><span><Scissors size={14} aria-hidden="true" /> Tear here to begin</span></button>
+          <div className={`ticket-perforation-wrap ${draggingTear ? "is-dragging" : ""}`} ref={tearLineRef}>
+            <div className="ticket-tear-progress" style={{ width: `${Math.max(0, tearProgress * 100)}%` }} aria-hidden="true" />
+            <span className="ticket-perforation-label"><Scissors size={14} aria-hidden="true" /> {tearingTicket ? "Ticket released" : "Drag to tear"}</span>
+            <button className="ticket-tear-handle" style={{ left: `calc((100% - 44px) * ${1 - tearProgress})` }} type="button" onClick={handleTearClick} onPointerDown={handleTearPointerDown} onPointerMove={handleTearPointerMove} onPointerUp={handleTearPointerEnd} onPointerCancel={handleTearPointerEnd} disabled={tearingTicket} aria-label="Drag the tear handle to begin the focus flight">
+              <span className="ticket-tear-knob" aria-hidden="true" />
+            </button>
           </div>
-          <div className="ticket-boarding-section">
+          <div className={`ticket-boarding-section ${tearingTicket ? "is-falling" : ""}`}>
             <span className="ticket-boarding-label">Boarding pass</span>
             <strong>Boarding begins {onboardingTicket.boardingAt}</strong>
             <div className="ticket-barcode" aria-label={`Waypoint ticket ${onboardingTicket.tripCode}`} role="img" />
             <small>Unique focus ticket · not an airline boarding pass</small>
           </div>
         </section>
-        <div className="ticket-helper-text">Tear the line when you are ready to leave the map behind and enter your focus flight.</div>
+        <div className="ticket-helper-text">Drag the handle across the perforation when you are ready to leave the map behind. Tap it if you are on a touchscreen.</div>
       </main>
     );
   }

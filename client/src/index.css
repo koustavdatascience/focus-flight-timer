@@ -199,8 +199,16 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .destination-brief-card p { margin: 0; color: #61727d; font-size: 10px; line-height: 1.45; }
 
 .onboarding-shell::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(180deg, rgba(246,243,236,.22), rgba(169,212,222,.04) 55%, rgba(24,44,66,.1)); }
-.onboarding-ticket { position: absolute; top: 50%; left: 50%; z-index: 6; width: min(570px, calc(100vw - 48px)); max-height: calc(100svh - 54px); overflow: auto; transform: translate(-50%, -50%); padding: 25px 28px 22px; border: 1px solid rgba(24,44,66,.13); border-radius: 8px; background: #fffdf7; color: var(--ink); box-shadow: 0 24px 55px rgba(24,44,66,.25); text-align: left; transition: transform .72s cubic-bezier(.7,0,.84,.32), opacity .72s ease, filter .72s ease; }
-.onboarding-ticket.is-tearing { transform: translate(-50%, -42%) rotate(1.4deg); opacity: .08; filter: blur(2px); }
+.onboarding-ticket { position: absolute; top: 50%; left: 50%; z-index: 6; width: min(570px, calc(100vw - 48px)); max-height: calc(100svh - 54px); overflow: visible; transform: translate(-50%, -50%); padding: 25px 28px 22px; border: 1px solid rgba(24,44,66,.13); border-radius: 8px; background: #fffdf7; color: var(--ink); box-shadow: 0 24px 55px rgba(24,44,66,.25); text-align: left; transition: transform .72s cubic-bezier(.7,0,.84,.32), opacity .72s ease, filter .72s ease; }
+.onboarding-ticket.is-tearing { transform: translate(-50%, -50%) rotate(.45deg); }
+.onboarding-ticket.is-tearing .ticket-perforation-wrap { pointer-events: none; }
+.ticket-boarding-section { position: relative; z-index: 2; transform-origin: 50% 0; }
+.ticket-boarding-section.is-falling { animation: ticket-boarding-fall .82s cubic-bezier(.65,.02,.86,.35) forwards; pointer-events: none; }
+@keyframes ticket-boarding-fall {
+  0% { opacity: 1; transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
+  18% { opacity: 1; transform: translate3d(-3px, 7px, 0) rotate(-1deg) scale(1.005); }
+  100% { opacity: 0; transform: translate3d(20px, 190px, 0) rotate(8deg) scale(.92); }
+}
 .ticket-header-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .ticket-overline, .ticket-trip-code, .ticket-route-line span, .ticket-detail-grid span, .ticket-boarding-label { color: #687884; font-size: 9px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
 .ticket-overline { display: inline-flex; align-items: center; gap: 7px; color: var(--blue); }
@@ -220,13 +228,17 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .ticket-detail-grid div:not(:first-child) { border-left: 1px solid rgba(24,44,66,.1); padding-left: 12px; }
 .ticket-detail-grid strong { overflow-wrap: anywhere; font-size: 12px; line-height: 1.25; }
 .ticket-detail-grid small { color: #72808a; font-size: 9px; line-height: 1.25; }
-.ticket-perforation-wrap { position: relative; margin: 0 -28px; border-top: 1px dashed rgba(24,44,66,.4); }
+.ticket-perforation-wrap { position: relative; height: 43px; margin: 0 -28px; border-top: 1px dashed rgba(24,44,66,.4); }
 .ticket-perforation-wrap::before, .ticket-perforation-wrap::after { content: ""; position: absolute; top: -10px; width: 20px; height: 20px; border-radius: 50%; background: #dcecf0; }
 .ticket-perforation-wrap::before { left: -10px; } .ticket-perforation-wrap::after { right: -10px; }
-.ticket-perforation { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 42px; color: #5f6e78; background: transparent; cursor: pointer; transition: color .18s ease, background .18s ease; }
-.ticket-perforation span { display: inline-flex; align-items: center; gap: 7px; padding: 5px 12px; border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-.ticket-perforation:hover:not(:disabled) { color: var(--blue); background: rgba(169,212,222,.2); }
-.ticket-perforation:disabled { cursor: wait; }
+.ticket-perforation-wrap.is-dragging { border-top-color: var(--blue); }
+.ticket-tear-progress { position: absolute; top: -1px; right: 0; height: 2px; max-width: 100%; background: var(--blue); opacity: .85; transition: width .08s linear; pointer-events: none; }
+.ticket-perforation-label { position: absolute; inset: 0; display: inline-flex; align-items: center; justify-content: center; gap: 7px; color: #5f6e78; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; pointer-events: none; }
+.ticket-tear-handle { position: absolute; top: 50%; width: 44px; height: 44px; display: grid; place-items: center; padding: 0; border: 1px solid rgba(24,44,66,.1); border-radius: 50%; background: rgba(255,255,255,.96); color: var(--blue); box-shadow: 0 5px 14px rgba(24,44,66,.2); cursor: grab; touch-action: none; transform: translateY(-50%); transition: left .08s linear, transform .18s ease, box-shadow .18s ease; z-index: 3; }
+.ticket-tear-handle:hover:not(:disabled), .ticket-perforation-wrap.is-dragging .ticket-tear-handle { transform: translateY(-50%) scale(1.08); box-shadow: 0 7px 18px rgba(13,120,206,.28); }
+.ticket-tear-handle:active:not(:disabled) { cursor: grabbing; }
+.ticket-tear-handle:disabled { cursor: wait; }
+.ticket-tear-knob { width: 11px; height: 11px; border-radius: 50%; background: #b9e5ec; box-shadow: 0 0 0 5px rgba(13,120,206,.1); }
 .ticket-boarding-section { display: grid; gap: 9px; padding: 19px 0 3px; text-align: center; }
 .ticket-boarding-section strong { font-size: 11px; font-weight: 600; }
 .ticket-barcode { height: 54px; margin: 1px 14px 0; background: repeating-linear-gradient(90deg, #182c42 0 2px, transparent 2px 5px, #182c42 5px 6px, transparent 6px 10px, #182c42 10px 14px, transparent 14px 18px); opacity: .92; }
@@ -255,6 +267,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   .ticket-detail-grid { grid-template-columns: repeat(2, 1fr); gap: 12px 8px; padding-bottom: 16px; }
   .ticket-detail-grid div:nth-child(3) { border-left: 0; padding-left: 0; }
   .ticket-perforation-wrap { margin: 0 -18px; }
+  .ticket-tear-handle { width: 42px; height: 42px; }
+  .ticket-helper-text { line-height: 1.4; }
   .ticket-helper-text { bottom: 10px; width: calc(100vw - 28px); font-size: 9px; }
   .active-map-credit, .selecting-map-credit { right: 14px; bottom: 8px; font-size: 8px; }
 }

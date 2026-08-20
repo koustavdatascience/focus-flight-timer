@@ -57,6 +57,7 @@ export default function Home() {
   const [completionRecorded, setCompletionRecorded] = useState(false);
   const [lastSelectedLocation, setLastSelectedLocation] = useState<Destination | null>(null);
   const [onboardingTicket, setOnboardingTicket] = useState<WaypointTicket | null>(null);
+  const [ticketEntering, setTicketEntering] = useState(false);
   const [tearingTicket, setTearingTicket] = useState(false);
   const [tearProgress, setTearProgress] = useState(0);
   const [draggingTear, setDraggingTear] = useState(false);
@@ -328,6 +329,7 @@ export default function Home() {
     setSearchMode("origin");
     setRemaining(0);
     setOnboardingTicket(null);
+    setTicketEntering(false);
     setTearingTicket(false);
     setTearProgress(0);
     setDraggingTear(false);
@@ -341,6 +343,7 @@ export default function Home() {
     pauseAndSyncActiveTrip();
     setRunning(false);
     setOnboardingTicket(null);
+    setTicketEntering(false);
     setTearingTicket(false);
     setTearProgress(0);
     setDraggingTear(false);
@@ -417,6 +420,7 @@ export default function Home() {
   function beginOnboarding() {
     if (!selectedOrigin || !selectedDestination || !routeDuration || durationLoading) return;
     setOnboardingTicket(createWaypointTicket(selectedOrigin, selectedDestination, routeDuration.durationSeconds));
+    setTicketEntering(true);
     setTearingTicket(false);
     setNotice("");
     setView("onboarding");
@@ -543,7 +547,7 @@ export default function Home() {
       <main className="geo-flight-shell onboarding-shell">
         <FlightMap origin={selectedOrigin} destination={selectedDestination} progress={0} mode="selecting" />
         <button className="flight-back-button" onClick={returnToSelection} aria-label="Back to route review"><ArrowLeft size={20} /></button>
-        <section className={`onboarding-ticket ${tearingTicket ? "is-tearing" : ""}`} aria-labelledby="onboarding-ticket-title">
+        <section className={`onboarding-ticket ${ticketEntering ? "ticket-entering" : ""} ${tearingTicket ? "is-tearing" : ""}`} onAnimationEnd={(event) => { if (event.animationName === "ticket-entrance") setTicketEntering(false); }} aria-labelledby="onboarding-ticket-title">
           <div className="ticket-header-row">
             <span className="ticket-overline"><Ticket size={14} aria-hidden="true" /> Waypoint focus flight</span>
             <span className="ticket-trip-code">{onboardingTicket.tripCode}</span>

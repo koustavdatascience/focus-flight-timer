@@ -200,6 +200,12 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 
 .onboarding-shell::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(180deg, rgba(246,243,236,.22), rgba(169,212,222,.04) 55%, rgba(24,44,66,.1)); }
 .onboarding-ticket { position: absolute; top: 50%; left: 50%; z-index: 6; width: min(570px, calc(100vw - 48px)); max-height: calc(100svh - 54px); overflow: visible; transform: translate(-50%, -50%); padding: 25px 28px 22px; border: 1px solid rgba(24,44,66,.13); border-radius: 8px; background: #fffdf7; color: var(--ink); box-shadow: 0 24px 55px rgba(24,44,66,.25); text-align: left; transition: transform .72s cubic-bezier(.7,0,.84,.32), opacity .72s ease, filter .72s ease; }
+.onboarding-ticket.ticket-entering { animation: ticket-entrance .62s cubic-bezier(.23,1,.32,1) both; }
+@keyframes ticket-entrance {
+  0% { opacity: 0; transform: translate(-50%, calc(-50% + 46px)) rotate(1.6deg) scale(.985); }
+  62% { opacity: 1; transform: translate(-50%, calc(-50% - 5px)) rotate(-.25deg) scale(1.005); }
+  100% { opacity: 1; transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+}
 .onboarding-ticket.is-tearing { transform: translate(-50%, -50%) rotate(.45deg); }
 .onboarding-ticket.is-tearing .ticket-perforation-wrap { pointer-events: none; }
 .ticket-boarding-section { position: relative; z-index: 2; transform-origin: 50% 0; }

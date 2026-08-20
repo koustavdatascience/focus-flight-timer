@@ -2,8 +2,32 @@ import { ArrowLeft, Plane, Trophy, UsersRound } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { getFocusLeaderboard, type PublicLeaderboardRow } from "@/lib/supabase";
-import { formatFocusTime, rankLeaderboardEntries, type LeaderboardCategory, type LeaderboardPeriod } from "@/services/leaderboardState";
+import { formatFocusTime, leaderboardPeriodStart, rankLeaderboardEntries, type LeaderboardCategory, type LeaderboardPeriod } from "@/services/leaderboardState";
 import "../journey.css";
+
+const DEMO_LEADERBOARD_SEEDS = [
+  { handle: "demo-aurora", displayName: "Aurora Lin", focusSeconds: 8_100, flights: 6 },
+  { handle: "demo-mateo", displayName: "Mateo Silva", focusSeconds: 6_300, flights: 5 },
+  { handle: "demo-nia", displayName: "Nia Okafor", focusSeconds: 5_400, flights: 4 },
+  { handle: "demo-jules", displayName: "Jules Martin", focusSeconds: 4_500, flights: 4 },
+  { handle: "demo-sora", displayName: "Sora Tanaka", focusSeconds: 3_600, flights: 3 },
+  { handle: "demo-eli", displayName: "Eli Brooks", focusSeconds: 2_700, flights: 3 },
+];
+
+function createDemoLeaderboardRows(category: LeaderboardCategory, period: LeaderboardPeriod): PublicLeaderboardRow[] {
+  return DEMO_LEADERBOARD_SEEDS.map((pilot) => ({
+    user_id: `demo-${category}-${pilot.handle}`,
+    category,
+    period_type: period,
+    period_start_utc: leaderboardPeriodStart(period),
+    completed_focus_seconds: pilot.focusSeconds,
+    completed_flights: pilot.flights,
+    last_score_at: null,
+    handle: pilot.handle,
+    display_name: pilot.displayName,
+    avatar_path: null,
+  }));
+}
 
 const categoryCopy: Record<LeaderboardCategory, { label: string; detail: string; icon: typeof Plane }> = {
   solo: { label: "Solo Focus", detail: "Completed personal focus flights", icon: Plane },
@@ -15,16 +39,20 @@ export default function Leaderboards() {
   const [category, setCategory] = useState<LeaderboardCategory>("solo");
   const [period, setPeriod] = useState<LeaderboardPeriod>("monthly");
   const [rows, setRows] = useState<PublicLeaderboardRow[]>([]);
+  const [usingDemoRows, setUsingDemoRows] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     let active = true;
     setLoading(true);
+    setUsingDemoRows(false);
     setError("");
     void getFocusLeaderboard(category, period)
       .then((nextRows) => {
-        if (active) setRows(nextRows);
+        if (!active) return;
+        setUsingDemoRows(nextRows.length === 0);
+        setRows(nextRows.length > 0 ? nextRows : createDemoLeaderboardRows(category, period));
       })
       .catch(() => {
         if (active) setError("The leaderboard is temporarily unavailable. Please try again shortly.");
@@ -74,16 +102,23 @@ export default function Leaderboards() {
             {rankedRows.map((entry) => (
               <li key={entry.user_id} className={entry.sharedRank <= 3 ? "leaderboard-row leaderboard-row-leading" : "leaderboard-row"}>
                 <span className="leaderboard-rank" aria-label={`Rank ${entry.sharedRank}`}>{entry.sharedRank}</span>
-                <button className="leaderboard-pilot" onClick={() => navigate(`/u/${entry.handle}`)} aria-label={`View ${entry.display_name || entry.handle}'s profile`}>
-                  <span className="leaderboard-avatar" aria-hidden="true">{(entry.display_name || entry.handle).slice(0, 1).toUpperCase()}</span>
-                  <span><strong>{entry.display_name || entry.handle}</strong><small>@{entry.handle}</small></span>
-                </button>
+                {usingDemoRows ? (
+                  <span className="leaderboard-pilot" aria-label={`Sample pilot ${entry.display_name || entry.handle}`}>
+                    <span className="leaderboard-avatar" aria-hidden="true">{(entry.display_name || entry.handle).slice(0, 1).toUpperCase()}</span>
+                    <span><strong>{entry.display_name || entry.handle}</strong><small>@{entry.handle}</small></span>
+                  </span>
+                ) : (
+                  <button className="leaderboard-pilot" onClick={() => navigate(`/u/${entry.handle}`)} aria-label={`View ${entry.display_name || entry.handle}'s profile`}>
+                    <span className="leaderboard-avatar" aria-hidden="true">{(entry.display_name || entry.handle).slice(0, 1).toUpperCase()}</span>
+                    <span><strong>{entry.display_name || entry.handle}</strong><small>@{entry.handle}</small></span>
+                  </button>
+                )}
                 <span className="leaderboard-score"><strong>{formatFocusTime(entry.completed_focus_seconds)}</strong><small>{entry.completed_flights} completed {entry.completed_flights === 1 ? "flight" : "flights"}</small></span>
               </li>
             ))}
           </ol>
         )}
-        <p className="leaderboard-note">Pilots can opt out in their private Pilot Log at any time. Distance is a personal Explorer statistic, never a ranking metric.</p>
+        <p className="leaderboard-note">{usingDemoRows ? "Sample/demo entries are shown until opted-in pilots have completed a flight. " : "Pilots can opt out in their private Pilot Log at any time. "}Distance is a personal Explorer statistic, never a ranking metric.</p>
       </section>
     </main>
   );

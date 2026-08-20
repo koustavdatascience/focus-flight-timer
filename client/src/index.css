@@ -38,7 +38,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .route-location-card { width: 174px; align-items: flex-start; padding: 22px 20px; text-align: left; }
 .route-card-simple:hover, .route-card-simple.active { transform: translateY(-4px); box-shadow: 0 15px 27px rgba(29,62,76,.17); background: rgba(255,255,255,.94); }
 .route-card-simple.active { border-color: rgba(13,120,206,.4); }
-.route-card-label { margin-bottom: 9px; color: rgba(24,44,66,.56); font-size: 9px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.route-card-label { display: grid; gap: 3px; margin-bottom: 9px; color: rgba(24,44,66,.56); font-size: 9px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.route-card-label small { display: block; font-size: .86em; letter-spacing: .12em; }
 .route-code-simple { color: #687884; font-size: 11px; letter-spacing: .13em; }
 .route-place-simple { font-size: 15px; font-weight: 600; }
 .route-minutes-simple { color: #687884; font-size: 12px; }

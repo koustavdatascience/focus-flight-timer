@@ -27,10 +27,8 @@ describe("destination facts", () => {
     expect(brief.fact).toContain("Sydney Harbour");
   });
 
-  it("returns a transparent route note for unknown airports", () => {
+  it("returns no briefing for airports without curated content", () => {
     const brief = getDestinationBrief(destination({ iata: "ZZZ", city: "Example City", name: "Example Airport" }));
-    expect(brief.sourceLabel).toBe("Route note");
-    expect(brief.fact).toContain("Example City");
-    expect(brief.fact).toContain("airport catalogue");
+    expect(brief).toBeNull();
   });
 });

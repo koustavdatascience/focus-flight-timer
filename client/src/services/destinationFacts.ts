@@ -31,14 +31,7 @@ const CURATED_FACTS: Record<string, CuratedFact> = {
   FRA: { fact: "Frankfurt is known for its dense financial district alongside a historic centre on the Main River.", sourceLabel: "Destination fact" },
 };
 
-export function getDestinationBrief(destination: Destination): DestinationBrief {
-  const airportCode = destination.iata || destination.icao || String(destination.id);
+export function getDestinationBrief(destination: Destination): DestinationBrief | null {
   const curated = destination.iata ? CURATED_FACTS[destination.iata.toUpperCase()] : undefined;
-  if (curated) return { title: destination.city, ...curated };
-
-  return {
-    title: destination.city,
-    fact: `${destination.city} is served by ${destination.name} (${airportCode}) in ${destination.country}. This route note is based on Waypoint's airport catalogue; richer local context and current news can be added later.`,
-    sourceLabel: "Route note",
-  };
+  return curated ? { title: destination.city, ...curated } : null;
 }

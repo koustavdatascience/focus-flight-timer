@@ -37,9 +37,21 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .route-card-simple { position: relative; width: 128px; height: 128px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border: 1px solid rgba(24,44,66,.09); border-radius: 11px; background: rgba(255,255,255,.84); color: var(--ink); box-shadow: 0 9px 22px rgba(29,62,76,.12); cursor: pointer; transition: transform .2s cubic-bezier(.23,1,.32,1), box-shadow .2s ease, background .2s ease; }
 .route-location-card { width: 174px; align-items: flex-start; padding: 22px 20px; text-align: left; }
 .route-card-simple:hover, .route-card-simple.active { transform: translateY(-4px); box-shadow: 0 15px 27px rgba(29,62,76,.17); background: rgba(255,255,255,.94); }
+@media (prefers-reduced-motion: no-preference) {
+  .route-card-simple.shuffle-pulse-a { animation: shuffle-card-pulse-a .24s cubic-bezier(.23,1,.32,1); }
+  .route-card-simple.shuffle-pulse-b { animation: shuffle-card-pulse-b .24s cubic-bezier(.23,1,.32,1); }
+}
+@keyframes shuffle-card-pulse-a {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  45% { transform: translateY(-7px) rotate(-1.4deg); }
+}
+@keyframes shuffle-card-pulse-b {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  45% { transform: translateY(-7px) rotate(1.4deg); }
+}
 .route-card-simple.active { border-color: rgba(13,120,206,.4); }
 .route-card-label { display: grid; gap: 3px; margin-bottom: 9px; color: rgba(24,44,66,.56); font-size: 9px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
-.route-card-label small { display: block; font-size: .86em; letter-spacing: .12em; }
+.route-card-label small { display: block; color: rgba(24,44,66,.46); font-size: .86em; font-weight: 600; letter-spacing: .12em; }
 .route-code-simple { color: #687884; font-size: 11px; letter-spacing: .13em; }
 .route-place-simple { font-size: 15px; font-weight: 600; }
 .route-minutes-simple { color: #687884; font-size: 12px; }

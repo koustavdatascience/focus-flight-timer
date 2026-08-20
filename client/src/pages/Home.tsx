@@ -56,6 +56,7 @@ export default function Home() {
   const [persistingTrip, setPersistingTrip] = useState(false);
   const [completionRecorded, setCompletionRecorded] = useState(false);
   const [lastSelectedLocation, setLastSelectedLocation] = useState<Destination | null>(null);
+  const [shufflePulse, setShufflePulse] = useState<{ target: SearchMode; nonce: number } | null>(null);
   const [onboardingTicket, setOnboardingTicket] = useState<WaypointTicket | null>(null);
   const [ticketEntering, setTicketEntering] = useState(false);
   const [tearingTicket, setTearingTicket] = useState(false);
@@ -395,12 +396,17 @@ export default function Home() {
     setMenuOpen(false);
   }
 
+  function pulseShuffle(target: SearchMode) {
+    setShufflePulse((current) => ({ target, nonce: (current?.nonce ?? 0) + 1 }));
+  }
+
   function cycleRandomOrigin() {
     const randomOrigin = pickRandomOrigin(AIRPORTS);
     if (!randomOrigin) {
       setNotice("No eligible starting airport is available just now. Try again shortly.");
       return;
     }
+    pulseShuffle("origin");
     selectOrigin(randomOrigin);
   }
 
@@ -414,6 +420,7 @@ export default function Home() {
       setNotice("No eligible destination is available just now. Try again shortly.");
       return;
     }
+    pulseShuffle("destination");
     void selectDestination(randomDestination, "", undefined, false);
   }
 
@@ -625,12 +632,12 @@ export default function Home() {
         <div className="flight-kicker"><Plane size={17} fill="currentColor" /><span>{selectedOrigin ? "Choose a destination," : "Choose a starting airport,"}</span><strong>keep your focus.</strong></div>
         <h1 id="flight-title">Your next focus flight<br /><em>starts here.</em></h1>
         <div className="route-cards route-cards-two" aria-label="Starting location and destination">
-          <button className={`route-card-simple route-location-card ${selectedOrigin ? "active" : ""}`} onClick={cycleRandomOrigin} aria-label="Cycle through random starting airports">
+          <button className={`route-card-simple route-location-card ${selectedOrigin ? "active" : ""} ${shufflePulse?.target === "origin" ? `shuffle-pulse-${shufflePulse.nonce % 2 === 0 ? "a" : "b"}` : ""}`} onClick={cycleRandomOrigin} aria-label="Cycle through random starting airports">
             <span className="route-card-label">Starting location <small>click to shuffle</small></span>
             <span className="route-code-simple">{selectedOrigin ? airportLabel(selectedOrigin) : "FROM"}</span>
             <span className="route-place-simple">{selectedOrigin ? selectedOrigin.city : "Pick origin"}</span>
           </button>
-          <button className={`route-card-simple route-location-card ${selectedDestination ? "active" : ""}`} onClick={cycleRandomDestination} aria-label="Cycle through random destinations">
+          <button className={`route-card-simple route-location-card ${selectedDestination ? "active" : ""} ${shufflePulse?.target === "destination" ? `shuffle-pulse-${shufflePulse.nonce % 2 === 0 ? "a" : "b"}` : ""}`} onClick={cycleRandomDestination} aria-label="Cycle through random destinations">
             <span className="route-card-label">Destination <small>click to shuffle</small></span>
             <span className="route-code-simple">{selectedDestination ? airportLabel(selectedDestination) : "TO"}</span>
             <span className="route-place-simple">{selectedDestination ? `${selectedDestination.city}${routeDuration ? ` · ${formatFlightDuration(routeDuration.durationSeconds)}` : ""}` : "Pick destination"}</span>
